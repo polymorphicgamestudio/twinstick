@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class LegStepper : MonoBehaviour {
 
-	[SerializeField] Transform root = null;
+	[SerializeField] Transform controller = null;
 	[SerializeField] Vector3 homeOffset = Vector3.zero;
 	Vector2 homeRadiusRange = new Vector2(0.1f, 0.546f);
 	float homeRadius = 0.1f;
@@ -80,7 +80,7 @@ public class LegStepper : MonoBehaviour {
 		//lift less when sprinting!!!!!!!
 		float liftAmount = Input.GetKey(KeyCode.LeftShift) ? 0f : Vector3.Distance(startPoint, endPoint) / 2f;
 		centerPoint += Vector3.up * liftAmount;
-		Quaternion endRot = root.rotation;// * footRotOffset[index];
+		Quaternion endRot = controller.rotation;// * footRotOffset[index];
 
 		// Here we use a do-while loop so the normalized time goes past 1.0 on the last iteration,
 		// placing us at the end position before ending.
@@ -104,14 +104,14 @@ public class LegStepper : MonoBehaviour {
 	}
 	
 	void UpdateHomePositions() {
-		home[0] = root.TransformPoint(new Vector3(-homeOffset.x, homeOffset.y, homeOffset.z));
-		home[1] = root.TransformPoint(homeOffset);
+		home[0] = controller.TransformPoint(new Vector3(-homeOffset.x, homeOffset.y, homeOffset.z));
+		home[1] = controller.TransformPoint(homeOffset);
 	}
 	void DrawHomePositions() {
 		for (int i = 0; i < home.Length; i++) {
 			Debug.DrawRay(home[i], Vector3.up * 0.1f);
-			Debug.DrawRay(home[i], root.right * homeRadius, Color.magenta);
-			Debug.DrawRay(home[i], -root.right * homeRadius, Color.cyan);
+			Debug.DrawRay(home[i], controller.right * homeRadius, Color.magenta);
+			Debug.DrawRay(home[i], -controller.right * homeRadius, Color.cyan);
 		}
 	}
 }
