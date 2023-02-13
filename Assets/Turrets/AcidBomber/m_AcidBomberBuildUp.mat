@@ -86,7 +86,7 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Scroll: 1
-    - _ShaderDisplacement: 0.399
+    - _ShaderDisplacement: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
