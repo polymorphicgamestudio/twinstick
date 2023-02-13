@@ -5,8 +5,6 @@ using UnityEngine;
 public class RobotController : MonoBehaviour {
 
 	[SerializeField] Rigidbody player;
-
-	[SerializeField] Transform target;
 	[SerializeField] Transform root;
 	[SerializeField] Transform head;
 

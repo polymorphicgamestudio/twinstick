@@ -3,19 +3,19 @@ using System.Collections;
 
 [RequireComponent(typeof(MatrixBlender))]
 public class CameraController : MonoBehaviour {
+
+	private MatrixBlender blender;
 	private Matrix4x4 ortho, perspective;
 	float fov = 60f, near = .3f, far = 200f;
-	[Tooltip("Orthographic Size")]
-	float size = 50f;
 	private float aspect;
-	private MatrixBlender blender;
 	private bool orthoOn = false, CamFollowPlayer = true;
 	Camera cam;
-
+	
+	[Tooltip("Orthographic Size")] float size = 50f;
 	Vector3 orthoCamPos = new Vector3(0, 76, -44);
 	float orthoCamAngle = 60f;
 
-	public Transform player;
+	Transform player;
 
 	Vector2 zoomRange = new Vector2(5f, 40f);
 	float zoom = 35f;
@@ -33,6 +33,8 @@ public class CameraController : MonoBehaviour {
 		cam = GetComponent<Camera>();
 		cam.projectionMatrix = perspective;
 		blender = GetComponent<MatrixBlender>();
+
+		player = ShepGM.player;
 	}
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.Space)) {

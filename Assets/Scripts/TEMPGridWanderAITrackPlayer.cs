@@ -19,6 +19,18 @@ public class TEMPGridWanderAITrackPlayer : MonoBehaviour {
 
 	bool enableObstacles = true;
 
+
+
+
+
+	private void Awake() {
+		ShepGM.GetList(ShepGM.Thing.Slime).Add(transform);
+	}
+	private void OnDestroy() {
+		ShepGM.GetList(ShepGM.Thing.Slime).Remove(transform);
+	}
+
+
 	void Update() {
 		Move();
 		transform.position = new Vector3(currentXFloat, 0, currentZFloat);
