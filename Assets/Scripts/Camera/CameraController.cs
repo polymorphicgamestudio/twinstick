@@ -19,9 +19,9 @@ namespace ShepProject {
 
 		Transform player;
 
-		Vector2 zoomRange = new Vector2(5f, 40f);
-		float zoom = 35f;
-		Vector2 vertAngleBounds = new Vector2(0f, 80f);
+        float zoomPercent = 0.8f;
+        Vector2 zoomRange = new Vector2(5f, 60f);
+		Vector2 vertAngleRange = new Vector2(30f, 80f);
 		float perspAngleVert = 60f;
 		float perspAngleHoz = 0f;
 		Vector2 lastMousePos = Vector2.zero;
@@ -29,21 +29,22 @@ namespace ShepProject {
 		[HideInInspector]
 		public Vector3 directionForward = Vector3.forward, directionRight = Vector3.right;
 
-
 		void Start() {
+			cam = Camera.main;	
 			CreateMatrices();
 			cam = GetComponent<Camera>();
 			cam.projectionMatrix = perspective;
 			blender = GetComponent<MatrixBlender>();
-
 			player = ShepGM.player;
 		}
-		void Update() {
-			if (Input.GetKeyDown(KeyCode.Space)) {
+
+
+        void Update() {
+			if (Input.GetKeyDown(KeyCode.Space))
 				ToggleOrtho();
-			}
 			PerspectiveCameraControls();
-			if (Input.mouseScrollDelta.y != 0) Zoom();
+			if (Input.mouseScrollDelta.y != 0)
+                zoomPercent = Mathf.Clamp01(zoomPercent + Input.mouseScrollDelta.y * 0.1f);
 			lastMousePos = Input.mousePosition;
 		}
 
@@ -88,7 +89,8 @@ namespace ShepProject {
 			Vector3 startPos = cam.transform.position;
 			Quaternion startRot = cam.transform.rotation;
 			Quaternion endRot = Quaternion.Euler(perspAngleVert, 0, 0);
-			float progress = 0f;
+            float zoom = Mathf.Lerp(zoomRange.x, zoomRange.y, zoomPercent);
+            float progress = 0f;
 			while (progress < 1f) {
 				progress = (Time.time - startTime) / duration;
 				Vector3 direction = Quaternion.AngleAxis(perspAngleVert, Vector3.right) * -Vector3.forward;
@@ -104,28 +106,21 @@ namespace ShepProject {
 			else ExitOrtho();
 		}
 
-		void Zoom() {
-			zoom = Mathf.Clamp(zoom + Input.mouseScrollDelta.y, zoomRange.x, zoomRange.y);
-			if (zoom == zoomRange.y) {
-				if (!orthoOn) EnterOrtho();
-			}
-			else if (orthoOn) ExitOrtho();
-		}
 		void PerspectiveCameraControls() {
 			if (!CamFollowPlayer) return;
-			//rotate mouse by holding center click
+            
+			//rotate cameraHoz by holding center click and moving mouse
 			if (Input.GetMouseButton(2)) {
-				Vector2 mouseDelta = (Vector2)Input.mousePosition - lastMousePos;
-				perspAngleVert = ClampAngle(perspAngleVert - mouseDelta.y, vertAngleBounds.x, vertAngleBounds.y);
-				perspAngleHoz += mouseDelta.x;
+				perspAngleHoz += Input.mousePosition.x - lastMousePos.x;
 			}
-			//forward vector rotation around the up axis
-			directionForward = Quaternion.AngleAxis(perspAngleHoz, Vector3.up) * Vector3.forward;
-			//vector orthogonal to directionForward and up axis
-			directionRight = Vector3.Cross(-directionForward, Vector3.up);
-			//direction vector controlled by directionForward and directionRight
-			Vector3 camDirection = Quaternion.AngleAxis(perspAngleVert, directionRight) * -directionForward;
 
+            float zoom = Mathf.Lerp(zoomRange.x, zoomRange.y, zoomPercent);
+			perspAngleVert = Mathf.Lerp(vertAngleRange.x, vertAngleRange.y, zoomPercent);
+
+            //forward vector rotation around the up axis
+            directionForward = Quaternion.AngleAxis(perspAngleHoz, Vector3.up) * Vector3.forward;
+			directionRight = Vector3.Cross(-directionForward, Vector3.up);
+			Vector3 camDirection = Quaternion.AngleAxis(perspAngleVert, directionRight) * -directionForward;
 			cam.transform.position = player.position + Vector3.up + camDirection * zoom;
 			cam.transform.LookAt(player.position + Vector3.up);
 		}
@@ -145,5 +140,4 @@ namespace ShepProject {
 			return Mathf.Clamp(angle, min, max);
 		}
 	}
-
 }
