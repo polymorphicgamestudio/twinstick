@@ -3,8 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SystemBase
+public abstract class SystemBase : MonoBehaviour
 {
-	public ShepGM manager;
+	private ShepGM manager;
+	protected ShepGM Manager => manager;
+
+	public void Initialize(ShepGM inst) {
+		this.manager = inst;
+	}
 
 }

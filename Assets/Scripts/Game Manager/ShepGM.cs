@@ -17,6 +17,9 @@ namespace ShepProject {
 		public static Transform player;
 		static List<Transform>[] things = new List<Transform>[(int)Thing.Count];
 
+		[SerializeField]
+		private EnemyManager enemyManager;
+
 		public enum Thing {
 			Slime,
 			Turret,
@@ -30,10 +33,9 @@ namespace ShepProject {
 		private void Awake() {
 
 			actions = new PlayerInputActions();
-			actions.Player.Zoom.Enable();
+			actions.Player.Enable();
 
-
-
+			enemyManager.Initialize(this);
 
 			if (inst == null) {
 				inst = this;
