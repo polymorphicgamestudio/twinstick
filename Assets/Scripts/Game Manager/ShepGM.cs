@@ -9,6 +9,11 @@ namespace ShepProject {
 	**************************************************/
 	public class ShepGM : MonoBehaviour {
 
+
+		public static ShepGM inst;
+
+		public PlayerInputActions actions;
+
 		public static Transform player;
 		static List<Transform>[] things = new List<Transform>[(int)Thing.Count];
 
@@ -20,6 +25,26 @@ namespace ShepProject {
 			PlayerProjectile,
 			Count
 		}
+
+		
+		private void Awake() {
+
+			actions = new PlayerInputActions();
+			actions.Player.Zoom.Enable();
+
+
+
+
+			if (inst == null) {
+				inst = this;
+			}
+			else {
+				Debug.LogError("ShemGM Instance already exists!");
+			}
+
+
+		}
+
 
 		static ShepGM() {
 			for (int q = 0; q < things.Length; q++) {

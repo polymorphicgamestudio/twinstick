@@ -36,10 +36,20 @@ namespace ShepProject {
 			cam.projectionMatrix = perspective;
 			blender = GetComponent<MatrixBlender>();
 			player = ShepGM.player;
+
+			ShepGM.inst.actions.Player.Zoom.performed += Zoom_performed;
+		    
+
 		}
 
+		private void Zoom_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) 
+		{
+		
+			throw new System.NotImplementedException();
+		
+		}
 
-        void Update() {
+		void Update() {
 			if (Input.GetKeyDown(KeyCode.Space))
 				ToggleOrtho();
 			PerspectiveCameraControls();
