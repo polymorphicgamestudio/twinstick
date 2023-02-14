@@ -2,18 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemySystem 
-{ 
+namespace ShepProject {
 
-    private List<Transform> enemyList;
-    
+    public class EnemySystem : SystemBase {
 
-
-    void Update()
-    {
-        
-        
+        private List<Transform> enemyList;
 
 
+
+        void Update() {
+
+
+            
+
+        }
     }
+
 }
