@@ -1,28 +1,47 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace ShepProject {
 
 	public class PlayerMovementController : MonoBehaviour {
 
 		Rigidbody rb;
-		Vector2 speed = new Vector2(5f, 20f); // walk, run
+		Vector3 moveInput;
+		Vector2 speed = new Vector2(5f, 30f); // walk, run
 		[SerializeField] CameraController cameraController;
 		[HideInInspector] public bool running = false;
 
 		private void Awake() {
-			ShepGM.player = transform;
+			ShepGM.inst.player = transform;
 		}
 
 		void Start() {
 			rb = GetComponent<Rigidbody>();
+			ShepGM.inst.actions.Player.Move.performed += Move_performed;
+			ShepGM.inst.actions.Player.Move.canceled += Move_canceled;
+			ShepGM.inst.actions.Player.Run.performed += Run_performed;
+			ShepGM.inst.actions.Player.Run.canceled += Run_canceled;
 		}
 
 		private void FixedUpdate() {
-			Vector3 inputForward = cameraController.directionForward * Input.GetAxis("Vertical");
-			Vector3 inputRight = cameraController.directionRight * Input.GetAxis("Horizontal");
-			running = Input.GetKey(KeyCode.LeftShift);
-			rb.velocity = Vector3.ClampMagnitude(inputForward + inputRight, 1f) * (running ? speed.y : speed.x);
+			rb.velocity = moveInput * (running ? speed.y : speed.x);
+		}
+
+
+		void Move_performed(InputAction.CallbackContext context) {
+			Vector2 move = ShepGM.inst.actions.Player.Move.ReadValue<Vector2>();
+			Vector3 forward = cameraController.directionForward * move.y;
+			Vector3 right = cameraController.directionRight * move.x;
+			moveInput = Vector3.ClampMagnitude(forward + right, 1f);
+		}
+		void Move_canceled(InputAction.CallbackContext context) {
+			moveInput = Vector2.zero;
+		}
+		void Run_performed(InputAction.CallbackContext context) {
+			running = true;
+		}
+		void Run_canceled(InputAction.CallbackContext context) {
+			running = false;
 		}
 	}
-
 }

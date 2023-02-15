@@ -1,9 +1,11 @@
+using ShepProject;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class RobotController : MonoBehaviour {
 
+	PlayerMovementController playerController;
 	[SerializeField] Rigidbody player;
 	[SerializeField] Transform root;
 	[SerializeField] Transform head;
@@ -27,13 +29,15 @@ public class RobotController : MonoBehaviour {
 
 
 
-
+	private void Awake() {
+		playerController = player.GetComponent<PlayerMovementController>();
+	}
 
 	void Update() {
 		SetMousePos();
 		distFromMousePos = Vector3.Distance(root.position, mousePos);
 
-		running = Input.GetKey(KeyCode.LeftShift) && player.velocity.sqrMagnitude > 1f;
+		running = playerController.running;
 	}
 
 	// By Putting our animation code in LateUpdate, we allow other systems to update the environment first 

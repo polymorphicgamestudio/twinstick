@@ -14,7 +14,7 @@ namespace ShepProject {
 
 		public PlayerInputActions actions;
 
-		public static Transform player;
+		public Transform player;
 		static List<Transform>[] things = new List<Transform>[(int)Thing.Count];
 
 		[SerializeField]

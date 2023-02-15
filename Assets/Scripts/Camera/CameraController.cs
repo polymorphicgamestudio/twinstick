@@ -36,7 +36,7 @@ namespace ShepProject {
 			cam = GetComponent<Camera>();
 			cam.projectionMatrix = perspective;
 			blender = GetComponent<MatrixBlender>();
-			player = ShepGM.player;
+			player = ShepGM.inst.player;
 
 
 			ShepGM.inst.actions.Player.Zoom.performed += Zoom_performed;
@@ -133,7 +133,7 @@ namespace ShepProject {
 			if (!CamFollowPlayer) return;
             
             float zoom = Mathf.Lerp(zoomRange.x, zoomRange.y, zoomPercent);
-			perspAngleVert = Mathf.Lerp(vertAngleRange.x, vertAngleRange.y, zoomPercent);
+			perspAngleVert = Mathf.Lerp(vertAngleRange.x, vertAngleRange.y, Mathf.Pow(zoomPercent,0.5f));
 
             //forward vector rotation around the up axis
             directionForward = Quaternion.AngleAxis(perspAngleHoz, Vector3.up) * Vector3.forward;

@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using ShepProject;
+using System.Collections;
 using UnityEngine;
 
 public class LegStepper : MonoBehaviour {
+
+	PlayerMovementController playerController;
 
 	[SerializeField] Transform controller = null;
 	[SerializeField] Vector3 homeOffset = Vector3.zero;
@@ -17,6 +20,9 @@ public class LegStepper : MonoBehaviour {
 	//private Quaternion[] footRotOffset;
 
 
+	private void Awake() {
+		playerController = ShepGM.inst.player.GetComponent<PlayerMovementController>();
+	}
 	void Start() {
 		distFromHome = new float[2];
 		moving = new bool[2];
@@ -50,7 +56,7 @@ public class LegStepper : MonoBehaviour {
 			homeRadius = Mathf.Lerp(homeRadius, homeRadiusRange.y, 10f * Time.deltaTime);
 			overshootFraction = Mathf.Lerp(overshootFraction, 0.8f, 10f * Time.deltaTime);
 			// faster sprinting feet!!!!!!!!!!
-			float targetFootSpeed = Input.GetKey(KeyCode.LeftShift) ? moveDurationRange.z : moveDurationRange.y;
+			float targetFootSpeed = playerController.running ? moveDurationRange.z : moveDurationRange.y;
 			moveDuration = Mathf.Lerp(moveDuration, targetFootSpeed, 5f * Time.deltaTime);
 		}
 	}
@@ -78,7 +84,7 @@ public class LegStepper : MonoBehaviour {
 		Vector3 centerPoint = (startPoint + endPoint) / 2f;
 		//lift
 		//lift less when sprinting!!!!!!!
-		float liftAmount = Input.GetKey(KeyCode.LeftShift) ? 0f : Vector3.Distance(startPoint, endPoint) / 2f;
+		float liftAmount = playerController.running ? 0f : Vector3.Distance(startPoint, endPoint) / 2f;
 		centerPoint += Vector3.up * liftAmount;
 		Quaternion endRot = controller.rotation;// * footRotOffset[index];
 
