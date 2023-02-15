@@ -5,11 +5,11 @@ using UnityEngine;
 
 public abstract class SystemBase : MonoBehaviour
 {
-	private ShepGM manager;
-	protected ShepGM Manager => manager;
+	private ShepGM inst;
+	protected ShepGM Inst => inst;
 
 	public void Initialize(ShepGM inst) {
-		this.manager = inst;
+		this.inst = inst;
 	}
 
 }

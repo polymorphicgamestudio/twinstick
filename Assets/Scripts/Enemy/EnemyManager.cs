@@ -14,7 +14,12 @@ namespace ShepProject {
 
 		private List<Transform> enemyList;
 
-        List<EnemyBurrow> burrows;
+        private List<EnemyBurrow> burrows;
+
+        private bool spawningEnemies;
+
+        public bool SpawningEnemies => spawningEnemies;
+
 
 
 		private void Start() {

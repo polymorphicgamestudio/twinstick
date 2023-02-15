@@ -22,6 +22,9 @@ namespace ShepProject {
 
         public void Update() {
 
+            if (!manager.SpawningEnemies)
+                return;
+
             currentSpawnTime -= Time.deltaTime;
 
             if (currentSpawnTime > 0)
