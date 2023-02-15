@@ -20,6 +20,7 @@ namespace ShepProject {
 
 		Transform player;
 
+		float zoomInput;
         float zoomPercent = 0.8f;
         Vector2 zoomRange = new Vector2(5f, 60f);
 		Vector2 vertAngleRange = new Vector2(30f, 80f);
@@ -40,14 +41,17 @@ namespace ShepProject {
 
 
 			ShepGM.inst.actions.Player.Zoom.performed += Zoom_performed;
+			ShepGM.inst.actions.Player.Zoom.canceled += Zoom_canceled;
 			ShepGM.inst.actions.Player.ToggleOrth.performed += ToggleOrth_performed;
 			ShepGM.inst.actions.Player.RotateCam.performed += RotateCam_performed;
 			ShepGM.inst.actions.Player.RotateCam.canceled += RotateCam_canceled;
 		}
 
 		private void Zoom_performed(InputAction.CallbackContext context) {
-			float zoomInput = Mathf.Clamp(ShepGM.inst.actions.Player.Zoom.ReadValue<float>(),-1f,1f);
-			zoomPercent = Mathf.Clamp01(zoomPercent + zoomInput * 0.05f);
+			zoomInput = Mathf.Clamp(ShepGM.inst.actions.Player.Zoom.ReadValue<float>(),-20,20);
+		}
+		private void Zoom_canceled(InputAction.CallbackContext context) {
+			zoomInput = 0f;
 		}
 		private void ToggleOrth_performed(InputAction.CallbackContext context) {
 			ToggleOrtho();
@@ -62,6 +66,7 @@ namespace ShepProject {
 
 
 		void Update() {
+			zoomPercent = Mathf.Clamp01(zoomPercent + zoomInput * 0.005f);
 			RotateCamera();
 			PerspectiveCameraControls();
 		}
