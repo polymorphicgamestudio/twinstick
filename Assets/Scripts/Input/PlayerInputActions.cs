@@ -80,6 +80,24 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""MousePosition"",
+                    ""type"": ""Value"",
+                    ""id"": ""93d7e8de-7776-47c3-abf9-8efe52e73ded"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""MouseDelta"",
+                    ""type"": ""Value"",
+                    ""id"": ""39e644ed-76bb-4781-91bb-e67350ffbdb2"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -388,6 +406,28 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""RotateCam"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0b7ff77b-f2c5-4b63-b15d-73cd9c467197"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""MousePosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""25b3672e-688a-4458-aec2-9a909c0361af"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""MouseDelta"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -849,6 +889,8 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player_Zoom = m_Player.FindAction("Zoom", throwIfNotFound: true);
         m_Player_ToggleOrth = m_Player.FindAction("ToggleOrth", throwIfNotFound: true);
         m_Player_RotateCam = m_Player.FindAction("RotateCam", throwIfNotFound: true);
+        m_Player_MousePosition = m_Player.FindAction("MousePosition", throwIfNotFound: true);
+        m_Player_MouseDelta = m_Player.FindAction("MouseDelta", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -926,6 +968,8 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Zoom;
     private readonly InputAction m_Player_ToggleOrth;
     private readonly InputAction m_Player_RotateCam;
+    private readonly InputAction m_Player_MousePosition;
+    private readonly InputAction m_Player_MouseDelta;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -936,6 +980,8 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         public InputAction @Zoom => m_Wrapper.m_Player_Zoom;
         public InputAction @ToggleOrth => m_Wrapper.m_Player_ToggleOrth;
         public InputAction @RotateCam => m_Wrapper.m_Player_RotateCam;
+        public InputAction @MousePosition => m_Wrapper.m_Player_MousePosition;
+        public InputAction @MouseDelta => m_Wrapper.m_Player_MouseDelta;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -963,6 +1009,12 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @RotateCam.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCam;
                 @RotateCam.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCam;
                 @RotateCam.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCam;
+                @MousePosition.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMousePosition;
+                @MousePosition.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMousePosition;
+                @MousePosition.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMousePosition;
+                @MouseDelta.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseDelta;
+                @MouseDelta.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseDelta;
+                @MouseDelta.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseDelta;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -985,6 +1037,12 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @RotateCam.started += instance.OnRotateCam;
                 @RotateCam.performed += instance.OnRotateCam;
                 @RotateCam.canceled += instance.OnRotateCam;
+                @MousePosition.started += instance.OnMousePosition;
+                @MousePosition.performed += instance.OnMousePosition;
+                @MousePosition.canceled += instance.OnMousePosition;
+                @MouseDelta.started += instance.OnMouseDelta;
+                @MouseDelta.performed += instance.OnMouseDelta;
+                @MouseDelta.canceled += instance.OnMouseDelta;
             }
         }
     }
@@ -1120,6 +1178,8 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnZoom(InputAction.CallbackContext context);
         void OnToggleOrth(InputAction.CallbackContext context);
         void OnRotateCam(InputAction.CallbackContext context);
+        void OnMousePosition(InputAction.CallbackContext context);
+        void OnMouseDelta(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

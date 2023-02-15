@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 
 namespace ShepProject {
@@ -24,7 +25,7 @@ namespace ShepProject {
 		Vector2 vertAngleRange = new Vector2(30f, 80f);
 		float perspAngleVert = 60f;
 		float perspAngleHoz = 0f;
-		Vector2 lastMousePos = Vector2.zero;
+		bool rotating = false;
 
 		[HideInInspector]
 		public Vector3 directionForward = Vector3.forward, directionRight = Vector3.right;
@@ -40,22 +41,34 @@ namespace ShepProject {
 
 			ShepGM.inst.actions.Player.Zoom.performed += Zoom_performed;
 			ShepGM.inst.actions.Player.ToggleOrth.performed += ToggleOrth_performed;
+			ShepGM.inst.actions.Player.RotateCam.performed += RotateCam_performed;
+			ShepGM.inst.actions.Player.RotateCam.canceled += RotateCam_canceled;
 		}
 
-		private void Zoom_performed(UnityEngine.InputSystem.InputAction.CallbackContext context) {
+		private void Zoom_performed(InputAction.CallbackContext context) {
 			float zoomInput = Mathf.Clamp(ShepGM.inst.actions.Player.Zoom.ReadValue<float>(),-1f,1f);
-			zoomPercent = Mathf.Clamp01(zoomPercent + zoomInput * 0.1f);
-			Debug.Log(zoomPercent);
+			zoomPercent = Mathf.Clamp01(zoomPercent + zoomInput * 0.05f);
 		}
-		private void ToggleOrth_performed(UnityEngine.InputSystem.InputAction.CallbackContext context) {
+		private void ToggleOrth_performed(InputAction.CallbackContext context) {
 			ToggleOrtho();
+		}
+		private void RotateCam_performed(InputAction.CallbackContext context) {
+			rotating = true;
+		}
+		private void RotateCam_canceled(InputAction.CallbackContext context) {
+			rotating = false;
 		}
 
 
 
 		void Update() {
+			RotateCamera();
 			PerspectiveCameraControls();
-			lastMousePos = Input.mousePosition;
+		}
+
+		void RotateCamera() {
+			if (rotating)
+				perspAngleHoz += ShepGM.inst.actions.Player.MouseDelta.ReadValue<Vector2>().x;
 		}
 
 		private void CreateMatrices() {
@@ -119,11 +132,6 @@ namespace ShepProject {
 		void PerspectiveCameraControls() {
 			if (!CamFollowPlayer) return;
             
-			//rotate cameraHoz by holding center click and moving mouse
-			if (Input.GetMouseButton(2)) {
-				perspAngleHoz += Input.mousePosition.x - lastMousePos.x;
-			}
-
             float zoom = Mathf.Lerp(zoomRange.x, zoomRange.y, zoomPercent);
 			perspAngleVert = Mathf.Lerp(vertAngleRange.x, vertAngleRange.y, zoomPercent);
 
