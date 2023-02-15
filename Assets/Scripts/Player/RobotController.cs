@@ -1,12 +1,10 @@
 using ShepProject;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class RobotController : MonoBehaviour {
 
-	PlayerMovementController playerController;
-	[SerializeField] Rigidbody player;
+	Rigidbody player;
 	[SerializeField] Transform root;
 	[SerializeField] Transform head;
 
@@ -16,28 +14,47 @@ public class RobotController : MonoBehaviour {
 
 	Vector3 mousePos = Vector3.zero;
 	Plane floorPlane = new Plane(Vector3.up, 0f);
-	float distFromMousePos = 0f;
+	//float distFromMousePos = 0f;
 
 	bool running;
 	Quaternion lookDirection;
 
 	public Transform[] footTargets; // L, R
 
-
+	bool usingController = false;
+	Vector3 joystickDir;
+	Vector3 mouseDir;
 
 
 
 
 
 	private void Awake() {
-		playerController = player.GetComponent<PlayerMovementController>();
+		player = ShepGM.inst.player.GetComponent<Rigidbody>();
+		ShepGM.inst.actions.Player.Look.performed += Look_performed;
+		ShepGM.inst.actions.Player.MouseDelta.performed += MouseDelta_performed;
 	}
+
+	private void Look_performed(InputAction.CallbackContext context) {
+		usingController = true;
+		if (running) {
+			joystickDir = player.velocity;
+			return;
+		}
+		Vector2 joystickInput = ShepGM.inst.actions.Player.Look.ReadValue<Vector2>();
+		joystickDir = new Vector3(joystickInput.x, 0f, joystickInput.y);
+	}
+	private void MouseDelta_performed(InputAction.CallbackContext context) {
+		usingController = false;
+		SetMousePos();
+		mouseDir = Vector3.ProjectOnPlane(mousePos - player.position, Vector3.up);
+	}
+
 
 	void Update() {
 		SetMousePos();
-		distFromMousePos = Vector3.Distance(root.position, mousePos);
-
-		running = playerController.running;
+		//distFromMousePos = Vector3.Distance(root.position, mousePos);
+		running = player.GetComponent<PlayerMovementController>().running;
 	}
 
 	// By Putting our animation code in LateUpdate, we allow other systems to update the environment first 
@@ -51,25 +68,21 @@ public class RobotController : MonoBehaviour {
 		//root.position = Vector3.Lerp(root.position, centerOfBalance + Vector3.up * breathDisplace, 10f * Time.deltaTime);
 		root.position = centerOfBalance + Vector3.up * (yOffset + breathDisplace);
 
-		
 		player.rotation = Quaternion.RotateTowards(player.rotation, lookDirection, 180f * Time.deltaTime);
 		head.rotation = Quaternion.Slerp(head.rotation, lookDirection, 5f * Time.deltaTime);
 	}
 
 
 
-
-
-
-
 	void SetMousePos() {
 		float distance;
-		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		Ray ray = Camera.main.ScreenPointToRay(ShepGM.inst.actions.Player.MousePosition.ReadValue<Vector2>());
 		if (floorPlane.Raycast(ray, out distance))
 			mousePos = ray.GetPoint(distance);
 	}
 	void SetLookDirection() {
-		Vector3 dir = running ? player.velocity : Vector3.ProjectOnPlane(mousePos - player.position, Vector3.up);
+		Vector3 dir = running ? player.velocity : usingController? joystickDir : mouseDir;
+		if (dir == Vector3.zero) return;
 		lookDirection = Quaternion.LookRotation(dir, Vector3.up);
 	}
 }
