@@ -16,11 +16,11 @@ public class RobotController : MonoBehaviour {
 	Plane floorPlane = new Plane(Vector3.up, 0f);
 	//float distFromMousePos = 0f;
 
-	bool running;
-	Quaternion lookDirection;
-
 	public Transform[] footTargets; // L, R
 
+
+	bool running = false;
+	Quaternion lookDirection;
 	bool usingController = false;
 	Vector3 joystickDir;
 	Vector3 mouseDir;
@@ -37,13 +37,10 @@ public class RobotController : MonoBehaviour {
 
 	private void Look_performed(InputAction.CallbackContext context) {
 		usingController = true;
-		if (running) {
-			joystickDir = player.velocity;
-			return;
-		}
 		Vector2 joystickInput = ShepGM.inst.actions.Player.Look.ReadValue<Vector2>();
+		if (running) joystickInput = new Vector2(player.velocity.x, player.velocity.z);
 		joystickDir = new Vector3(joystickInput.x, 0f, joystickInput.y);
-	}
+		}
 	private void MouseDelta_performed(InputAction.CallbackContext context) {
 		usingController = false;
 		SetMousePos();
@@ -54,7 +51,12 @@ public class RobotController : MonoBehaviour {
 	void Update() {
 		SetMousePos();
 		//distFromMousePos = Vector3.Distance(root.position, mousePos);
-		running = player.GetComponent<PlayerMovementController>().running;
+
+		if (running != player.GetComponent<PlayerMovementController>().running) { 
+			running = player.GetComponent<PlayerMovementController>().running;
+			//if running changes set joystickDir to velocity;
+			joystickDir = player.velocity;
+		}
 	}
 
 	// By Putting our animation code in LateUpdate, we allow other systems to update the environment first 
