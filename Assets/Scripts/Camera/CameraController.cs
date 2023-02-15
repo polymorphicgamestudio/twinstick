@@ -37,24 +37,24 @@ namespace ShepProject {
 			blender = GetComponent<MatrixBlender>();
 			player = ShepGM.player;
 
+
 			ShepGM.inst.actions.Player.Zoom.performed += Zoom_performed;
-		    
-
+			ShepGM.inst.actions.Player.ToggleOrth.performed += ToggleOrth_performed;
 		}
 
-		private void Zoom_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) 
-		{
-		
-			throw new System.NotImplementedException();
-		
+		private void Zoom_performed(UnityEngine.InputSystem.InputAction.CallbackContext context) {
+			float zoomInput = Mathf.Clamp(ShepGM.inst.actions.Player.Zoom.ReadValue<float>(),-1f,1f);
+			zoomPercent = Mathf.Clamp01(zoomPercent + zoomInput * 0.1f);
+			Debug.Log(zoomPercent);
 		}
+		private void ToggleOrth_performed(UnityEngine.InputSystem.InputAction.CallbackContext context) {
+			ToggleOrtho();
+		}
+
+
 
 		void Update() {
-			if (Input.GetKeyDown(KeyCode.Space))
-				ToggleOrtho();
 			PerspectiveCameraControls();
-			if (Input.mouseScrollDelta.y != 0)
-                zoomPercent = Mathf.Clamp01(zoomPercent + Input.mouseScrollDelta.y * 0.1f);
 			lastMousePos = Input.mousePosition;
 		}
 

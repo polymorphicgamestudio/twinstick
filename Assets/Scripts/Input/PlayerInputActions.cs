@@ -71,6 +71,15 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RotateCam"",
+                    ""type"": ""Value"",
+                    ""id"": ""f69538b9-9e63-4e83-9931-005e9130769d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -322,7 +331,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/leftShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""Zoom"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -333,7 +342,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""Zoom"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -357,6 +366,28 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ToggleOrth"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cfa9f4f3-72b8-4435-be1f-0b1fc7fa3794"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""RotateCam"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f018a053-18ec-43d3-877b-6fa9a8d13ab9"",
+                    ""path"": ""<Gamepad>/leftStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotateCam"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -817,6 +848,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player_Action = m_Player.FindAction("Action", throwIfNotFound: true);
         m_Player_Zoom = m_Player.FindAction("Zoom", throwIfNotFound: true);
         m_Player_ToggleOrth = m_Player.FindAction("ToggleOrth", throwIfNotFound: true);
+        m_Player_RotateCam = m_Player.FindAction("RotateCam", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -893,6 +925,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Action;
     private readonly InputAction m_Player_Zoom;
     private readonly InputAction m_Player_ToggleOrth;
+    private readonly InputAction m_Player_RotateCam;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -902,6 +935,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         public InputAction @Action => m_Wrapper.m_Player_Action;
         public InputAction @Zoom => m_Wrapper.m_Player_Zoom;
         public InputAction @ToggleOrth => m_Wrapper.m_Player_ToggleOrth;
+        public InputAction @RotateCam => m_Wrapper.m_Player_RotateCam;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -926,6 +960,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @ToggleOrth.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleOrth;
                 @ToggleOrth.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleOrth;
                 @ToggleOrth.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleOrth;
+                @RotateCam.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCam;
+                @RotateCam.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCam;
+                @RotateCam.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRotateCam;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -945,6 +982,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @ToggleOrth.started += instance.OnToggleOrth;
                 @ToggleOrth.performed += instance.OnToggleOrth;
                 @ToggleOrth.canceled += instance.OnToggleOrth;
+                @RotateCam.started += instance.OnRotateCam;
+                @RotateCam.performed += instance.OnRotateCam;
+                @RotateCam.canceled += instance.OnRotateCam;
             }
         }
     }
@@ -1079,6 +1119,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnAction(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
         void OnToggleOrth(InputAction.CallbackContext context);
+        void OnRotateCam(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
