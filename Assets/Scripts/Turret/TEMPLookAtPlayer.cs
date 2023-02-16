@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class TEMPLookAtPlayer : MonoBehaviour {
 
-	public Transform target;
+	Transform player;
+	public Vector3 rotationOffset = Vector3.zero;
 
-    void Update() {
-		transform.rotation = Quaternion.LookRotation(target.position - transform.position, Vector3.up);
+	void Awake() {
+		player = ShepProject.ShepGM.inst.player;
+	}
+
+	void Update() {
+		Quaternion offset = Quaternion.Euler(rotationOffset);
+		transform.rotation = offset * Quaternion.LookRotation(player.position - transform.position, Vector3.up);
     }
 }

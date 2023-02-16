@@ -7,6 +7,7 @@ public class RobotController : MonoBehaviour {
 	Rigidbody player;
 	[SerializeField] Transform root;
 	[SerializeField] Transform head;
+	[SerializeField] Transform neck;
 
 	Vector3 centerOfBalance;
 	[SerializeField] float yOffset = 1f;
@@ -14,7 +15,7 @@ public class RobotController : MonoBehaviour {
 
 	Vector3 mousePos = Vector3.zero;
 	Plane floorPlane = new Plane(Vector3.up, 0f);
-	//float distFromMousePos = 0f;
+	float distFromMousePos = 0f;
 
 	public Transform[] footTargets; // L, R
 
@@ -50,8 +51,6 @@ public class RobotController : MonoBehaviour {
 
 	void Update() {
 		SetMousePos();
-		//distFromMousePos = Vector3.Distance(root.position, mousePos);
-
 		if (running != player.GetComponent<PlayerMovementController>().running) { 
 			running = player.GetComponent<PlayerMovementController>().running;
 			//if running changes set joystickDir to velocity;
@@ -62,6 +61,7 @@ public class RobotController : MonoBehaviour {
 	// By Putting our animation code in LateUpdate, we allow other systems to update the environment first 
 	// this allows the animation to adapt before the frame is drawn.
 	void LateUpdate() {
+		SetNeckAngle(1f, 20f, -20f, 35f);
 		SetLookDirection();
 
 		centerOfBalance = (footTargets[0].position + footTargets[1].position) / 2f;
@@ -86,5 +86,11 @@ public class RobotController : MonoBehaviour {
 		Vector3 dir = running ? player.velocity : usingController? joystickDir : mouseDir;
 		if (dir == Vector3.zero) return;
 		lookDirection = Quaternion.LookRotation(dir, Vector3.up);
+	}
+	void SetNeckAngle(float minDist, float maxDist, float minAngle, float maxAngle) {
+		distFromMousePos = Vector3.Distance(root.position, mousePos);
+		float distPercent = (distFromMousePos - minDist) / (maxDist - minDist);
+		float neckAngle = Mathf.Lerp(minAngle, maxAngle, distPercent);
+		neck.localEulerAngles = new Vector3(neckAngle, 0f, 0f);
 	}
 }
