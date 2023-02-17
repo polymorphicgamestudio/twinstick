@@ -8,34 +8,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace DigitalRuby.LightningBolt
-{
-    public enum LightningBoltAnimationMode
-    {
-        /// <summary>
-        /// No animation
-        /// </summary>
+namespace DigitalRuby.LightningBolt {
+    public enum LightningBoltAnimationMode {
         None,
-
-        /// <summary>
-        /// Pick a random frame
-        /// </summary>
         Random,
-
-        /// <summary>
-        /// Loop through each frame and restart at the beginning
-        /// </summary>
         Loop,
-
-        /// <summary>
-        /// Loop through each frame then go backwards to the beginning then forward, etc.
-        /// </summary>
         PingPong
     }
-
-    /// <summary>
-    /// Allows creation of simple lightning bolts
-    /// </summary>
     [RequireComponent(typeof(LineRenderer))]
     public class LightningBoltScript : MonoBehaviour
     {
@@ -51,9 +30,9 @@ namespace DigitalRuby.LightningBolt
         [Tooltip("The end position where the lightning will end at. This is in world space if EndObject is null, otherwise this is offset from EndObject position.")]
         public Vector3 EndPosition;
 
-        [Range(0, 8)]
+        [Range(0, 6)]
         [Tooltip("How manu generations? Higher numbers create more line segments.")]
-        public int Generations = 6;
+        public int Generations = 2;
 
         [Range(0.01f, 1.0f)]
         [Tooltip("How long each bolt should last before creating a new bolt. In ManualMode, the bolt will simply disappear after this amount of seconds.")]
@@ -78,12 +57,13 @@ namespace DigitalRuby.LightningBolt
         [Tooltip("The animation mode for the lightning")]
         public LightningBoltAnimationMode AnimationMode = LightningBoltAnimationMode.PingPong;
 
-        /// <summary>
-        /// Assign your own random if you want to have the same lightning appearance
-        /// </summary>
-        [HideInInspector]
-        [System.NonSerialized]
-        public System.Random RandomGenerator = new System.Random();
+
+
+        public bool useLight;
+        public Light pointLight;
+
+
+        [HideInInspector] [System.NonSerialized] public System.Random RandomGenerator = new System.Random();
 
         private LineRenderer lineRenderer;
         private List<KeyValuePair<Vector3, Vector3>> segments = new List<KeyValuePair<Vector3, Vector3>>();
