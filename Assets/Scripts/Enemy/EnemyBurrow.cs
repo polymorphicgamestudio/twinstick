@@ -20,7 +20,7 @@ namespace ShepProject {
 
 		}
 
-        public void Update() {
+        public void ManualUpdate() {
 
             if (!manager.SpawningEnemies)
                 return;

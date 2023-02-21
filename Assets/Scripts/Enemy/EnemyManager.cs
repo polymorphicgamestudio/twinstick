@@ -11,10 +11,11 @@ namespace ShepProject {
         [SerializeField]
         private GameObject burrowPrefab;
 
-
 		private List<Transform> enemyList;
 
         private List<EnemyBurrow> burrows;
+
+        private QuadTree quadTree;
 
         private bool spawningEnemies;
 
@@ -28,22 +29,15 @@ namespace ShepProject {
 
 			burrows = new List<EnemyBurrow>();
 
+            quadTree = new QuadTree(1000, 10);
+
 			AddBurrow();
 
 		}
 
 		void Update() 
         {
-
-            //for (int i = 0; i < burrows.Count; i++) {
-
-            //    burrows[i].Update();
-
-            //}
-
-
-
-			/*
+            /*
              * each frame, spawn any new required enemies
              * 
              * copy the enemy positions to a float2 buffer for jobs since its a 2d representation
@@ -64,7 +58,20 @@ namespace ShepProject {
              * 
              */
 
+            //doesn't matter if bullets do damage before QT update
+            //just need to make sure that they all happen before or after
 
+
+
+            quadTree.NewFrame();
+
+            //spawn enemies
+            for (int i = 0; i < burrows.Count; i++) {
+                burrows[i].ManualUpdate();
+
+            }
+
+            quadTree.Update();
 
 		}
 
@@ -83,7 +90,14 @@ namespace ShepProject {
             burrows.Add(burrow);
 
 		}
-            
+
+
+		private void OnDisable() {
+            quadTree.Dispose();
+
+
+		}
+
 
 
 	}
