@@ -8,7 +8,7 @@ public abstract class SystemBase : MonoBehaviour
 	private ShepGM inst;
 	protected ShepGM Inst => inst;
 
-	public void Initialize(ShepGM inst) {
+	public virtual void Initialize(ShepGM inst) {
 		this.inst = inst;
 	}
 

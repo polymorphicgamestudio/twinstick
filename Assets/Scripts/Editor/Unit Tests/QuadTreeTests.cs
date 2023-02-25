@@ -8,34 +8,34 @@ namespace ShepProject {
 
 	public class QuadTreeTests {
 
-		[Test]
-		public void TestSort() {
+	//	[Test]
+	//	public void TestSort() {
 
-			short count = 100;
+	//		short count = 100;
 
-			QuadTree tree = new QuadTree(count * 5, 2);
-
-
+	//		QuadTree tree = new QuadTree(count * 5, 2);
 
 
-			for (short i = count; i > -count; i--) {
-				Vector3 temp = new Vector3(i, 0, i);
 
-				tree.AddPosition(temp);
 
-			}
+	//		for (short i = count; i > -count; i--) {
+	//			Vector3 temp = new Vector3(i, 0, i);
 
-			//positions added now, so test if it updates correctly
-			tree.Update();
+	//			tree.AddPosition(temp);
+
+	//		}
+
+	//		//positions added now, so test if it updates correctly
+	//		tree.Update();
 
 			
 
 
 	
-			tree.Dispose();
+	//		tree.Dispose();
 
 
-	}
+	//}
 
 
 	}

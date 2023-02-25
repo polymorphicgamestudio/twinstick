@@ -12,10 +12,11 @@ namespace ShepProject {
 		[HideInInspector] public bool running = false;
 
 		private void Awake() {
-			ShepGM.inst.player = transform;
+
 		}
 
 		void Start() {
+			ShepGM.inst.player = transform;
 			rb = GetComponent<Rigidbody>();
 			ShepGM.inst.actions.Player.Move.performed += Move_performed;
 			ShepGM.inst.actions.Player.Move.canceled += Move_canceled;

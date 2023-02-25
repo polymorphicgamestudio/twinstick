@@ -41,8 +41,11 @@ namespace ShepProject {
 
             //spawn base enemy prefab which has all base behaviours
             //then add it to the list
+            GameObject enemy = GameObject.Instantiate(enemyPrefab);
+            enemy.transform.position = transform.position;
+            enemy.SetActive(true);
 
-            manager.AddEnemyToList(GameObject.Instantiate(enemyPrefab).transform);
+			manager.AddEnemyToList(enemy.transform);
 
 
 

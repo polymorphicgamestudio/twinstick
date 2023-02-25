@@ -1,22 +1,69 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Jobs;
 
 namespace ShepProject {
+
+
+    internal enum GeneGroups {
+
+        Type,
+        Attractions,
+        TotalGeneCount = 
+            1 // object type
+            + (int)Attraction.Count //for all the possible attractions an object can have
+    }
+
+    internal enum Attraction {
+        Slime = 1,
+        BaseTower,
+        BlasterTower,
+		FireTower,
+		AcidTower,
+		LightningTower,
+		IceTower,
+		LaserTower,
+        Count
+
+
+    }
+
+
+    internal enum ObjectType {
+        Player,
+        Slime,
+		BlasterTower,
+		FireTower,
+		AcidTower,
+		LightningTower,
+		IceTower,
+		LaserTower,
+
+
+	}
+
+
 
     public class EnemyManager : SystemBase {
 
 
         [SerializeField]
         private GameObject burrowPrefab;
-
-		private List<Transform> enemyList;
-
         private List<EnemyBurrow> burrows;
+
+        private NativeArray<float> traits;
+
+        private NativeArray<float> headings;
+        private NativeArray<float> newHeadings;
+        private bool switchedHeadings;
 
         private QuadTree quadTree;
 
+        [SerializeField]
         private bool spawningEnemies;
 
         public bool SpawningEnemies => spawningEnemies;
@@ -25,13 +72,24 @@ namespace ShepProject {
 
 		private void Start() {
 
-			enemyList = new List<Transform>();
 
-			burrows = new List<EnemyBurrow>();
+            traits = new NativeArray<float>(50000, Allocator.Persistent);
+            headings = new NativeArray<float>(1000, Allocator.Persistent);
+            newHeadings = new NativeArray<float>(1000, Allocator.Persistent);
+            switchedHeadings = false;
 
-            quadTree = new QuadTree(1000, 10);
+            burrows = new List<EnemyBurrow>();
 
+            quadTree = new QuadTree(1000, 15);
+
+            quadTree.AddTransform(Inst.player.transform);
+            traits[(int)GeneGroups.Type] = (int)(ObjectType.Player);
 			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+
 
 		}
 
@@ -66,6 +124,7 @@ namespace ShepProject {
             quadTree.NewFrame();
 
             //spawn enemies
+
             for (int i = 0; i < burrows.Count; i++) {
                 burrows[i].ManualUpdate();
 
@@ -73,29 +132,84 @@ namespace ShepProject {
 
             quadTree.Update();
 
+            /*
+             * - [0] type
+             * - [1] attraction to slimes
+             * - [2] base attaction to towers
+             * - [3 - 8] for each tower multiplier
+             * 
+             * 
+             * 
+             */
+
+            if (quadTree.positionCount <= 0)
+                return;
+
+            EnemyMovementJob moveJob = new EnemyMovementJob();
+            moveJob.positions = quadTree.positions.Slice(0, quadTree.positionCount + 1);
+            moveJob.buckets = quadTree.quadsList.Slice(0, quadTree.QuadsListLength);
+
+            if (switchedHeadings) {
+				moveJob.headings = newHeadings;
+				moveJob.newHeadings = headings;
+			}
+            else {
+				moveJob.headings = headings;
+				moveJob.newHeadings = newHeadings;
+			}
+
+            moveJob.objectIDs = quadTree.objectIDs;
+            moveJob.objectQuadIDs = quadTree.objectQuadIDs;
+            moveJob.genes = traits;
+            moveJob.deltaTime = Time.deltaTime;
+            moveJob.Schedule(quadTree.positionCount, SystemInfo.processorCount - 1).Complete();
+
+
+            //after movement, write the information back to the transforms
+
+            WriteTransformsJob wtj = new WriteTransformsJob();
+            wtj.positions = quadTree.positions;
+
+			if (switchedHeadings) {
+				wtj.rotation = headings;
+			}
+			else {
+				wtj.rotation = newHeadings;
+			}
+
+			switchedHeadings = !switchedHeadings;
+			wtj.Schedule(quadTree.TransformAccess);
+            
+
 		}
 
 
         public void AddEnemyToList(Transform enemy) {
 
-            enemyList.Add(enemy);
+            ushort id =  quadTree.AddTransform(enemy);
 
+            //offset 1 for type, then attractions count
+            traits[id * (1 + (int)Attraction.Count)] = (int)ObjectType.Slime;
+            traits[id * (1 + (int)Attraction.Count) + (int)Attraction.Slime] = -1;
         }
 
         private void AddBurrow() {
 
             EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
-            burrow.Initialize(this, 1f);
+            burrow.gameObject.transform.position = new Vector3((Random.value * 30) - 15, 0, (Random.value * 30) - 15);
+            burrow.Initialize(this, .25f);
 
             burrows.Add(burrow);
-
+            burrow.gameObject.SetActive(true);
 		}
 
 
 		private void OnDisable() {
             quadTree.Dispose();
 
-
+            traits.Dispose();
+            headings.Dispose();
+            newHeadings.Dispose();
 		}
 
 

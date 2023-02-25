@@ -35,8 +35,10 @@ namespace ShepProject {
 			actions = new PlayerInputActions();
 			actions.Player.Enable();
 
-			if (enemyManager != null)
+			if (enemyManager != null) {
 				enemyManager.Initialize(this);
+
+			}
 
 			if (inst == null) {
 				inst = this;

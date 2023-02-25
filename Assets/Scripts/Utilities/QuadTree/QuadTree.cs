@@ -13,20 +13,24 @@ namespace ShepProject {
 
 		public Vector3 origin;
 		public float halfLength;
-		public ushort positionCount;
-		public NativeArray<ushort> indices;
-		public NativeArray<float2> items;
-		//private TransformAccessArray jobTransforms;
-		public List<Transform> transforms;
+		public short positionCount;
+		public NativeArray<ushort> objectIDs;
+		public NativeArray<ushort> objectQuadIDs;
+		public NativeArray<float2> positions;
+
+		private Transform[] transforms;
+		private TransformAccessArray transformAccess;
+		public TransformAccessArray TransformAccess => transformAccess;
+
+		public NativeArray<Quad> quadsList;
 
 		public NativeArray<Quad> XQuads;
+		public NativeArray<Quad> ZQuads;
+
 		private NativeArray<int> lengths;
 
 		int xQuadsLength { get => lengths[0]; set => lengths[0] = value; }
-
-		public NativeArray<Quad> ZQuads;
-		int zQuadsLength { get => lengths[1]; set => lengths[1] = value; }
-
+		public int QuadsListLength => lengths[1];
 
 		public ushort bucketSize;
 
@@ -39,18 +43,30 @@ namespace ShepProject {
 		/// <param name="positionCount"></param>
 		public QuadTree(int positionCount, ushort bucketSize) {
 
-			indices = new NativeArray<ushort>(positionCount, Allocator.Persistent);
-			items = new NativeArray<float2>(positionCount, Allocator.Persistent);
-			transforms = new List<Transform>(positionCount);
+			objectIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
+			objectQuadIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
 
+			for (ushort i = 0; i < positionCount; i++) {
+
+				objectIDs[i] = i;
+
+			}
+
+			positions = new NativeArray<float2>(positionCount, Allocator.Persistent);
+			transforms = new Transform[positionCount];
+			transformAccess = new TransformAccessArray(positionCount);
+
+			quadsList = new NativeArray<Quad>(positionCount, Allocator.Persistent);
 			XQuads = new NativeArray<Quad>(positionCount, Allocator.Persistent);
 			ZQuads = new NativeArray<Quad>(positionCount, Allocator.Persistent);
 			sorted = new NativeArray<bool>(1, Allocator.Persistent);
 
 			lengths = new NativeArray<int>(2, Allocator.Persistent);
 
-			halfLength = 30;
-
+			halfLength = 60;
+			
+			//start position count at -1 so it takes first slots
+			this.positionCount = -1;
 
 			this.bucketSize = bucketSize;
 
@@ -64,6 +80,9 @@ namespace ShepProject {
 
 
 
+			//update positions from transforms
+			ReadTransformData();
+
 			Quad first = new Quad();
 			first.startIndex = 0;
 			first.endIndex = (short)(positionCount - 1);
@@ -72,34 +91,41 @@ namespace ShepProject {
 
 			XQuads[0] = first;
 			xQuadsLength = 1;
+			lengths[1] = 0;
+			if (XQuads[0].BucketSize <= bucketSize) {
+				quadsList[0] = XQuads[0];
+				sorted[0] = true;
+				lengths[1] = 1;
+			}
 			while (!sorted[0]) {
 
 				SortIterationJob sij = new SortIterationJob();
-				sij.positions = items;
-				sij.positionIndices = indices;
-				//sij.quads = 
+				sij.positions = positions;
+				sij.positionIndices = objectIDs;
 				sij.readFrom = XQuads;
 				sij.writeTo = ZQuads;
+				sij.bucketSize = bucketSize;
 				sij.zSort = false;
-				sij.Schedule(xQuadsLength, SystemInfo.processorCount - 1).Complete();
+				sij.Schedule(xQuadsLength, SystemInfo.processorCount).Complete();
 
 				sij = new SortIterationJob();
-				sij.positions = items;
-				sij.positionIndices = indices;
+				sij.positions = positions;
+				sij.positionIndices = objectIDs;
 				sij.readFrom = ZQuads;
 				sij.writeTo = XQuads;
+				sij.bucketSize = bucketSize;
 				sij.zSort = true;
-				sij.Schedule(xQuadsLength * 2, SystemInfo.processorCount - 1).Complete();
+				sij.Schedule(xQuadsLength * 2, SystemInfo.processorCount).Complete();
 
 
 				QuadFilteringJob fj = new QuadFilteringJob();
 				fj.readFrom = XQuads;
+				fj.quadsList = quadsList;
+				fj.quadsID = objectQuadIDs;
 				fj.isSorted = sorted;
 				fj.lengths = lengths;
 				fj.bucketSize = bucketSize;	
 				fj.Schedule().Complete();
-
-				//sorted[0] = true;
 
 
 
@@ -110,7 +136,7 @@ namespace ShepProject {
 		}
 
 		public void NewFrame() {
-			positionCount = 0;
+			lengths[1] = 0;
 			sorted[0] = false;
 
 			//update the transform's positions
@@ -119,31 +145,33 @@ namespace ShepProject {
 		}
 
 
-		public void AddTransform(Transform transform) {
+		public ushort AddTransform(Transform transform) {
 
-			transforms.Add(transform);
-			
-
-		}
-
-		public void AddPosition(Vector3 position) {
-
-			indices[positionCount] = positionCount;
-			items[positionCount] = new float2(position.x, position.z);
 			positionCount++;
+			transforms[positionCount] = transform;
+			return objectIDs[positionCount];
 
 		}
 
-		//public void RemoveTransform(int id) {
+		//public void AddPosition(Vector3 position) {
 
-		//	//will only be called when an enemy dies or a tower/wall is removed.
-		//	//will swap the unwanted ID for the object at end of the array
-		//	//all objects will keep their same id
-		//	//and any new objects will be assigned the ID at the end of the ID array
-
-
+		//	objectIDs[positionCount] = positionCount;
+		//	positions[positionCount] = new float2(position.x, position.z);
+		//	positionCount++;
 
 		//}
+
+		private void ReadTransformData() {
+
+
+			transformAccess.SetTransforms(transforms);
+			ReadTransformsJob job = new ReadTransformsJob();
+			job.positions = positions;
+			job.maxIndex = positionCount;
+			job.Schedule(transformAccess).Complete();
+
+
+		}
 
 
 		private void NullChecks() {
@@ -153,26 +181,38 @@ namespace ShepProject {
 			//or set as inactive if they've been killed
 
 
-
-			for (int i = 0; i < transforms.Count;) {
+			ushort temp = 0;
+			for (int i = 0; i < positionCount; i++) {
 
 				if (transforms[i] == null) {
-					transforms.RemoveAt(i);
-					continue;
-				}
+					temp = objectIDs[i];
+					objectIDs[i] = objectIDs[positionCount - 1];
+					objectIDs[positionCount - 1] = temp;
 
-				i++;
+					transforms[i] = transforms[positionCount- 1];
+					transforms[positionCount - 1] = null;
+					positionCount--;
+					continue;
+
+				}
+					
+
 			}
+
+
 
 		}
 
 		public void Dispose() {
-			indices.Dispose();
-			items.Dispose();
+			objectIDs.Dispose();
+			positions.Dispose();
 			XQuads.Dispose();
 			ZQuads.Dispose();
 			sorted.Dispose();
 			lengths.Dispose();
+			quadsList.Dispose();
+			transformAccess.Dispose();
+			objectQuadIDs.Dispose();
 
 		}
 
