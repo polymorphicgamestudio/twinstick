@@ -19,7 +19,7 @@ namespace ShepProject {
     }
 
     internal enum Attraction {
-        Slime = 1,
+        Slime = 0,
         BaseTower,
         BlasterTower,
 		FireTower,
@@ -59,6 +59,9 @@ namespace ShepProject {
 
         private NativeArray<float> headings;
         private NativeArray<float> newHeadings;
+
+        private NativeArray<ushort> loopCounts;
+
         private bool switchedHeadings;
 
         private QuadTree quadTree;
@@ -77,18 +80,19 @@ namespace ShepProject {
             headings = new NativeArray<float>(1000, Allocator.Persistent);
             newHeadings = new NativeArray<float>(1000, Allocator.Persistent);
             switchedHeadings = false;
+            loopCounts = new NativeArray<ushort>(50000, Allocator.Persistent);
 
             burrows = new List<EnemyBurrow>();
 
-            quadTree = new QuadTree(1000, 15);
+            quadTree = new QuadTree(1000, 7);
 
             quadTree.AddTransform(Inst.player.transform);
             traits[(int)GeneGroups.Type] = (int)(ObjectType.Player);
 			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
 
 
 		}
@@ -130,6 +134,7 @@ namespace ShepProject {
 
             }
 
+            spawningEnemies = false;
             quadTree.Update();
 
             /*
@@ -148,6 +153,7 @@ namespace ShepProject {
             EnemyMovementJob moveJob = new EnemyMovementJob();
             moveJob.positions = quadTree.positions.Slice(0, quadTree.positionCount + 1);
             moveJob.buckets = quadTree.quadsList.Slice(0, quadTree.QuadsListLength);
+            moveJob.loopCounts = loopCounts;
 
             if (switchedHeadings) {
 				moveJob.headings = newHeadings;
@@ -162,7 +168,7 @@ namespace ShepProject {
             moveJob.objectQuadIDs = quadTree.objectQuadIDs;
             moveJob.genes = traits;
             moveJob.deltaTime = Time.deltaTime;
-            moveJob.Schedule(quadTree.positionCount, SystemInfo.processorCount - 1).Complete();
+            moveJob.Run(quadTree.positionCount + 1);// Schedule(quadTree.positionCount + 1, SystemInfo.processorCount - 1).Complete();
 
 
             //after movement, write the information back to the transforms
@@ -190,14 +196,14 @@ namespace ShepProject {
 
             //offset 1 for type, then attractions count
             traits[id * (1 + (int)Attraction.Count)] = (int)ObjectType.Slime;
-            traits[id * (1 + (int)Attraction.Count) + (int)Attraction.Slime] = -1;
+            traits[id * (1 + (int)Attraction.Count) + 1 + (int)Attraction.Slime] = -1;
         }
 
         private void AddBurrow() {
 
             EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
             burrow.gameObject.transform.position = new Vector3((Random.value * 30) - 15, 0, (Random.value * 30) - 15);
-            burrow.Initialize(this, .25f);
+            burrow.Initialize(this, .5f);
 
             burrows.Add(burrow);
             burrow.gameObject.SetActive(true);
@@ -210,6 +216,7 @@ namespace ShepProject {
             traits.Dispose();
             headings.Dispose();
             newHeadings.Dispose();
+            loopCounts.Dispose();
 		}
 
 

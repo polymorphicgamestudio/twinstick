@@ -85,7 +85,7 @@ namespace ShepProject {
 
 			Quad first = new Quad();
 			first.startIndex = 0;
-			first.endIndex = (short)(positionCount - 1);
+			first.endIndex = (short)(positionCount);
 			first.position = new float2(origin.x, origin.z);
 			first.halfLength = halfLength;
 

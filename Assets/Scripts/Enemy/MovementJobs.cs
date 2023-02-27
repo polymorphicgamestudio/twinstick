@@ -27,6 +27,10 @@ public struct EnemyMovementJob : IJobParallelFor {
 	[NativeDisableContainerSafetyRestriction]
 	public NativeSlice<float> newHeadings;
 
+
+	[NativeDisableContainerSafetyRestriction]
+	public NativeArray<ushort>loopCounts;
+
 	//attractions for each type of object
 	// slash genes
 	[NativeDisableContainerSafetyRestriction]
@@ -55,9 +59,41 @@ public struct EnemyMovementJob : IJobParallelFor {
 
 
 		float2 direction = (positions[0] - positions[objectIDs[index]]);
+
 		float headingCalculation = math.atan2(direction.x, direction.y);
 
-		//if you change sides when you're behind enemies, they turn the wrong direction
+
+		if (math.degrees(headingCalculation) < 0)
+			headingCalculation += 2 * math.PI;
+
+		float headingDegrees = math.degrees(headings[objectIDs[index]]);
+		float newHeadingDegrees = math.degrees(headingCalculation);
+
+
+		if (headingDegrees > 180 && newHeadingDegrees < 20) {
+
+			headings[objectIDs[index]] -= 2 * math.PI;
+
+
+		}
+		else if (headingDegrees < 180 && newHeadingDegrees > 340) {
+
+			headings[objectIDs[index]] += 2 * math.PI;
+
+		}
+
+		Debug.DrawRay(new Vector3(positions[objectIDs[index]].x, 0, positions[objectIDs[index]].y),
+		new Vector3(direction.x, 0, direction.y), Color.green);
+
+		
+
+		newHeadings[objectIDs[index]] = math.lerp(headings[objectIDs[index]], headingCalculation, deltaTime * 2f);
+
+		float3 temp = math.forward(quaternion.Euler(0, newHeadings[objectIDs[index]], 0)) * (deltaTime * 5f);
+		direction.x = temp.x;
+		direction.y = temp.z;
+		positions[objectIDs[index]] += direction;
+
 
 		//float slimeAttraction =
 		//	objectIDs[index] * (int)GeneGroups.TotalGeneCount // gets us to the object's type
@@ -80,9 +116,10 @@ public struct EnemyMovementJob : IJobParallelFor {
 		//				//then based on that and how close they are, turn towards/away
 
 		//				localPosition = (positions[i] - positions[objectIDs[index]]);
-		//				incrementalHeading = math.atan2(localPosition.x, localPosition.y);
+		//				incrementalHeading = math.lerp(incrementalHeading, math.atan2(localPosition.x, localPosition.y),
+		//					deltaTime / 20f);// math.distance(positions[i], positions[objectIDs[index]]));
 
-		//				headingCalculation += (incrementalHeading * (slimeAttraction / 10f));
+
 
 
 		//				break;
@@ -92,15 +129,10 @@ public struct EnemyMovementJob : IJobParallelFor {
 
 		//}
 
+		//headingCalculation += math.lerp(headings[objectIDs[index]], incrementalHeading, deltaTime);
 
 
 
-		newHeadings[objectIDs[index]] = math.lerp(headings[objectIDs[index]], headingCalculation, deltaTime);
-
-		float3 temp = math.forward(quaternion.Euler(0, newHeadings[objectIDs[index]], 0)) * (deltaTime * 5);
-		direction.x = temp.x;
-		direction.y = temp.z;
-		positions[objectIDs[index]] += direction;
 
 
 
