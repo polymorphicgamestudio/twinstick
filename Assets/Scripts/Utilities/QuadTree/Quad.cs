@@ -38,6 +38,12 @@ namespace ShepProject {
 		}
 
 
+		public override string ToString() {
+
+
+			return "Start: " + startIndex + " End: " + endIndex;
+		}
+
 	}
 
 }

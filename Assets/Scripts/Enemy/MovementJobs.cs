@@ -6,12 +6,14 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public struct EnemyMovementJob : IJobParallelFor {
 
 	[NativeDisableContainerSafetyRestriction]
 	public NativeArray<ushort> objectIDs;
+	[NativeDisableContainerSafetyRestriction]
 	public NativeArray<ushort> objectQuadIDs;
 
 	//initial positions for enemies
@@ -82,57 +84,138 @@ public struct EnemyMovementJob : IJobParallelFor {
 
 		}
 
-		Debug.DrawRay(new Vector3(positions[objectIDs[index]].x, 0, positions[objectIDs[index]].y),
-		new Vector3(direction.x, 0, direction.y), Color.green);
+		int geneIndex = (objectIDs[index] * (int)GeneGroups.TotalGeneCount) // gets us to the object's type
+			+ 1 //to get to start of attractions in array
+			+ (int)Attraction.Slime;//then to finally get us to slime attraction value
 
-		
+		float slimeAttraction = genes[geneIndex]; 
 
+		//have direction to the player, now need to check other objects in the bucket
+		float2 localPosition = new float2();
+
+		//now turning towards player more
 		newHeadings[objectIDs[index]] = math.lerp(headings[objectIDs[index]], headingCalculation, deltaTime * 2f);
+
+		for (int i = buckets[objectQuadIDs[objectIDs[index]]].startIndex; 
+			i <= buckets[objectQuadIDs[objectIDs[index]]].endIndex; i++) {
+
+
+
+			
+
+			//for now just worrying about slimes
+			switch (genes[objectIDs[i] * (int)GeneGroups.TotalGeneCount]) {
+
+				case (int)ObjectType.Slime: {
+
+						/*
+						 * check distance of slime
+						 * 
+						 * if not within a certain distance (squared to save CPU time),
+						 *		continue on to the next slime to check
+						 * 
+						 * 
+						 * check whether slime is behind or in front of current slime with dot product
+						 * 
+						 *		if slime is in front
+						 *		
+						 * 
+						 * adjust heading to go away/towards slime depending on its genes
+						 *		
+						 * 
+						 */
+
+
+
+
+						localPosition = (positions[i] - positions[objectIDs[index]]);
+
+
+						//if greater than this distance, ignore and continue on
+						if ((math.pow(localPosition.x, 2) + math.pow(localPosition.y, 2)) > 9){
+
+							continue;
+
+						}
+
+						float towardsEnemy = math.atan2(localPosition.x, localPosition.y);
+
+						if (towardsEnemy < 0)
+							towardsEnemy += 2 * math.PI;
+
+						//if it's between 270-360 and 0-90 then its in front, otherwise its behind
+
+						//if trying to get away, then it should try to turn towards 180 degrees away.
+						//Ex. other enemy is at heading 120 degrees
+						//		in order to get away, enemy needs to turn towards 300 degrees since it's facing the opposite direction
+
+						//otherwise if they're trying to head towards it, then turn towards the heading that the enemy is at
+
+
+						float localHeadingDistance = 0;
+
+
+						if (slimeAttraction < 0) {
+							//turn away from the other slime a small fraction, so increase the localHeadingDistance
+
+							towardsEnemy += math.PI;
+							towardsEnemy %= (math.PI * 2);
+
+							localHeadingDistance = towardsEnemy - headingCalculation;
+
+							/*
+							 * 
+							 * if angle is negative
+							 *		then need to turn to the right to get away from it unless its greater than 180
+							 *		
+							 * if angle is positive, need to turn to the left to get away from it
+							 *		unless it's greater than 180
+							 * 
+							 * 
+							 * 
+							 */
+
+							//if between 0 to 180 turn left
+							if (localHeadingDistance < -math.PI || (localHeadingDistance > 0 && localHeadingDistance < math.PI)) {
+								//turn to the left to get away from it
+
+								newHeadings[objectIDs[index]] -= (deltaTime);
+								//headingCalculation -= (deltaTime * 10);
+
+							}
+
+							//if between 0 to -180 turn right
+							else if (localHeadingDistance > 180 || (localHeadingDistance < 0 && localHeadingDistance > -math.PI)) {
+								//turn to the right to get away
+								newHeadings[objectIDs[index]] += (deltaTime);
+
+								//headingCalculation += (deltaTime * 10);
+
+							}
+
+
+						}
+						else {
+							//turn towards the slime and decrease the localHeadingDistance
+
+
+						}
+
+						break;
+					}
+
+			}
+
+		}
+
+		//headingCalculation += incrementalHeading; //math.lerp(headingCalculation, incrementalHeading, deltaTime);
+
+
 
 		float3 temp = math.forward(quaternion.Euler(0, newHeadings[objectIDs[index]], 0)) * (deltaTime * 5f);
 		direction.x = temp.x;
 		direction.y = temp.z;
 		positions[objectIDs[index]] += direction;
-
-
-		//float slimeAttraction =
-		//	objectIDs[index] * (int)GeneGroups.TotalGeneCount // gets us to the object's type
-		//	+ 1 //to get to start of attractions in array
-		//	+ (int)Attraction.Slime; //then to finally get us to slime attraction value
-
-		////have direction to the player, now need to check other objects in the bucket
-		//float2 localPosition = new float2();
-		//float incrementalHeading = 0;
-
-		//for (int i = buckets[objectQuadIDs[index]].startIndex; i <= buckets[objectQuadIDs[index]].endIndex; i++) {
-
-
-		//	//for now just worrying about slimes
-		//	switch (genes[objectIDs[i] * (int)GeneGroups.TotalGeneCount]) {
-
-		//		case (int)ObjectType.Slime: {
-
-		//				//check its attraction to other slime gene
-		//				//then based on that and how close they are, turn towards/away
-
-		//				localPosition = (positions[i] - positions[objectIDs[index]]);
-		//				incrementalHeading = math.lerp(incrementalHeading, math.atan2(localPosition.x, localPosition.y),
-		//					deltaTime / 20f);// math.distance(positions[i], positions[objectIDs[index]]));
-
-
-
-
-		//				break;
-		//			}
-
-		//	}
-
-		//}
-
-		//headingCalculation += math.lerp(headings[objectIDs[index]], incrementalHeading, deltaTime);
-
-
-
 
 
 

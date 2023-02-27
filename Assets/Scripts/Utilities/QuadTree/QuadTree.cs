@@ -19,6 +19,8 @@ namespace ShepProject {
 		public NativeArray<float2> positions;
 
 		private Transform[] transforms;
+		public Transform[] Transforms => transforms;
+
 		private TransformAccessArray transformAccess;
 		public TransformAccessArray TransformAccess => transformAccess;
 

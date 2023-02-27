@@ -5,6 +5,7 @@ using Unity.Jobs;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Jobs;
+using UnityEngine.Profiling;
 
 namespace ShepProject {
 
@@ -89,10 +90,10 @@ namespace ShepProject {
             quadTree.AddTransform(Inst.player.transform);
             traits[(int)GeneGroups.Type] = (int)(ObjectType.Player);
 			AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
 
 
 		}
@@ -134,7 +135,7 @@ namespace ShepProject {
 
             }
 
-            spawningEnemies = false;
+            //spawningEnemies = false;
             quadTree.Update();
 
             /*
@@ -152,7 +153,7 @@ namespace ShepProject {
 
             EnemyMovementJob moveJob = new EnemyMovementJob();
             moveJob.positions = quadTree.positions.Slice(0, quadTree.positionCount + 1);
-            moveJob.buckets = quadTree.quadsList.Slice(0, quadTree.QuadsListLength);
+            moveJob.buckets = quadTree.quadsList.Slice(0, quadTree.QuadsListLength + 1);
             moveJob.loopCounts = loopCounts;
 
             if (switchedHeadings) {
@@ -168,7 +169,8 @@ namespace ShepProject {
             moveJob.objectQuadIDs = quadTree.objectQuadIDs;
             moveJob.genes = traits;
             moveJob.deltaTime = Time.deltaTime;
-            moveJob.Run(quadTree.positionCount + 1);// Schedule(quadTree.positionCount + 1, SystemInfo.processorCount - 1).Complete();
+            //moveJob.Run(quadTree.positionCount + 1);
+            moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount - 1).Complete();
 
 
             //after movement, write the information back to the transforms
@@ -185,7 +187,18 @@ namespace ShepProject {
 
 			switchedHeadings = !switchedHeadings;
 			wtj.Schedule(quadTree.TransformAccess);
-            
+
+            Profiler.BeginSample("Writing Velocities");
+
+            for (int i = 0; i <= quadTree.positionCount; i++) {
+
+                quadTree.Transforms[i].gameObject.GetComponent<Rigidbody>().velocity = (quadTree.Transforms[i].forward * 10);
+
+
+
+			}
+
+            Profiler.EndSample();
 
 		}
 
@@ -196,7 +209,7 @@ namespace ShepProject {
 
             //offset 1 for type, then attractions count
             traits[id * (1 + (int)Attraction.Count)] = (int)ObjectType.Slime;
-            traits[id * (1 + (int)Attraction.Count) + 1 + (int)Attraction.Slime] = -1;
+            traits[(id * (int)GeneGroups.TotalGeneCount) + 1 + (int)Attraction.Slime] = -1;
         }
 
         private void AddBurrow() {

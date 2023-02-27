@@ -413,7 +413,8 @@ namespace ShepProject {
 
 		public void Execute(int index, TransformAccess transform) {
 
-			transform.position = new Vector3(positions[index].x, .5f, positions[index].y);
+			//transform.position = new Vector3(positions[index].x, .5f, positions[index].y);
+			transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 			Quaternion q = transform.rotation;
 			q.eulerAngles = new Vector3(0, math.degrees(rotation[index]), 0);
 			transform.rotation = q;
