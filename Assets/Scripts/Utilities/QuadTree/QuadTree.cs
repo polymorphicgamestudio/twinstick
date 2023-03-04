@@ -98,6 +98,13 @@ namespace ShepProject {
 				quadsList[0] = XQuads[0];
 				sorted[0] = true;
 				lengths[1] = 1;
+
+				for (int i = 0; i <= positionCount; i++) {
+
+					objectQuadIDs[i] = 0; 
+
+				}
+
 			}
 			while (!sorted[0]) {
 
@@ -135,11 +142,39 @@ namespace ShepProject {
 			}
 
 
+			for (int i = 0; i < positionCount; i++) {
+
+				if (objectQuadIDs[i] > lengths[1]) {
+
+					int test = 0;
+				}
+
+			}
+
 		}
 
 		public void NewFrame() {
 			lengths[1] = 0;
 			sorted[0] = false;
+
+
+			for (int i = 0; i < XQuads.Length; i++) {
+
+				XQuads[i] = new Quad(-1, -1);
+				ZQuads[i] = new Quad(-1, -1);
+			}
+
+			for (int i = 0; i < quadsList.Length; i++) {
+
+				quadsList[i] = new Quad();
+
+			}
+
+			for (int i = 0; i < objectQuadIDs.Length; i++) {
+
+				objectQuadIDs[i] = ushort.MaxValue;
+
+			}
 
 			//update the transform's positions
 			NullChecks();

@@ -30,7 +30,7 @@ public class RobotController : MonoBehaviour {
 
 
 
-	private void Awake() {
+	private void Start() {
 		player = ShepGM.inst.player.GetComponent<Rigidbody>();
 		ShepGM.inst.actions.Player.Look.performed += Look_performed;
 		ShepGM.inst.actions.Player.MouseDelta.performed += MouseDelta_performed;

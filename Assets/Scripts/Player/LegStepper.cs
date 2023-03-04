@@ -21,9 +21,12 @@ public class LegStepper : MonoBehaviour {
 
 
 	private void Awake() {
-		playerController = ShepGM.inst.player.GetComponent<PlayerMovementController>();
+
 	}
 	void Start() {
+
+		playerController = ShepGM.inst.player.GetComponent<PlayerMovementController>();
+
 		distFromHome = new float[2];
 		moving = new bool[2];
 		home = new Vector3[2];

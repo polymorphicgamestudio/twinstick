@@ -17,7 +17,7 @@ namespace ShepProject {
 		public short startIndex;
 		public short endIndex;
 
-		public short BucketSize => (short)((endIndex - startIndex));
+		public short BucketSize => (short)((endIndex - startIndex) + 1);
 
 		public Quad(short startIndex, short endIndex) {
 

@@ -38,17 +38,24 @@ namespace ShepProject {
 
 			Quad readQuad = readFrom[index];
 
-			short startIndex = readQuad.startIndex;
+            Quad leftQuad = new Quad(-1, -1);
+            Quad rightQuad = new Quad(-1, -1);
+
+            short startIndex = readQuad.startIndex;
 			short endIndex = readQuad.endIndex;
 
 			if (startIndex < 0 || endIndex < 0) {
 
 				startIndex = -1;
 				endIndex = -1;
-			}
 
-			Quad leftQuad = new Quad(-1,-1);
-			Quad rightQuad = new Quad(-1,-1);
+
+                writeTo[index * 2] = leftQuad;
+                writeTo[index * 2 + 1] = rightQuad;
+
+				return;
+
+            }
 
 
 			while (startIndex < endIndex) {
@@ -69,27 +76,6 @@ namespace ShepProject {
 						endIndex--;
 					}
 
-					if (SwapItems(ref startIndex, ref endIndex, ref readQuad)) {
-						//finished this iteration of sorting so exit
-						//add the two new quad to the hashMap now
-						leftQuad.startIndex = readQuad.startIndex;
-						leftQuad.endIndex = startIndex;
-
-						rightQuad.startIndex = endIndex;
-						rightQuad.endIndex = readQuad.endIndex;
-
-						leftQuad.position = new float2(readQuad.position.x, (readQuad.position.y) - (readQuad.halfLength / 2f));
-						rightQuad.position = new float2(readQuad.position.x, (readQuad.position.y) + (readQuad.halfLength / 2f));
-
-						leftQuad.halfLength = readQuad.halfLength / 2f;
-						rightQuad.halfLength = readQuad.halfLength / 2f;
-
-
-						break;
-					}
-
-
-
 				}
 				else {
 
@@ -103,24 +89,18 @@ namespace ShepProject {
 						&& endIndex > startIndex) {
 						endIndex--;
 					}
+				}
 
-					if (SwapItems(ref startIndex, ref endIndex, ref readQuad)) {
 
-						leftQuad.startIndex = readQuad.startIndex;
-						leftQuad.endIndex = startIndex;
+				if (startIndex < endIndex)
+				{
 
-						rightQuad.startIndex = endIndex;
-						rightQuad.endIndex = readQuad.endIndex;
+					ushort temp = positionIndices[startIndex];
+					positionIndices[startIndex] = positionIndices[endIndex];
+					positionIndices[endIndex] = temp;
 
-						leftQuad.position =  new float2((readQuad.position.x) - (readQuad.halfLength / 2f), readQuad.position.y);
-						rightQuad.position = new float2((readQuad.position.x) + (readQuad.halfLength / 2f), readQuad.position.y);
-
-						leftQuad.halfLength = readQuad.halfLength;
-						rightQuad.halfLength = readQuad.halfLength;
-
-						break;
-
-					}
+					startIndex++;
+					endIndex--;
 
 
 
@@ -128,10 +108,83 @@ namespace ShepProject {
 
 			}
 
-			//the sorting has finished for this iteration,
-			//add the quads to the list for further sorting if needed
+            //the sorting has finished for this iteration,
+            //add the quads to the list for further sorting if needed
 
-			writeTo[index * 2] = leftQuad;
+
+            float value = 0;
+            if (zSort)
+            {
+                value = positions[positionIndices[startIndex]].y;
+            }
+            else
+            {
+                value = positions[positionIndices[startIndex]].x;
+            }
+
+			if (IsLessThanOrEqual(value, ref readQuad))
+			{ 
+				//start index is lesser, so endIndex needs to be adjusted
+
+				if (startIndex >= readQuad.endIndex)
+				{
+					endIndex = -1;
+
+				}
+				else
+				{
+					endIndex = (short)(startIndex + 1);
+				}
+
+			}
+			else
+			{
+                //endIndex is greater
+
+                if (endIndex <= readQuad.startIndex)
+                {
+                    startIndex = -1;
+
+                }
+                else
+                {
+                    startIndex = (short)(endIndex - 1);
+                }
+
+            }
+
+
+            leftQuad.startIndex = readQuad.startIndex;
+            leftQuad.endIndex = startIndex;
+
+            rightQuad.startIndex = endIndex;
+            rightQuad.endIndex = readQuad.endIndex;
+
+            if (zSort)
+            {
+
+                leftQuad.position = new float2(readQuad.position.x, (readQuad.position.y) - (readQuad.halfLength / 2f));
+                rightQuad.position = new float2(readQuad.position.x, (readQuad.position.y) + (readQuad.halfLength / 2f));
+
+                leftQuad.halfLength = readQuad.halfLength / 2f;
+                rightQuad.halfLength = readQuad.halfLength / 2f;
+
+
+            }
+
+            else
+            {
+                leftQuad.position = new float2((readQuad.position.x) - (readQuad.halfLength / 2f), readQuad.position.y);
+                rightQuad.position = new float2((readQuad.position.x) + (readQuad.halfLength / 2f), readQuad.position.y);
+
+                leftQuad.halfLength = readQuad.halfLength;
+                rightQuad.halfLength = readQuad.halfLength;
+            }
+
+
+
+
+            writeTo[index * 2] = leftQuad;
 			writeTo[index * 2 + 1] = rightQuad;
 
 
@@ -153,138 +206,6 @@ namespace ShepProject {
 			}
 			return false;
 		}
-
-		/// <summary>
-		/// Swaps items if needed, and returns whether or not that should be the last sort for this iteration
-		/// </summary>
-		/// <param name="left"></param>
-		/// <param name="right"></param>
-		/// <returns></returns>
-		private bool SwapItems(ref short left, ref short right, ref Quad q) {
-			//both items are now on an object that needs to be swapped
-			//check that they're not on the same object and if not, swap
-
-
-			float value = 0;
-			if (zSort) {
-				value = positions[positionIndices[left]].y;
-			}
-			else {
-				value = positions[positionIndices[left]].x;
-			}
-
-
-			if (left >= right) {
-				//find out which was changed last
-				//then update indices correctly and return true
-
-				//no swap needed for this case
-
-				if (IsLessThanOrEqual(value, ref q)) {
-					//left should be at this index, so update right correctly
-
-					if (left + 1 >= q.endIndex) {
-						left = q.endIndex;
-						right = -1;
-					}
-					else {
-						left++;
-						right = (short)(left + 1);
-					}
-
-				}
-				else {
-					//right should be at this index, so update left correctly
-					if (right - 1 <= q.startIndex) {
-						right = q.startIndex;
-						left = -1;
-
-					}
-					else {
-						right--;
-						left = (short)(right - 1);
-					}
-
-				}
-
-				return true;
-
-			}
-
-			/*if (left < right)*/
-			else {
-
-				//then just swap items
-				//check if they're equal or greater, if so need to check which is greater
-				//then adjust and return whichever value
-				//then return true to say its finished sorting
-
-				ushort temp = positionIndices[left];
-
-				positionIndices[left] = positionIndices[right];
-				positionIndices[right] = temp;
-
-				if (left < (right - 1)) {
-					left++;
-					right--;
-
-
-					//could be at the same index now
-					//check if that's the case and update correctly if so
-
-					if (left == right) {
-
-						if (zSort) {
-							value = positions[positionIndices[left]].y;
-						}
-						else {
-							value = positions[positionIndices[left]].x;
-						}
-
-						if (IsLessThanOrEqual(value, ref q)) {
-							//left should be at this index, so update right correctly
-
-							if (left + 1 >= q.endIndex) {
-								left = q.endIndex;
-								right = -1;
-							}
-							else {
-								left++;
-								right = (short)(left + 1);
-							}
-
-						}
-						else {
-							//right should be at this index, so update left correctly
-							if (right - 1 <= q.startIndex) {
-								right = q.startIndex;
-								left = -1;
-
-							}
-							else {
-								right--;
-								left = (short)(right - 1);
-							}
-
-						}
-
-
-
-						return true;
-					}
-
-				}
-				//otherwise left is one below right and everything is ok
-				else if (left == (right - 1)) {
-					return true;
-				}
-
-				return false;
-
-			}
-
-		}
-
 
 	}
 
