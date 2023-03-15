@@ -29,6 +29,7 @@ namespace ShepProject {
 	public enum Attraction {
 		Slime = 0,
 		Sheep,
+		Wall,
 		BaseTower,
 		BlasterTower,
 		FireTower,
@@ -115,7 +116,7 @@ namespace ShepProject {
 
 		public ObjectType GetObjectType(int id) {
 
-			return (ObjectType)IDTypeIndex(id);
+			return (ObjectType)genes[IDTypeIndex(id)];
 
 		}
 

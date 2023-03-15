@@ -1,5 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.Mathematics;
+using Random = UnityEngine.Random;
+using UnityEngine.UIElements;
 
 namespace ShepProject {
 
@@ -18,7 +21,14 @@ namespace ShepProject {
 		static List<Transform>[] things = new List<Transform>[(int)Thing.Count];
 
 		[SerializeField]
+		private BoxCollider playableArea;
+		[SerializeField]
+		private BoxCollider wallCollider;
+
+		[SerializeField]
 		private EnemyManager enemyManager;
+
+
 
 		public enum Thing {
 			Slime,
@@ -48,7 +58,77 @@ namespace ShepProject {
 			}
 
 
+
 		}
+
+		public void GeneratePlayableAreaWall() {
+
+
+
+			if (playableArea == null) {
+
+				Debug.LogError("Playable Area not set for level.");
+				return;
+			}
+
+			int xWalls = (int)(playableArea.size.x / wallCollider.size.x);
+			int zWalls = (int)(playableArea.size.z / wallCollider.size.x) + 1;
+
+
+			float3 position = new float3(playableArea.center - (playableArea.size / 2f));
+			position.x += wallCollider.size.x;
+
+			GenerateHorizontalWall(position, xWalls);
+
+			position.z += (playableArea.size.z);
+			GenerateHorizontalWall(position, xWalls);
+
+			position.x -= wallCollider.size.x / 2f;
+			position.z -= wallCollider.size.x / 2f;
+
+			GenerateVerticalWall(position, zWalls);
+
+
+			position.x += (playableArea.size.x);
+			position.x -= wallCollider.size.x / 2f;
+			GenerateVerticalWall(position, zWalls);
+
+		}
+
+		private void GenerateHorizontalWall(float3 startPosition, int wallCount) {
+
+			//generating bottom wall
+			for (int i = 0; i < wallCount; i++) {
+
+				GameObject inst = Instantiate(wallCollider.gameObject);
+				inst.transform.position = startPosition;
+				startPosition.x += wallCollider.size.x;
+
+				enemyManager.AddWallToList(inst.transform);
+			}
+
+		}
+
+		private void GenerateVerticalWall(float3 startPosition, int wallCount) {
+
+			for (int i = 0; i < wallCount; i++) {
+
+				GameObject inst = Instantiate(wallCollider.gameObject);
+
+				inst.transform.position = startPosition;
+				startPosition.z -= wallCollider.size.x;
+
+				Quaternion q = inst.transform.rotation;
+				q.eulerAngles += new Vector3(0, 90, 0);
+				inst.transform.rotation = q;
+
+				enemyManager.AddWallToList(inst.transform);
+
+			}
+
+
+		}
+
 
 
 		static ShepGM() {

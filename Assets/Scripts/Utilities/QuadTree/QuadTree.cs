@@ -65,7 +65,7 @@ namespace ShepProject {
 
 			lengths = new NativeArray<int>(2, Allocator.Persistent);
 
-			halfLength = 60;
+			halfLength = 100;
 			
 			//start position count at -1 so it takes first slots
 			this.positionCount = -1;

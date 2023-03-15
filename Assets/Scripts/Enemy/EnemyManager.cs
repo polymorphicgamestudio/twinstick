@@ -46,50 +46,61 @@ namespace ShepProject {
         public bool SpawningEnemies => spawningEnemies;
 
 
+		private void Awake() {
 
-		private void Start() {
 
-
-            genes = new GenesArray(50000, Allocator.Persistent);
+			genes = new GenesArray(50000, Allocator.Persistent);
 
 			choosableTargets = new NativeList<ushort>(1000, Allocator.Persistent);
 			targetIDs = new NativeArray<ushort>(1000, Allocator.Persistent);
 
-            for (int i = 0; i < targetIDs.Length; i++) {
+			for (int i = 0; i < targetIDs.Length; i++) {
 
 
-                targetIDs[i] = ushort.MaxValue;
+				targetIDs[i] = ushort.MaxValue;
 
-            }
+			}
 
-            headings = new NativeArray<float>(1000, Allocator.Persistent);
-            newHeadings = new NativeArray<float>(1000, Allocator.Persistent);
-            switchedHeadings = false;
-            loopCounts = new NativeArray<ushort>(50000, Allocator.Persistent);
+			headings = new NativeArray<float>(1000, Allocator.Persistent);
+			newHeadings = new NativeArray<float>(1000, Allocator.Persistent);
+			switchedHeadings = false;
+			loopCounts = new NativeArray<ushort>(50000, Allocator.Persistent);
 
-            burrows = new List<EnemyBurrow>();
+			burrows = new List<EnemyBurrow>();
 
-            quadTree = new QuadTree(1000, 10);
+			quadTree = new QuadTree(1000, 25);
+
+
+		}
+
+		private void Start() {
+
+
 
             quadTree.AddTransform(Inst.player.transform);
             genes.SetObjectType(0, ObjectType.Player);
 
-            //uncomment to add player to list of choosableTargets
-            choosableTargets.Add(0);
+
+			//uncomment to add player to list of choosableTargets
+			//choosableTargets.Add(0);
 
 			SpawnSheep();
 
 
+
+			//generate a wall surrounding the area
+			//Inst.GeneratePlayableAreaWall();
+
 			AddBurrow();
 			AddBurrow();
 			AddBurrow();
 			AddBurrow();
 			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
 
 
 		}
@@ -176,8 +187,8 @@ namespace ShepProject {
             moveJob.genes = genes;
             moveJob.targetIDs = targetIDs;
             moveJob.deltaTime = Time.deltaTime;
-            //moveJob.Run(quadTree.positionCount + 1);
-            moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount - 1).Complete();
+            moveJob.Run(quadTree.positionCount + 1);
+            //moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
 
             //after movement, write the information back to the transforms
@@ -199,17 +210,17 @@ namespace ShepProject {
 
             for (int i = 0; i <= quadTree.positionCount; i++) {
 
-                if (genes[i * (int)GeneGroups.TotalGeneCount] == (int)ObjectType.Sheep) {
+                if (genes.GetObjectType(i) == ObjectType.Sheep) {
 
                     //if being chased, set velocity, otherwise don't
-                    if (headings[i] != newHeadings[i])
-					    quadTree.Transforms[i].gameObject.GetComponent<Rigidbody>().velocity = (quadTree.Transforms[i].forward * 3);
+                    //if (headings[i] != newHeadings[i])
+					quadTree.Transforms[i].gameObject.GetComponent<Rigidbody>().velocity = (quadTree.Transforms[i].forward * 3);
 
 					continue;
 
                 }
-
-				quadTree.Transforms[i].gameObject.GetComponent<Rigidbody>().velocity = (quadTree.Transforms[i].forward * 5);
+                else if (genes.GetObjectType(i) == ObjectType.Slime)
+				    quadTree.Transforms[i].gameObject.GetComponent<Rigidbody>().velocity = (quadTree.Transforms[i].forward * 5);
 
 
 
@@ -227,9 +238,21 @@ namespace ShepProject {
             //offset 1 for type, then attractions count
             genes.SetObjectType(id, ObjectType.Slime);
             genes.SetAttraction(id, Attraction.Slime, -2);
+            genes.SetAttraction(id, Attraction.Wall, -5);
+        }
 
-            //genes[id * (1 + (int)Attraction.Count)] = (int)ObjectType.Slime;
-            //genes[(id * (int)GeneGroups.TotalGeneCount) + 1 + (int)Attraction.Slime] = -2;
+        public void AddWallToList(Transform wall) {
+
+
+            //for adding all the child points to make sure enemies can avoid them correctly
+            for (int i = 0; i < wall.childCount; i++) {
+
+				ushort id = quadTree.AddTransform(wall.transform.GetChild(i));
+                genes.SetObjectType(id, ObjectType.Wall);
+
+
+			}
+
         }
 
         private void AddBurrow() {
@@ -264,9 +287,8 @@ namespace ShepProject {
 
 				genes.SetObjectType(id, ObjectType.Sheep);
 				genes.SetAttraction(id, Attraction.Slime, -5);
+                genes.SetAttraction(id, Attraction.Wall, -5);
 
-				//genes[id * (1 + (int)Attraction.Count)] = (int)ObjectType.Sheep;
-				//genes[(id * (int)GeneGroups.TotalGeneCount) + 1 + (int)Attraction.Slime] = -5;
                 choosableTargets.Add(id);
 
                 sheep.SetActive(true);
