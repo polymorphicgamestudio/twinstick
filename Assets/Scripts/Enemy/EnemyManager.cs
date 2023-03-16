@@ -32,16 +32,14 @@ namespace ShepProject {
         private NativeArray<ushort> targetIDs;
 
         private NativeArray<float> headings;
-        private NativeArray<float> newHeadings;
-
-        private NativeArray<ushort> loopCounts;
-
-        private bool switchedHeadings;
 
         private QuadTree quadTree;
 
-        [SerializeField]
+		public int maxEnemies;
+		[SerializeField]
         private bool spawningEnemies;
+
+
 
         public bool SpawningEnemies => spawningEnemies;
 
@@ -49,26 +47,20 @@ namespace ShepProject {
 		private void Awake() {
 
 
-			genes = new GenesArray(50000, Allocator.Persistent);
+			genes = new GenesArray(maxEnemies * ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
 
-			choosableTargets = new NativeList<ushort>(1000, Allocator.Persistent);
-			targetIDs = new NativeArray<ushort>(1000, Allocator.Persistent);
-
-			for (int i = 0; i < targetIDs.Length; i++) {
-
-
-				targetIDs[i] = ushort.MaxValue;
-
-			}
-
-			headings = new NativeArray<float>(1000, Allocator.Persistent);
-			newHeadings = new NativeArray<float>(1000, Allocator.Persistent);
-			switchedHeadings = false;
-			loopCounts = new NativeArray<ushort>(50000, Allocator.Persistent);
-
+			choosableTargets = new NativeList<ushort>(100, Allocator.Persistent);
+			targetIDs = new NativeArray<ushort>(maxEnemies, Allocator.Persistent);
+			headings = new NativeArray<float>(maxEnemies, Allocator.Persistent);
 			burrows = new List<EnemyBurrow>();
+			quadTree = new QuadTree(maxEnemies, 25);
 
-			quadTree = new QuadTree(1000, 25);
+
+			for (int i = 0; i < targetIDs.Length; i++)
+				targetIDs[i] = ushort.MaxValue;
+			
+
+
 
 
 		}
@@ -89,18 +81,62 @@ namespace ShepProject {
 
 
 			//generate a wall surrounding the area
-			//Inst.GeneratePlayableAreaWall();
+			Inst.GeneratePlayableAreaWall();
+
+			AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
+            AddBurrow();
 
 			AddBurrow();
 			AddBurrow();
 			AddBurrow();
 			AddBurrow();
 			AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
 
 
 		}
@@ -142,7 +178,8 @@ namespace ShepProject {
 
             }
 
-            //spawningEnemies = false;
+            if (quadTree.positionCount >= 1000)
+                spawningEnemies = false;
             quadTree.Update();
 
             /*
@@ -171,24 +208,23 @@ namespace ShepProject {
             AIMovementJob moveJob = new AIMovementJob();
             moveJob.positions = quadTree.positions.Slice(0, quadTree.positionCount + 1);
             moveJob.buckets = quadTree.quadsList.Slice(0, quadTree.QuadsListLength);
-            moveJob.loopCounts = loopCounts;
 
-            if (switchedHeadings) {
-				moveJob.headings = newHeadings;
-				moveJob.newHeadings = headings;
-			}
-            else {
+            //if (switchedHeadings) {
+				//moveJob.headings = newHeadings;
+				//moveJob.newHeadings = headings;
+			//}
+            //else {
 				moveJob.headings = headings;
-				moveJob.newHeadings = newHeadings;
-			}
+				//moveJob.newHeadings = newHeadings;
+			//}
 
             moveJob.objectIDs = quadTree.objectIDs;
             moveJob.objectQuadIDs = quadTree.objectQuadIDs;
             moveJob.genes = genes;
             moveJob.targetIDs = targetIDs;
             moveJob.deltaTime = Time.deltaTime;
-            moveJob.Run(quadTree.positionCount + 1);
-            //moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
+            //moveJob.Run(quadTree.positionCount + 1);
+            moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
 
             //after movement, write the information back to the transforms
@@ -196,14 +232,14 @@ namespace ShepProject {
             WriteTransformsJob wtj = new WriteTransformsJob();
             wtj.positions = quadTree.positions;
 
-			if (switchedHeadings) {
+			//if (switchedHeadings) {
 				wtj.rotation = headings;
-			}
-			else {
-				wtj.rotation = newHeadings;
-			}
+			//}
+			//else {
+				//wtj.rotation = newHeadings;
+			//}
 
-			switchedHeadings = !switchedHeadings;
+			//switchedHeadings = !switchedHeadings;
 			wtj.Schedule(quadTree.TransformAccess);
 
             Profiler.BeginSample("Writing Velocities");
@@ -220,7 +256,7 @@ namespace ShepProject {
 
                 }
                 else if (genes.GetObjectType(i) == ObjectType.Slime)
-				    quadTree.Transforms[i].gameObject.GetComponent<Rigidbody>().velocity = (quadTree.Transforms[i].forward * 5);
+				    quadTree.Transforms[i].gameObject.GetComponent<Rigidbody>().velocity = (quadTree.Transforms[i].forward * 3.25f);
 
 
 
@@ -238,17 +274,19 @@ namespace ShepProject {
             //offset 1 for type, then attractions count
             genes.SetObjectType(id, ObjectType.Slime);
             genes.SetAttraction(id, Attraction.Slime, -2);
-            genes.SetAttraction(id, Attraction.Wall, -5);
+            genes.SetAttraction(id, Attraction.Wall, -50);
         }
 
         public void AddWallToList(Transform wall) {
 
 
             //for adding all the child points to make sure enemies can avoid them correctly
-            for (int i = 0; i < wall.childCount; i++) {
+            for (int i = 0; i < wall.childCount;) {
+
 
 				ushort id = quadTree.AddTransform(wall.transform.GetChild(i));
-                genes.SetObjectType(id, ObjectType.Wall);
+				wall.transform.GetChild(i).parent = null;
+				genes.SetObjectType(id, ObjectType.Wall);
 
 
 			}
@@ -259,11 +297,11 @@ namespace ShepProject {
 
             EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
 
-            int min = 8;
+            int min = -15;
             int max = 15;
 
             //if (Random.value > .5f)
-                burrow.gameObject.transform.position = new Vector3(Random.Range(-5, 5) , 0, Random.Range(min, max));
+                burrow.gameObject.transform.position = new Vector3(Random.Range(-15, 15) , 0, Random.Range(min, max));
             //else
 				//burrow.gameObject.transform.position = new Vector3(Random.Range(-min, -max), 0, Random.Range(-min, -max));
 
@@ -286,8 +324,8 @@ namespace ShepProject {
 				ushort id = quadTree.AddTransform(sheep.transform);
 
 				genes.SetObjectType(id, ObjectType.Sheep);
-				genes.SetAttraction(id, Attraction.Slime, -5);
-                genes.SetAttraction(id, Attraction.Wall, -5);
+				genes.SetAttraction(id, Attraction.Slime, -2);
+                genes.SetAttraction(id, Attraction.Wall, -50);
 
                 choosableTargets.Add(id);
 
@@ -303,8 +341,7 @@ namespace ShepProject {
 
             genes.Dispose();
             headings.Dispose();
-            newHeadings.Dispose();
-            loopCounts.Dispose();
+
 		}
 
 

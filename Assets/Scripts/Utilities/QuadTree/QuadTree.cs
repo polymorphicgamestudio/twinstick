@@ -109,8 +109,8 @@ namespace ShepProject {
 			while (!sorted[0]) {
 
 				SortIterationJob sij = new SortIterationJob();
-				sij.positions = positions;
-				sij.positionIndices = objectIDs;
+				sij.objectPositions = positions;
+				sij.objectIDs = objectIDs;
 				sij.readFrom = XQuads;
 				sij.writeTo = ZQuads;
 				sij.bucketSize = bucketSize;
@@ -118,8 +118,8 @@ namespace ShepProject {
 				sij.Schedule(xQuadsLength, SystemInfo.processorCount).Complete();
 
 				sij = new SortIterationJob();
-				sij.positions = positions;
-				sij.positionIndices = objectIDs;
+				sij.objectPositions = positions;
+				sij.objectIDs = objectIDs;
 				sij.readFrom = ZQuads;
 				sij.writeTo = XQuads;
 				sij.bucketSize = bucketSize;
@@ -130,6 +130,7 @@ namespace ShepProject {
 				QuadFilteringJob fj = new QuadFilteringJob();
 				fj.readFrom = XQuads;
 				fj.quadsList = quadsList;
+				fj.objectIDs = objectIDs;
 				fj.quadsID = objectQuadIDs;
 				fj.isSorted = sorted;
 				fj.lengths = lengths;
@@ -138,16 +139,6 @@ namespace ShepProject {
 
 
 
-
-			}
-
-
-			for (int i = 0; i < positionCount; i++) {
-
-				if (objectQuadIDs[i] > lengths[1]) {
-
-					int test = 0;
-				}
 
 			}
 

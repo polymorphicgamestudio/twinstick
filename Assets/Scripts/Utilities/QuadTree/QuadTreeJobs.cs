@@ -13,9 +13,9 @@ namespace ShepProject {
 	public struct SortIterationJob : IJobParallelFor {
 
 		[NativeDisableContainerSafetyRestriction]
-		public NativeArray<ushort> positionIndices;
+		public NativeArray<ushort> objectIDs;
 		[NativeDisableContainerSafetyRestriction]
-		public NativeArray<float2> positions;
+		public NativeArray<float2> objectPositions;
 		//public NativeArray<bool> isSorted;
 
 		//public NativeHashMap<int, Quad> quads;
@@ -65,13 +65,13 @@ namespace ShepProject {
 					//since quad tree is 2d,
 					//using Y as the Z dimension to save memory
 
-					while (IsLessThanOrEqual(positions[positionIndices[startIndex]].y, ref readQuad) 
+					while (IsLessThanOrEqual(objectPositions[objectIDs[startIndex]].y, ref readQuad) 
 						&& startIndex < endIndex) {
 
 						startIndex++;
 
 					}
-					while (IsGreaterThan(positions[positionIndices[endIndex]].y, ref readQuad)
+					while (IsGreaterThan(objectPositions[objectIDs[endIndex]].y, ref readQuad)
 						&& endIndex > startIndex) {
 						endIndex--;
 					}
@@ -79,13 +79,13 @@ namespace ShepProject {
 				}
 				else {
 
-					while (IsLessThanOrEqual(positions[positionIndices[startIndex]].x, ref readQuad)
+					while (IsLessThanOrEqual(objectPositions[objectIDs[startIndex]].x, ref readQuad)
 						&& startIndex < endIndex) {
 
 						startIndex++;
 
 					}
-					while (IsGreaterThan(positions[positionIndices[endIndex]].x, ref readQuad)
+					while (IsGreaterThan(objectPositions[objectIDs[endIndex]].x, ref readQuad)
 						&& endIndex > startIndex) {
 						endIndex--;
 					}
@@ -95,9 +95,9 @@ namespace ShepProject {
 				if (startIndex < endIndex)
 				{
 
-					ushort temp = positionIndices[startIndex];
-					positionIndices[startIndex] = positionIndices[endIndex];
-					positionIndices[endIndex] = temp;
+					ushort temp = objectIDs[startIndex];
+					objectIDs[startIndex] = objectIDs[endIndex];
+					objectIDs[endIndex] = temp;
 
 					startIndex++;
 					endIndex--;
@@ -115,11 +115,11 @@ namespace ShepProject {
             float value = 0;
             if (zSort)
             {
-                value = positions[positionIndices[startIndex]].y;
+                value = objectPositions[objectIDs[startIndex]].y;
             }
             else
             {
-                value = positions[positionIndices[startIndex]].x;
+                value = objectPositions[objectIDs[startIndex]].x;
             }
 
 			if (IsLessThanOrEqual(value, ref readQuad))
@@ -216,6 +216,7 @@ namespace ShepProject {
 		public NativeArray<Quad> readFrom;
 		public NativeArray<Quad> quadsList;
 
+		public NativeArray<ushort> objectIDs;
 		public NativeArray<ushort> quadsID;
 
 		public NativeArray<int> lengths;
@@ -247,7 +248,7 @@ namespace ShepProject {
 
 					for (int i = readFrom[startIndex].startIndex; i <= readFrom[startIndex].endIndex; i++) {
 
-						quadsID[i] = (ushort)(lengths[1] - 1);
+						quadsID[objectIDs[i]] = (ushort)(lengths[1] - 1);
 
 					}
 
@@ -266,7 +267,7 @@ namespace ShepProject {
 
 						for (int i = readFrom[endIndex].startIndex; i <= readFrom[endIndex].endIndex; i++) {
 
-							quadsID[i] = (ushort)(lengths[1] - 1);
+							quadsID[objectIDs[i]] = (ushort)(lengths[1] - 1);
 
 						}
 
