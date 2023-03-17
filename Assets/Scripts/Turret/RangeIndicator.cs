@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class RangeIndicator : MonoBehaviour {
 	[SerializeField] LayerMask layerMask;
-	[SerializeField] Transform center;
 	[SerializeField] float viewDistance = 10f;
 	Mesh mesh;
 
@@ -14,35 +11,31 @@ public class RangeIndicator : MonoBehaviour {
 	}
 
 	private void Update() {
+		CalculateMesh();
+	}
 
-		Vector3 origin = center.position;
+	void CalculateMesh() {
 		int rayCount = 91;
 		float rayAngle = 0f;
-		float angleIncrease = 360.0f / (rayCount - 1);
-		
 
 		Vector3[] verts = new Vector3[rayCount + 2]; // +1 for origin and +1 for ray at 0 rayAngle
 		Vector2[] uv = new Vector2[verts.Length];
 		int[] tris = new int[rayCount * 3];
 
-		verts[0] = origin;
 		int vertIndex = 1;
 		int triIndex = 0;
-
+		
 		for (int i = 0; i < rayCount; i++) {
 			Vector3 vertex;
 			RaycastHit hit;
-			Physics.Raycast(origin, VectorFromAngle(rayAngle), out hit, viewDistance, layerMask);
+			Physics.Raycast(transform.position, VectorFromAngle(rayAngle), out hit, viewDistance, layerMask);
 			if (hit.collider == null)
-				vertex = origin + VectorFromAngle(rayAngle) * viewDistance;
+				vertex = VectorFromAngle(rayAngle) * viewDistance;
 			else
-				vertex = hit.point;
-
-
+				vertex = hit.point - transform.position;
 
 			verts[vertIndex] = vertex;
 
-			
 			if (i > 0) {
 				tris[triIndex] = 0;
 				tris[triIndex + 1] = vertIndex - 1;
@@ -50,20 +43,18 @@ public class RangeIndicator : MonoBehaviour {
 				triIndex += 3;
 			}
 
-			uv[vertIndex] = new Vector2((float)vertIndex/verts.Length,1);
-
+			uv[vertIndex] = new Vector2((float)vertIndex / verts.Length, 1);
 
 			vertIndex++;
-			rayAngle -= angleIncrease;
+			rayAngle -= 360.0f / (rayCount - 1);
 		}
 		uv[0] = new Vector2(0.5f, 0);
-		
 
 
 		mesh.vertices = verts;
 		mesh.uv = uv;
 		mesh.triangles = tris;
-		mesh.bounds = new Bounds(origin, Vector3.one * 100);
+		mesh.bounds = new Bounds(transform.position, Vector3.one * 100);
 		//mesh.RecalculateBounds();
 	}
 
