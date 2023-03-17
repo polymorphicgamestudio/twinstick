@@ -342,6 +342,9 @@ namespace ShepProject {
             genes.Dispose();
             headings.Dispose();
 
+            choosableTargets.Dispose();
+            targetIDs.Dispose();
+
 		}
 
 

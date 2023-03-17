@@ -30,14 +30,14 @@ namespace ShepProject {
 		Slime = 0,
 		Sheep,
 		Wall,
-		BaseTower,
 		BlasterTower,
 		FireTower,
 		AcidTower,
 		LightningTower,
 		IceTower,
 		LaserTower,
-		Count
+        Player,
+        Count
 	}
 
 	public enum ViewRange {
@@ -57,18 +57,19 @@ namespace ShepProject {
 	}
 
 	public enum ObjectType {
-		Player,
 		Slime,
 		Sheep,
-		BlasterTower,
+        Wall,
+        BlasterTower,
 		FireTower,
 		AcidTower,
 		LightningTower,
 		IceTower,
 		LaserTower,
-		Wall
+        Player,
+		Count
 
-	}
+    }
 
 
 	public struct GenesArray {
@@ -91,9 +92,14 @@ namespace ShepProject {
 			return id * (int)GeneGroups.TotalGeneCount;
 		}
 
+		public float GetAttraction(int id, int attraction)
+		{
+            return genes[IDTypeIndex(id) + 1 + attraction];
+        }
+
 		public float GetAttraction(int id, Attraction attraction) {
 
-			return genes[IDTypeIndex(id) + 1 + (int)attraction];
+			return GetAttraction(id, (int)attraction);
 		}
 		public void SetAttraction(int id, Attraction attraction, float value) {
 

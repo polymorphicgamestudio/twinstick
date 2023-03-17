@@ -88,12 +88,15 @@ namespace ShepProject {
 		public void Execute(int index) {
 
 
+			//checking for player ID, since player is always the first thing spawned
 			if (objectIDs[index] == 0)
 				return;
 
 
 			ObjectType objType = genes.GetObjectType(objectIDs[index]);
 
+			if (objType == ObjectType.Wall)
+				return;
 
 			float2 moveTowards = new float2();
 
@@ -103,11 +106,14 @@ namespace ShepProject {
 			float2 localPosition = new float2();
 			float maxDist = 16;
 
-			for (int i = buckets[objectQuadIDs[objectIDs[index]]].startIndex;
+            for (int i = buckets[objectQuadIDs[objectIDs[index]]].startIndex;
 				i <= buckets[objectQuadIDs[objectIDs[index]]].endIndex; i++) {
 
-				localPosition = (positions[objectIDs[i]] - positions[objectIDs[index]]);
+                //to ignore itself in all calculationsSS
+                if (objectIDs[i] == objectIDs[index])
+                    continue;
 
+                localPosition = (positions[objectIDs[i]] - positions[objectIDs[index]]);
 
 				float sqDist = (math.pow(localPosition.x, 2) + math.pow(localPosition.y, 2));
 
@@ -118,40 +124,14 @@ namespace ShepProject {
 
 				}
 
-				//to ignore itself in all calculationsSS
-				if (objectIDs[i] == objectIDs[index])
-					continue;
-
-				//can get rid of this if during get attraction, can let it take an int, or ushort 
-				switch (genes.GetObjectType(objectIDs[i])) {
-
-					case ObjectType.Slime: {
-
-							moveTowards += (localPosition
-							//attraction level, will mirror vector if wants to get away
-							* (genes.GetAttraction(objectIDs[index], Attraction.Slime)
-							//distance falloff, further away means it cares less
-							* math.lerp(.5f, 2f, 1 - (sqDist / maxDist))));
+                moveTowards += (localPosition
+                //attraction level for object type, will mirror vector if wants to get away
+                * genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i]))
+                //distance falloff, further away means it cares less
+                * math.lerp(.5f, 2f, 1 - (sqDist / maxDist)));
 
 
-							break;
-						}
-					case ObjectType.Wall: {
-
-							moveTowards += (localPosition
-							//attraction level, will mirror vector if wants to get away
-							* (genes.GetAttraction(objectIDs[index], Attraction.Wall)
-							//distance falloff, further away means it cares less
-							* math.lerp(.5f, 2f, 1 - (sqDist / maxDist))));
-
-
-							break;
-						}
-
-				}
-
-
-			}
+            }
 
 
 			float headingCalculation = math.atan2(moveTowards.x, moveTowards.y);
