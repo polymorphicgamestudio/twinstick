@@ -542,11 +542,33 @@ namespace ShepProject {
 			
 			}
 
-            
+			//if over the right side
+            if ((positions[index].x + 5) - (current.position.x + current.halfLength) < 0)
+			{
+
+
+			}
+
+            //if over the bottom side
+            if ((positions[index].y - 5) - (current.position.y - current.halfLength) < 0)
+            {
+
+
+            }
+
+            //if over the top side
+            if ((positions[index].y + 5) - (current.position.y + current.halfLength) < 0)
+            {
+
+
+            }
+
+
+
         }
 
 
-		public void CheckRightTopAndBottomChildren(int index, QuadKey parent)
+        public void CheckRightTopAndBottomChildren(int index, QuadKey parent)
 		{
 			//will need to check each of these keys to see if they're divided as well as 
 			//whether they're close enough to object
