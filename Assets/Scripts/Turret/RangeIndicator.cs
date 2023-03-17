@@ -32,9 +32,9 @@ public class RangeIndicator : MonoBehaviour {
 		for (int i = 0; i < rayCount; i++) {
 			Vector3 vertex;
 			RaycastHit hit;
-			Physics.Raycast(origin, GetVectorFromAngle(rayAngle), out hit, viewDistance, layerMask);
+			Physics.Raycast(origin, VectorFromAngle(rayAngle), out hit, viewDistance, layerMask);
 			if (hit.collider == null)
-				vertex = origin + GetVectorFromAngle(rayAngle) * viewDistance;
+				vertex = origin + VectorFromAngle(rayAngle) * viewDistance;
 			else
 				vertex = hit.point;
 
@@ -43,7 +43,6 @@ public class RangeIndicator : MonoBehaviour {
 			verts[vertIndex] = vertex;
 
 			
-			//for now only run when i>0   later conncet this first tri to the last position to close circle?
 			if (i > 0) {
 				tris[triIndex] = 0;
 				tris[triIndex + 1] = vertIndex - 1;
@@ -51,24 +50,29 @@ public class RangeIndicator : MonoBehaviour {
 				triIndex += 3;
 			}
 
+			uv[vertIndex] = new Vector2((float)vertIndex/verts.Length,1);
+
 
 			vertIndex++;
 			rayAngle -= angleIncrease;
 		}
+		uv[0] = new Vector2(0.5f, 0);
 		
 
 
 		mesh.vertices = verts;
 		mesh.uv = uv;
 		mesh.triangles = tris;
+		mesh.bounds = new Bounds(origin, Vector3.one * 100);
+		//mesh.RecalculateBounds();
 	}
 
-	Vector3 GetVectorFromAngle(float angle) {
+	Vector3 VectorFromAngle(float angle) {
 		// angle = 0 -> 360
 		float angleRad = angle * Mathf.Deg2Rad;
 		return new Vector3(Mathf.Cos(angleRad), 0, Mathf.Sin(angleRad));
 	}
-	float GetAngleFromVector(Vector3 dir) {
+	float AngleFromVector(Vector3 dir) {
 		dir.Normalize();
 		float n = Mathf.Atan2(dir.x,dir.z) * Mathf.Rad2Deg;
 		if (n < 0) n += 360;
