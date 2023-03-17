@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
+using Unity.Collections.LowLevel;
 using Unity.Jobs;
 using UnityEditor;
 using UnityEngine;
@@ -26,9 +27,12 @@ namespace ShepProject {
 
 		//will contain IDs of sheep and player, and towers won't be targeted
 		private NativeList<ushort> choosableTargets;
-        
+
+
+        //public NativeParallelHashMap<int,int> hashmap;
+		
         //will store the target id of the slime
-        private NativeArray<ushort> targetIDs;
+		private NativeArray<ushort> targetIDs;
 
         private NativeArray<float> headings;
 
@@ -178,7 +182,7 @@ namespace ShepProject {
 
             }
 
-            //if (quadTree.positionCount >= 500)
+            if (quadTree.positionCount >= 1000)
                 spawningEnemies = false;
             quadTree.Update();
 

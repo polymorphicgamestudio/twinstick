@@ -20,7 +20,7 @@ namespace ShepProject {
 		public NativeArray<float2> objectPositions;
         //public NativeArray<bool> isSorted;
         [NativeDisableContainerSafetyRestriction]
-        public NativeHashMap<QuadKey, Quad> quads;
+        public NativeParallelHashMap<QuadKey, Quad> quads;
 
 		//this is the list to process
 		[NativeDisableContainerSafetyRestriction]
@@ -386,7 +386,7 @@ namespace ShepProject {
         public NativeArray<ushort> objectQuadIDs;
 
         [NativeDisableContainerSafetyRestriction]
-        public NativeHashMap<QuadKey, Quad> quads;
+        public NativeParallelHashMap<QuadKey, Quad> quads;
 
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<Quad> quadsList;
@@ -414,15 +414,17 @@ namespace ShepProject {
 			 * 
 			 */
 
+			int currentLevel = 0;
+			int viewRange = 5;
 			Quad current = quadsList[objectQuadIDs[index]];
 
 			//if their view is over the left side of the quad
-			if ((positions[index].x - 5) - (current.position.x - current.halfLength) < 0) 
+			if ((positions[index].x - viewRange) - (current.position.x - current.halfLength) < 0) 
 			{
 
 				//check if this position is in right quad, if so, then just get the left quad through the parent
 
-				int currentLevel = (int)current.key.GetCount();
+				currentLevel = (int)current.key.GetCount();
 
 				//if its in the right quad of its parent
 				if (current.key.GetHeirarchyBit(currentLevel - 2))
@@ -442,10 +444,6 @@ namespace ShepProject {
 						leftKey.LeftBranch();
 					}
 
-					Quad leftQuad = quads[leftKey];
-
-
-
 
 				}
                 else //not inside the same quad :( more CPU time required
@@ -463,7 +461,7 @@ namespace ShepProject {
 
 					while (parent.GetHeirarchyBit((int)parent.GetCount() - 2))
 					{
-						//while its still on the left side
+						//while its still on the right side
 						parent = parent.GetParentKey();
 
 					}
@@ -529,9 +527,8 @@ namespace ShepProject {
 					{
 						//now should have the mirrored version of the key and quad :)
 						//just need to add it to this object's list of neighbors
-						objectNeighbors[(index * maxNeighborQuads) + neighborCounts[index]] = leftKey;
-						neighborCounts[index]++;
-                    }
+						AddNeighborKey(index, leftKey);
+					}
 
 
 
@@ -543,29 +540,242 @@ namespace ShepProject {
 			}
 
 			//if over the right side
-            if ((positions[index].x + 5) - (current.position.x + current.halfLength) < 0)
-			{
+			if ((positions[index].x + viewRange) - (current.position.x + current.halfLength) > 0) {
+
+				currentLevel = (int)current.key.GetCount();
+
+				//if its in the right quad of its parent
+				if (current.key.GetHeirarchyBit(currentLevel - 2)) {
+					QuadKey rightKey = current.key.GetLevelPositionRange(currentLevel - 2);
+					rightKey.RightBranch();
+
+					//now need to know if its top or bottom quad
+
+					if (current.key.GetHeirarchyBit(currentLevel)) {
+						rightKey.RightBranch();
+
+					}
+					else {
+						rightKey.LeftBranch();
+					}
+
+					//need to add it to the neighbors
+					AddNeighborKey(index, rightKey);
+
+				}
+				else //not inside the same quad :( more CPU time required
+				{
+
+					//need to search for the first quad that is to the left of this quad then
+
+					//recursively go through each parent
+					//until it finds a parent that contains the quad to the left of the one that contains
+					//the child quad
+					//then after switching the topmost bit, flip other bits to get its mirror location,
+					//until at the lowest level
+
+					QuadKey parent = current.key.GetParentKey();
+
+					while (!parent.GetHeirarchyBit((int)parent.GetCount() - 2)) {
+						//while its still on the right side
+						parent = parent.GetParentKey();
+
+					}
+
+
+					//parent key on the right side has been found :)
+					//now flip each of the left bits to be right bits, but leave top/bottom bits alone
+
+
+					Quad rightQuad = new Quad();
+					QuadKey rightKey = parent;
+					rightKey.RightBranch();
+					if (current.key.GetHeirarchyBit((int)rightKey.GetCount())) {
+
+						rightKey.RightBranch();
+
+					}
+					else {
+						rightKey.LeftBranch();
+
+					}
+
+					while (quads.TryGetValue(rightKey, out rightQuad) && rightKey.GetCount() < current.key.GetCount()) {
+
+						if (!rightQuad.key.IsDivided)
+							break;
+
+						rightKey.LeftBranch();
+
+						if (current.key.GetHeirarchyBit((int)rightKey.GetCount())) {
+
+							rightKey.RightBranch();
+
+						}
+						else {
+							rightKey.LeftBranch();
+
+						}
+
+						//this only works up until the same level, if the other quad is divided more
+						//then we need to check all the children on the same border
+
+
+					}
+
+					//now check if there are any other children
+					if (rightQuad.key.IsDivided) {
+
+						//there are other children, so check the top and bottom children on the right side
+						CheckRightTopAndBottomChildren(index, rightKey);
+
+						//also might possibly need to check if the quads past these should be included
+						//most likely not though since they'll probably be too far to care about
+
+					}
+					else {
+						//now should have the mirrored version of the key and quad :)
+						//just need to add it to this object's list of neighbors
+						AddNeighborKey(index, rightKey);
+					}
+
+
+
+
+
+				}
 
 
 			}
 
-            //if over the bottom side
-            if ((positions[index].y - 5) - (current.position.y - current.halfLength) < 0)
-            {
+			//if over the bottom side
+			if ((positions[index].y - viewRange) - (current.position.y - current.halfLength) < 0) {
+
+				currentLevel = (int)current.key.GetCount();
+
+				//if its in the right quad of its parent
+				if (current.key.GetHeirarchyBit(currentLevel - 2)) {
+					QuadKey bottomKey = current.key.GetLevelPositionRange(currentLevel - 2);
 
 
-            }
+					if (current.key.GetHeirarchyBit(currentLevel)) {
+						bottomKey.RightBranch();
 
-            //if over the top side
-            if ((positions[index].y + 5) - (current.position.y + current.halfLength) < 0)
-            {
-
-
-            }
-
+					}
+					else {
+						bottomKey.LeftBranch();
+					}
 
 
-        }
+					bottomKey.RightBranch();
+
+					//now need to know if its top or bottom quad
+
+					AddNeighborKey(index, bottomKey);
+
+
+				}
+				else //not inside the same quad :( more CPU time required
+				{
+
+					//need to search for the first quad that is to the left of this quad then
+
+					//recursively go through each parent
+					//until it finds a parent that contains the quad to the left of the one that contains
+					//the child quad
+					//then after switching the topmost bit, flip other bits to get its mirror location,
+					//until at the lowest level
+
+					QuadKey parent = current.key.GetParentKey();
+
+					while (!parent.GetHeirarchyBit((int)parent.GetCount() - 2)) {
+						//while its still on the right side
+						parent = parent.GetParentKey();
+
+					}
+
+
+					//parent key on the right side has been found :)
+					//now flip each of the left bits to be right bits, but leave top/bottom bits alone
+
+
+					Quad bottomQuad = new Quad();
+					QuadKey bottomKey = parent;
+
+					if (current.key.GetHeirarchyBit((int)bottomKey.GetCount())) {
+
+						bottomKey.RightBranch();
+
+					}
+					else {
+						bottomKey.LeftBranch();
+
+					}
+
+
+					bottomKey.LeftBranch();
+
+					while (quads.TryGetValue(bottomKey, out bottomQuad) && bottomKey.GetCount() < current.key.GetCount()) {
+
+						if (!bottomQuad.key.IsDivided)
+							break;
+
+						if (current.key.GetHeirarchyBit((int)bottomKey.GetCount())) {
+
+							bottomKey.RightBranch();
+
+						}
+						else {
+							bottomKey.LeftBranch();
+
+						}
+
+
+						bottomKey.LeftBranch();
+
+
+
+						//this only works up until the same level, if the other quad is divided more
+						//then we need to check all the children on the same border
+
+
+					}
+
+					//now check if there are any other children
+					if (bottomQuad.key.IsDivided) {
+
+						//there are other children, so check the top and bottom children on the right side
+						CheckRightTopAndBottomChildren(index, bottomKey);
+
+						//also might possibly need to check if the quads past these should be included
+						//most likely not though since they'll probably be too far to care about
+
+					}
+					else {
+						//now should have the mirrored version of the key and quad :)
+						//just need to add it to this object's list of neighbors
+						AddNeighborKey(index, bottomKey);
+					}
+
+
+
+
+
+				}
+
+
+
+
+			}
+
+			//if over the top side
+			if ((positions[index].y + 5) - (current.position.y + current.halfLength) < 0) {
+
+
+			}
+
+
+		}
 
 
         public void CheckRightTopAndBottomChildren(int index, QuadKey parent)
@@ -592,10 +802,9 @@ namespace ShepProject {
 
 				if(positions[index].x - (topQuad.position.x + topQuad.halfLength) < 0)
 				{
-                    //within range of this quad
-                    objectNeighbors[(index * maxNeighborQuads) + neighborCounts[index]] = topKey;
-                    neighborCounts[index]++;
-                }
+					//within range of this quad
+					AddNeighborKey(index, topKey);
+				}
 
                 //otherwise not in range so no need to add it to list
 
@@ -620,16 +829,22 @@ namespace ShepProject {
 
 				if (positions[index].x - (bottomQuad.position.x + bottomQuad.halfLength) < 0)
 				{
-                    objectNeighbors[(index * maxNeighborQuads) + neighborCounts[index]] = bottomKey;
-                    neighborCounts[index]++;
+					AddNeighborKey(index, bottomKey);
 
-                }
+				}
 
                 //otherwise not in range so no need to add it to list
 
             }
         }
 
+
+		public void AddNeighborKey(int index, QuadKey key) {
+
+			objectNeighbors[(index * maxNeighborQuads) + neighborCounts[index]] = key;
+			neighborCounts[index]++;
+
+		}
 
 
     }

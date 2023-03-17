@@ -25,7 +25,7 @@ namespace ShepProject {
 		public TransformAccessArray TransformAccess => transformAccess;
 
 
-		public NativeHashMap<QuadKey, Quad> quads;
+		public NativeParallelHashMap<QuadKey, Quad> quads;
 		public NativeArray<Quad> quadsList;
 
 
@@ -75,7 +75,7 @@ namespace ShepProject {
 			quadsList = new NativeArray<Quad>(positionCount, Allocator.Persistent);
 			XQuads = new NativeArray<Quad>(positionCount, Allocator.Persistent);
 			ZQuads = new NativeArray<Quad>(positionCount, Allocator.Persistent);
-			quads = new NativeHashMap<QuadKey, Quad>((int)((float)positionCount / bucketSize) * 4, Allocator.Persistent);
+			quads = new NativeParallelHashMap<QuadKey, Quad>((int)((float)positionCount / bucketSize) * 4, Allocator.Persistent);
 			
 			sorted = new NativeArray<bool>(1, Allocator.Persistent);
 
