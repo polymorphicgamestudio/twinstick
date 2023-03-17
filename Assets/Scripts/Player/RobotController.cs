@@ -1,4 +1,5 @@
 using ShepProject;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -26,7 +27,9 @@ public class RobotController : MonoBehaviour {
 	Vector3 joystickDir;
 	Vector3 mouseDir;
 
-
+	[SerializeField] bool BuildMode = false;
+	[SerializeField] Transform hologram;
+	Vector3 forwardTilePos;
 
 
 
@@ -56,6 +59,7 @@ public class RobotController : MonoBehaviour {
 			//if running changes set joystickDir to velocity;
 			joystickDir = player.velocity;
 		}
+		SetForwardTilePos();
 	}
 
 	// By Putting our animation code in LateUpdate, we allow other systems to update the environment first 
@@ -71,11 +75,38 @@ public class RobotController : MonoBehaviour {
 		root.position = centerOfBalance + Vector3.up * (yOffset + breathDisplace);
 
 		player.rotation = Quaternion.RotateTowards(player.rotation, lookDirection, 180f * Time.deltaTime);
-		head.rotation = Quaternion.Slerp(head.rotation, lookDirection, 5f * Time.deltaTime);
+
+		if (BuildMode) {
+			Vector3 forwardDir = lookDirection * Vector3.forward;
+			Vector3 inFrontOfRobot = root.position + forwardDir * 4f;
+			forwardTilePos = VectorToNearestTilePos(inFrontOfRobot);
+			//Vector3 vectorToSnappePos = Vector3.ProjectOnPlane(forwardTilePos - head.position,Vector3.up);
+			//Quaternion snappedLookDir = Quaternion.LookRotation(vectorToSnappePos, Vector3.up);
+			//head.rotation = Quaternion.Slerp(head.rotation, snappedLookDir, 10f * Time.deltaTime);
+			Vector3 vectorToHologramPos = Vector3.ProjectOnPlane(hologram.position - root.position,Vector3.up);
+			head.rotation = Quaternion.LookRotation(vectorToHologramPos, Vector3.up);
+		}
+		else
+			head.rotation = Quaternion.Slerp(head.rotation, lookDirection, 5f * Time.deltaTime);
 	}
 
 
-
+	void SetForwardTilePos() {
+		if (BuildMode) {
+			Vector3 inFrontOfRobotHead = head.position + head.forward * 4f;
+			hologram.position = Vector3.Lerp(hologram.position, forwardTilePos, 20f * Time.deltaTime);
+			//Debug.DrawRay(forwardTilePos, Vector3.up * 5f, Color.yellow);
+		}
+		else {
+			forwardTilePos = Vector3.zero;
+		}
+	}
+	Vector3 VectorToNearestTilePos(Vector3 inputVector) {
+		return new Vector3(SnapNumber(inputVector.x), 0, SnapNumber(inputVector.z));
+	}
+	float SnapNumber(float num) {
+		return Mathf.Round((num + 2) / 4.0f) * 4 - 2;
+	}
 	void SetMousePos() {
 		float distance;
 		Ray ray = Camera.main.ScreenPointToRay(ShepGM.inst.actions.Player.MousePosition.ReadValue<Vector2>());
