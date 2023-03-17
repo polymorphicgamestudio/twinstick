@@ -19,7 +19,6 @@ namespace ShepProject {
         private GameObject burrowPrefab;
         public GameObject sheepPrefab;
 
-        public int sheepCount;
 
         private List<EnemyBurrow> burrows;
 
@@ -35,7 +34,8 @@ namespace ShepProject {
 
         private QuadTree quadTree;
 
-		public int maxEnemies;
+        public int sheepCount;
+        public int maxEnemies;
 		[SerializeField]
         private bool spawningEnemies;
 
@@ -178,7 +178,7 @@ namespace ShepProject {
 
             }
 
-            if (quadTree.positionCount >= 500)
+            //if (quadTree.positionCount >= 500)
                 spawningEnemies = false;
             quadTree.Update();
 

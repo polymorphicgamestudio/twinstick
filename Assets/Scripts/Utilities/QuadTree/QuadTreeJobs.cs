@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
@@ -160,11 +162,14 @@ namespace ShepProject {
 			leftQuad.key = readQuad.key;
 			leftQuad.key.LeftBranch();
 
-			if (leftQuad.BucketSize >= bucketSize)
+			if (leftQuad.BucketSize > bucketSize)
 			{
 				leftQuad.key.SetDivided();
 			}
-
+			else
+			{
+				leftQuad.key.SetDivided(false);
+			}
 
 
             rightQuad.startIndex = endIndex;
@@ -172,11 +177,14 @@ namespace ShepProject {
 			rightQuad.key = readQuad.key;
 			rightQuad.key.RightBranch();
 
-            if (rightQuad.BucketSize >= bucketSize)
-            {
-                rightQuad.key.SetDivided();
+			if (rightQuad.BucketSize > bucketSize)
+			{
+				rightQuad.key.SetDivided();
+			}
+			else
+			{
+				rightQuad.key.SetDivided(false);
             }
-
 
 
             if (zSort)
@@ -369,6 +377,240 @@ namespace ShepProject {
 
 
 	}
+
+
+    public struct NeighborSearchJob : IJobParallelFor
+    {
+
+		public NativeArray<float2> positions;
+        public NativeArray<ushort> objectQuadIDs;
+
+        [NativeDisableContainerSafetyRestriction]
+        public NativeHashMap<QuadKey, Quad> quads;
+
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<Quad> quadsList;
+
+		public NativeArray<byte> neighborCounts;
+		public NativeArray<QuadKey> objectNeighbors;
+		public int maxNeighborQuads;
+
+        public void Execute(int index)
+        {
+
+			//probably need to add the genesArray in here to check whether
+			//the object type is a wall, or is the players to make less work for the CPU
+
+
+			/*
+			 * 
+			 * for each position, check if its within a certain distance of each wall
+			 *		most likely whichever view distance they have it the highest
+			 *		or just pick a somewhat large distance like 10 squared
+			 * 
+			 * then continue in that direction
+			 * 
+			 * 
+			 * 
+			 */
+
+			Quad current = quadsList[objectQuadIDs[index]];
+
+			//if their view is over the left side of the quad
+			if ((positions[index].x - 5) - (current.position.x - current.halfLength) < 0) 
+			{
+
+				//check if this position is in right quad, if so, then just get the left quad through the parent
+
+				int currentLevel = (int)current.key.GetCount();
+
+				//if its in the right quad of its parent
+				if (current.key.GetHeirarchyBit(currentLevel - 2))
+				{
+					QuadKey leftKey = current.key.GetLevelPositionRange(currentLevel - 2);
+					leftKey.LeftBranch();
+
+					//now need to know if its top or bottom quad
+
+					if (current.key.GetHeirarchyBit(currentLevel))
+					{
+						leftKey.RightBranch();
+
+					}
+					else
+					{
+						leftKey.LeftBranch();
+					}
+
+					Quad leftQuad = quads[leftKey];
+
+
+
+
+				}
+                else //not inside the same quad :( more CPU time required
+                {
+
+					//need to search for the first quad that is to the left of this quad then
+
+					//recursively go through each parent
+					//until it finds a parent that contains the quad to the left of the one that contains
+					//the child quad
+					//then after switching the topmost bit, flip other bits to get its mirror location,
+					//until at the lowest level
+
+					QuadKey parent = current.key.GetParentKey();
+
+					while (parent.GetHeirarchyBit((int)parent.GetCount() - 2))
+					{
+						//while its still on the left side
+						parent = parent.GetParentKey();
+
+					}
+
+
+					//parent key on the right side has been found :)
+					//now flip each of the left bits to be right bits, but leave top/bottom bits alone
+
+
+					Quad leftQuad = new Quad();
+					QuadKey leftKey = parent;
+					leftKey.LeftBranch();
+                    if (current.key.GetHeirarchyBit((int)leftKey.GetCount()))
+                    {
+
+                        leftKey.RightBranch();
+
+                    }
+                    else
+                    {
+                        leftKey.LeftBranch();
+
+                    }
+
+                    while (quads.TryGetValue(leftKey, out leftQuad) && leftKey.GetCount() < current.key.GetCount())
+					{
+
+                        if (!leftQuad.key.IsDivided)
+							break;
+
+                        leftKey.RightBranch();
+
+                        if (current.key.GetHeirarchyBit((int)leftKey.GetCount()))
+                        {
+
+                            leftKey.RightBranch();
+
+                        }
+                        else
+                        {
+                            leftKey.LeftBranch();
+
+                        }
+
+						//this only works up until the same level, if the other quad is divided more
+						//then we need to check all the children on the same border
+
+
+                    }
+
+					//now check if there are any other children
+					if (leftQuad.key.IsDivided)
+					{
+
+                        //there are other children, so check the top and bottom children on the right side
+                        CheckRightTopAndBottomChildren(index, leftKey);
+
+						//also might possibly need to check if the quads past these should be included
+						//most likely not though since they'll probably be too far to care about
+
+					}
+					else
+					{
+						//now should have the mirrored version of the key and quad :)
+						//just need to add it to this object's list of neighbors
+						objectNeighbors[(index * maxNeighborQuads) + neighborCounts[index]] = leftKey;
+						neighborCounts[index]++;
+                    }
+
+
+
+                }
+
+
+
+			
+			}
+
+            
+        }
+
+
+		public void CheckRightTopAndBottomChildren(int index, QuadKey parent)
+		{
+			//will need to check each of these keys to see if they're divided as well as 
+			//whether they're close enough to object
+
+            parent.RightBranch();
+
+
+			Quad topQuad = new Quad();
+            QuadKey topKey = parent;
+            topKey.RightBranch();
+
+			quads.TryGetValue(topKey, out topQuad);
+
+			if (topQuad.key.IsDivided)
+			{
+				CheckRightTopAndBottomChildren(index, topKey);
+			}
+			else
+			{
+				//check if object's range is within this quad
+
+				if(positions[index].x - (topQuad.position.x + topQuad.halfLength) < 0)
+				{
+                    //within range of this quad
+                    objectNeighbors[(index * maxNeighborQuads) + neighborCounts[index]] = topKey;
+                    neighborCounts[index]++;
+                }
+
+                //otherwise not in range so no need to add it to list
+
+
+            }
+
+
+            Quad bottomQuad = new Quad();
+            QuadKey bottomKey = parent;
+            bottomKey.LeftBranch();
+
+            quads.TryGetValue(bottomKey, out bottomQuad);
+
+            if (bottomKey.IsDivided)
+			{
+				CheckRightTopAndBottomChildren(index, bottomKey);
+
+			}
+			else
+			{
+				//check if object's range is within this quad
+
+				if (positions[index].x - (bottomQuad.position.x + bottomQuad.halfLength) < 0)
+				{
+                    objectNeighbors[(index * maxNeighborQuads) + neighborCounts[index]] = bottomKey;
+                    neighborCounts[index]++;
+
+                }
+
+                //otherwise not in range so no need to add it to list
+
+            }
+        }
+
+
+
+    }
 
 
 

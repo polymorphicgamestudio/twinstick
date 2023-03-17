@@ -254,7 +254,7 @@ namespace ShepProject {
             return s;// Convert.ToString(GetQuadHeirarchy(), 2);
         }
 
-        public bool GetHeirarchyBit(byte index)
+        public bool GetHeirarchyBit(int index)
         {
             return (key.GetAligned(index, index) > 0);
         }
@@ -325,12 +325,12 @@ namespace ShepProject {
 
 
 
-        public void SetDivided()
+        public void SetDivided(bool value = true)
         {
             //sets it to the left of the last count index
             //due to how bitshifting works
             int count = (int)GetCount();
-            key.Set(23, 23, 1);
+            key.Set(23, 23, (uint)(value? 1 : 0));
 
         }
 
@@ -349,6 +349,14 @@ namespace ShepProject {
         //or also possible to just read range of heirarchy elements,
         //correct lvl count and isDivided bit required
 
+        public QuadKey GetParentKey()
+        {
+            if (GetCount() - 2 == 0)
+                return new QuadKey();
+
+            return GetLevelPositionRange((int)GetCount() - 2);
+
+        }
 
         public QuadKey GetLevelPositionRange(int endLevel)
         {

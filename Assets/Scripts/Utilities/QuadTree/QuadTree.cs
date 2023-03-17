@@ -28,8 +28,14 @@ namespace ShepProject {
 		public NativeHashMap<QuadKey, Quad> quads;
 		public NativeArray<Quad> quadsList;
 
-		public NativeArray<Quad> XQuads;
-		public NativeArray<Quad> ZQuads;
+
+        public int maxNeighborQuads;
+        public NativeArray<byte> neighborCounts;
+        public NativeArray<QuadKey> objectNeighbors;
+
+
+        private NativeArray<Quad> XQuads;
+		private NativeArray<Quad> ZQuads;
 
 		private NativeArray<int> lengths;
 
@@ -60,6 +66,10 @@ namespace ShepProject {
 			transforms = new Transform[positionCount];
 			transformAccess = new TransformAccessArray(positionCount);
 
+
+			maxNeighborQuads = 10;
+			neighborCounts = new NativeArray<byte>(positionCount, Allocator.Persistent);
+			objectNeighbors = new NativeArray<QuadKey>(positionCount * maxNeighborQuads, Allocator.Persistent);
 
 
 			quadsList = new NativeArray<Quad>(positionCount, Allocator.Persistent);
@@ -112,7 +122,14 @@ namespace ShepProject {
 				}
 
 			}
-			while (!sorted[0]) {
+			else
+			{
+				first.key.SetDivided();
+			}
+
+            quads.Add(first.key, first);
+
+            while (!sorted[0]) {
 
 				SortIterationJob sij = new SortIterationJob();
 				sij.objectPositions = positions;
@@ -149,6 +166,18 @@ namespace ShepProject {
 
 
 			}
+
+			NeighborSearchJob nsj = new NeighborSearchJob();
+			nsj.quadsList = quadsList;
+			nsj.quads = quads;
+			nsj.objectQuadIDs = objectQuadIDs;
+			nsj.positions = positions;
+			nsj.neighborCounts = neighborCounts;
+			nsj.objectNeighbors = objectNeighbors;
+			nsj.Run(positionCount);
+			//JobHandle handle = nsj.Schedule(positionCount, SystemInfo.processorCount);
+
+
 
 
 			//draw quads for debugging
@@ -187,12 +216,20 @@ namespace ShepProject {
 
 
 
+			//handle.Complete();
+
 		}
 
 		public void NewFrame() {
 			lengths[1] = 0;
 			sorted[0] = false;
 			quads.Clear();
+
+			for (int i = 0; i < neighborCounts.Length; i++)
+			{
+				neighborCounts[i] = 0;
+
+			}
 
 
 			for (int i = 0; i < XQuads.Length; i++) {
@@ -287,6 +324,13 @@ namespace ShepProject {
 			quadsList.Dispose();
 			transformAccess.Dispose();
 			objectQuadIDs.Dispose();
+			quads.Dispose();
+
+
+			neighborCounts.Dispose();
+			objectNeighbors.Dispose();
+
+
 
 		}
 
