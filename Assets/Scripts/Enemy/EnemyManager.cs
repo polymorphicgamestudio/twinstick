@@ -182,16 +182,6 @@ namespace ShepProject {
                 spawningEnemies = false;
             quadTree.Update();
 
-            /*
-             * - [0] type
-             * - [1] attraction to slimes
-             * - [2] base attaction to towers
-             * - [3 - 8] for each tower multiplier
-             * 
-             * 
-             * 
-             */
-
             if (quadTree.positionCount <= 0)
                 return;
 
@@ -208,16 +198,7 @@ namespace ShepProject {
             AIMovementJob moveJob = new AIMovementJob();
             moveJob.positions = quadTree.positions.Slice(0, quadTree.positionCount + 1);
             moveJob.buckets = quadTree.quadsList.Slice(0, quadTree.QuadsListLength);
-
-            //if (switchedHeadings) {
-				//moveJob.headings = newHeadings;
-				//moveJob.newHeadings = headings;
-			//}
-            //else {
-				moveJob.headings = headings;
-				//moveJob.newHeadings = newHeadings;
-			//}
-
+			moveJob.headings = headings;
             moveJob.objectIDs = quadTree.objectIDs;
             moveJob.objectQuadIDs = quadTree.objectQuadIDs;
             moveJob.genes = genes;
@@ -231,15 +212,7 @@ namespace ShepProject {
 
             WriteTransformsJob wtj = new WriteTransformsJob();
             wtj.positions = quadTree.positions;
-
-			//if (switchedHeadings) {
-				wtj.rotation = headings;
-			//}
-			//else {
-				//wtj.rotation = newHeadings;
-			//}
-
-			//switchedHeadings = !switchedHeadings;
+			wtj.rotation = headings;
 			wtj.Schedule(quadTree.TransformAccess);
 
             Profiler.BeginSample("Writing Velocities");
