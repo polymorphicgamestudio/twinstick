@@ -178,7 +178,7 @@ namespace ShepProject {
 
             }
 
-            if (quadTree.positionCount >= 1000)
+            if (quadTree.positionCount >= 500)
                 spawningEnemies = false;
             quadTree.Update();
 

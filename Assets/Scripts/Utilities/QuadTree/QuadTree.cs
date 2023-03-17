@@ -24,6 +24,8 @@ namespace ShepProject {
 		private TransformAccessArray transformAccess;
 		public TransformAccessArray TransformAccess => transformAccess;
 
+
+		public NativeHashMap<QuadKey, Quad> quads;
 		public NativeArray<Quad> quadsList;
 
 		public NativeArray<Quad> XQuads;
@@ -58,9 +60,13 @@ namespace ShepProject {
 			transforms = new Transform[positionCount];
 			transformAccess = new TransformAccessArray(positionCount);
 
+
+
 			quadsList = new NativeArray<Quad>(positionCount, Allocator.Persistent);
 			XQuads = new NativeArray<Quad>(positionCount, Allocator.Persistent);
 			ZQuads = new NativeArray<Quad>(positionCount, Allocator.Persistent);
+			quads = new NativeHashMap<QuadKey, Quad>((int)((float)positionCount / bucketSize) * 4, Allocator.Persistent);
+			
 			sorted = new NativeArray<bool>(1, Allocator.Persistent);
 
 			lengths = new NativeArray<int>(2, Allocator.Persistent);
@@ -115,6 +121,7 @@ namespace ShepProject {
 				sij.writeTo = ZQuads;
 				sij.bucketSize = bucketSize;
 				sij.zSort = false;
+				sij.quads = quads;
 				sij.Schedule(xQuadsLength, SystemInfo.processorCount).Complete();
 
 				sij = new SortIterationJob();
@@ -124,6 +131,7 @@ namespace ShepProject {
 				sij.writeTo = XQuads;
 				sij.bucketSize = bucketSize;
 				sij.zSort = true;
+				sij.quads = quads;
 				sij.Schedule(xQuadsLength * 2, SystemInfo.processorCount).Complete();
 
 
@@ -142,11 +150,49 @@ namespace ShepProject {
 
 			}
 
+
+			//draw quads for debugging
+			//issue with unity's code getting quads over certain amount, starts at about 150-160
+			//might be from using 2021 instead of a newer version of unity, not sure
+			NativeArray<Quad> q = quads.GetValueArray(Allocator.Temp);
+			for (int i = 0; i < q.Length; i++)
+			{
+
+				float3 pos = new float3(q[i].position.x, 1, q[i].position.y);
+				float3 half = new float3(q[i].halfLength, 0, q[i].halfLength);
+				float hl = q[i].halfLength;
+
+                //top left to top right
+                Debug.DrawLine(pos + new float3(-hl, 0, hl), pos + half);
+
+				//top right to bottom right
+				Debug.DrawLine(pos + half, pos + new float3(hl, 0, -hl));
+
+				half.z *= -1;
+
+                //bottom right to bottom left
+                Debug.DrawLine(pos + half, pos + new float3(-hl, 0, -hl));
+
+
+				half.x *= -1;
+				//bottom left to top left
+
+				Debug.DrawLine(pos + half, pos + new float3(-hl, 0, hl));
+
+
+
+            }
+
+			q.Dispose();
+
+
+
 		}
 
 		public void NewFrame() {
 			lengths[1] = 0;
 			sorted[0] = false;
+			quads.Clear();
 
 
 			for (int i = 0; i < XQuads.Length; i++) {

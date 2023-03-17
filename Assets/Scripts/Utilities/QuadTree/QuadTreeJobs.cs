@@ -16,9 +16,9 @@ namespace ShepProject {
 		public NativeArray<ushort> objectIDs;
 		[NativeDisableContainerSafetyRestriction]
 		public NativeArray<float2> objectPositions;
-		//public NativeArray<bool> isSorted;
-
-		//public NativeHashMap<int, Quad> quads;
+        //public NativeArray<bool> isSorted;
+        [NativeDisableContainerSafetyRestriction]
+        public NativeHashMap<QuadKey, Quad> quads;
 
 		//this is the list to process
 		[NativeDisableContainerSafetyRestriction]
@@ -154,11 +154,30 @@ namespace ShepProject {
             }
 
 
+
             leftQuad.startIndex = readQuad.startIndex;
             leftQuad.endIndex = startIndex;
+			leftQuad.key = readQuad.key;
+			leftQuad.key.LeftBranch();
+
+			if (leftQuad.BucketSize >= bucketSize)
+			{
+				leftQuad.key.SetDivided();
+			}
+
+
 
             rightQuad.startIndex = endIndex;
             rightQuad.endIndex = readQuad.endIndex;
+			rightQuad.key = readQuad.key;
+			rightQuad.key.RightBranch();
+
+            if (rightQuad.BucketSize >= bucketSize)
+            {
+                rightQuad.key.SetDivided();
+            }
+
+
 
             if (zSort)
             {
@@ -170,6 +189,8 @@ namespace ShepProject {
                 rightQuad.halfLength = readQuad.halfLength / 2f;
 
 
+                quads.Add(leftQuad.key, leftQuad);
+                quads.Add(rightQuad.key, rightQuad);
             }
 
             else
@@ -180,6 +201,7 @@ namespace ShepProject {
                 leftQuad.halfLength = readQuad.halfLength;
                 rightQuad.halfLength = readQuad.halfLength;
             }
+
 
 
 
