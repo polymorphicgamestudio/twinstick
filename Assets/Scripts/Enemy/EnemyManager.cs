@@ -48,7 +48,15 @@ namespace ShepProject {
         public bool SpawningEnemies => spawningEnemies;
 
 
-		private void Awake() {
+
+
+        private void OnGUI()
+        {
+            quadTree.OnGUI();
+        }
+
+
+        private void Awake() {
 
 
 			genes = new GenesArray(maxEnemies * ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
@@ -87,7 +95,11 @@ namespace ShepProject {
 			//generate a wall surrounding the area
 			Inst.GeneratePlayableAreaWall();
 
-			AddBurrow();
+
+            #region Spawn Burrows
+
+
+            AddBurrow();
             AddBurrow();
             AddBurrow();
             AddBurrow();
@@ -142,10 +154,12 @@ namespace ShepProject {
 			AddBurrow();
 			AddBurrow();
 
+            #endregion
 
-		}
+        }
 
-		void Update() 
+
+        void Update() 
         {
             /*
              * each frame, spawn any new required enemies
@@ -205,11 +219,15 @@ namespace ShepProject {
 			moveJob.headings = headings;
             moveJob.objectIDs = quadTree.objectIDs;
             moveJob.objectQuadIDs = quadTree.objectQuadIDs;
+            moveJob.quads = quadTree.quads;
             moveJob.genes = genes;
             moveJob.targetIDs = targetIDs;
             moveJob.deltaTime = Time.deltaTime;
-            //moveJob.Run(quadTree.positionCount + 1);
-            moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
+            moveJob.neighborCounts = quadTree.neighborCounts;
+            moveJob.objectNeighbors = quadTree.objectNeighbors;
+            moveJob.maxNeighborCount = quadTree.maxNeighborQuads;
+            moveJob.Run(quadTree.positionCount + 1);
+            //moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
 
             //after movement, write the information back to the transforms

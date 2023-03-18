@@ -52,10 +52,59 @@ namespace ShepProject {
 				endIndex = -1;
 
 
+                //leftQuad.key = readQuad.key;
+                //leftQuad.key.LeftBranch();
+                //leftQuad.key.SetDivided(false);
+                
+
+                //rightQuad.key = readQuad.key;
+                //rightQuad.key.RightBranch();
+                //rightQuad.key.SetDivided(false);
+                
+
+
+                //if (zSort)
+                //{
+
+                //    leftQuad.position = new float2(readQuad.position.x, (readQuad.position.y) - (readQuad.halfLength / 2f));
+                //    rightQuad.position = new float2(readQuad.position.x, (readQuad.position.y) + (readQuad.halfLength / 2f));
+
+                //    leftQuad.halfLength = readQuad.halfLength / 2f;
+                //    rightQuad.halfLength = readQuad.halfLength / 2f;
+
+
+                //    quads.Add(leftQuad.key, leftQuad);
+                //    quads.Add(rightQuad.key, rightQuad);
+                //}
+
+                //else
+                //{
+                //    leftQuad.position = new float2((readQuad.position.x) - (readQuad.halfLength / 2f), readQuad.position.y);
+                //    rightQuad.position = new float2((readQuad.position.x) + (readQuad.halfLength / 2f), readQuad.position.y);
+
+                //    leftQuad.halfLength = readQuad.halfLength;
+                //    rightQuad.halfLength = readQuad.halfLength;
+                //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 writeTo[index * 2] = leftQuad;
                 writeTo[index * 2 + 1] = rightQuad;
 
-				return;
+
+                return;
 
             }
 
@@ -417,13 +466,18 @@ namespace ShepProject {
 			 * 
 			 */
 
+            if (index == 1)
+            {
+                int tes = 0;
+            }
+
 			int currentLevel = 0;
 			int viewRange = 5;
 			Quad current = quadsList[objectQuadIDs[index]];
 
-			//if their view is over the left side of the quad
-			if ((positions[index].x - viewRange) - (current.position.x - current.halfLength) < 0) 
-			{
+            //if their view is over the left side of the quad
+            if ((positions[index].x - viewRange) - (current.position.x - current.halfLength) < 0)
+            {
 
                 //check if this position is in right quad, if so, then just get the left quad through the parent
 
@@ -437,62 +491,67 @@ namespace ShepProject {
                 currentLevel = (int)current.key.GetCount();
                 QuadKey parent = current.key;
 
-				while (!parent.GetHeirarchyBit((int)parent.GetCount() - 2))
-				{
-					//while its still on the left side
-					parent = parent.GetParentKey();
-				}
+                while (!parent.GetHeirarchyBit((int)parent.GetCount() - 2))
+                {
+                    //while its still on the left side
+                    parent = parent.GetParentKey();
+                }
 
 
-				//this quad is now at the same level as the quad we want to get
-				parent = parent.GetParentKey();
+                //this quad is now at the same level as the quad we want to get
+                parent = parent.GetParentKey();
 
-				//now it's the parent of the quad we want to get, which means that we can now go down to the level
+                //now it's the parent of the quad we want to get, which means that we can now go down to the level
 
-				Quad leftQuad = new Quad();
-				QuadKey leftKey = parent;
-				leftKey.LeftBranch();
+                Quad leftQuad = new Quad();
+                QuadKey leftKey = parent;
+                leftKey.LeftBranch();
 
-				CopyBit(current.key, ref leftKey);
+                CopyBit(current.key, ref leftKey);
 
                 while (quads.TryGetValue(leftKey, out leftQuad) && leftKey.GetCount() < current.key.GetCount())
-				{
+                {
 
                     if (!leftQuad.key.IsDivided)
-						break;
+                        break;
 
                     leftKey.RightBranch();
 
-					CopyBit(current.key, ref leftKey);
+                    CopyBit(current.key, ref leftKey);
 
-					//this only works up until the same level, if the other quad is divided more
-					//then we need to check all the children on the same border
+                    //this only works up until the same level, if the other quad is divided more
+                    //then we need to check all the children on the same border
 
                 }
 
-				//now check if there are any other children
-				if (leftQuad.key.IsDivided)
-				{
-                    //there are other children, so check the top and bottom children on the right side
-                    CheckOverLeftTopAndBottomChildren(index, leftKey);
+                //now check if there are any other children
+                //if (leftQuad.key.IsDivided)
+                //{
+                //    //there are other children, so check the top and bottom children on the right side
+                //    CheckOverLeftTopAndBottomChildren(index, leftKey);
 
-					//also might possibly need to check if the quads past these should be included
-					//most likely not though since they'll probably be too far to care about
-				}
-				else
-				{
-					//now should have the mirrored version of the key and quad :)
-					//just need to add it to this object's list of neighbors
-					AddNeighborKey(index, leftKey);
-				}
+                //    //also might possibly need to check if the quads past these should be included
+                //    //most likely not though since they'll probably be too far to care about
+                //}
+                //else
+                //{
+                //    //now should have the mirrored version of the key and quad :)
+                //    //just need to add it to this object's list of neighbors
+                //    AddNeighborKey(index, leftKey);
+                //}
+
+                AddNeighborKey(index, leftQuad.key);
 
 
+            }
 
-			
-			}
 
-			//if over the right side
-			if ((positions[index].x + viewRange) - (current.position.x + current.halfLength) > 0) {
+            #region Other Sides
+
+
+            //if over the right side
+            if ((positions[index].x + viewRange) - (current.position.x + current.halfLength) > 0)
+            {
 
 
                 //need to search for the first quad that is to the left of this quad then
@@ -539,26 +598,40 @@ namespace ShepProject {
 
                 }
 
-                //now check if there are any other children
-                if (rightQuad.key.IsDivided)
-                {
-                    //there are other children, so check the top and bottom children on the right side
-                    CheckOverRightTopAndBottomChildren(index, rightKey);
 
-                    //also might possibly need to check if the quads past these should be included
-                    //most likely not though since they'll probably be too far to care about
-                }
-                else
-                {
-                    //now should have the mirrored version of the key and quad :)
-                    //just need to add it to this object's list of neighbors
-                    AddNeighborKey(index, rightKey);
-                }
+
+                ////now check if there are any other children
+                //if (rightQuad.key.IsDivided)
+                //{
+                //    //there are other children, so check the top and bottom children on the right side
+                //    CheckOverRightTopAndBottomChildren(index, rightKey);
+
+                //    //also might possibly need to check if the quads past these should be included
+                //    //most likely not though since they'll probably be too far to care about
+                //}
+                //else
+                //{
+                //    //now should have the mirrored version of the key and quad :)
+                //    //just need to add it to this object's list of neighbors
+                //    AddNeighborKey(index, rightKey);
+                //}
+
+                AddNeighborKey(index, rightKey);
+
 
             }
 
-			//if over the bottom side
-			if ((positions[index].y - viewRange) - (current.position.y - current.halfLength) < 0) {
+
+
+
+
+
+
+
+
+            //if over the bottom side
+            if ((positions[index].y - viewRange) - (current.position.y - current.halfLength) < 0)
+            {
 
                 currentLevel = (int)current.key.GetCount();
                 QuadKey parent = current.key;
@@ -580,7 +653,7 @@ namespace ShepProject {
                 CopyBit(current.key, ref bottomKey);
                 bottomKey.LeftBranch();
 
-				//now at the bottom portion of the key, where the other one is at the top
+                //now at the bottom portion of the key, where the other one is at the top
 
                 while (quads.TryGetValue(bottomKey, out bottomQuad) && bottomKey.GetCount() < current.key.GetCount())
                 {
@@ -596,28 +669,29 @@ namespace ShepProject {
 
                 }
 
-                //now check if there are any other children
-                if (bottomQuad.key.IsDivided)
-                {
-                    //there are other children, so check the top and bottom children on the right side
-                    CheckOverBottomLeftAndRightChildren(index, bottomKey);
+                ////now check if there are any other children
+                //if (bottomQuad.key.IsDivided)
+                //{
+                //    //there are other children, so check the top and bottom children on the right side
+                //    CheckOverBottomLeftAndRightChildren(index, bottomKey);
 
-                    //also might possibly need to check if the quads past these should be included
-                    //most likely not though since they'll probably be too far to care about
-                }
-                else
-                {
-                    //now should have the mirrored version of the key and quad :)
-                    //just need to add it to this object's list of neighbors
-                    AddNeighborKey(index, bottomKey);
-                }
+                //    //also might possibly need to check if the quads past these should be included
+                //    //most likely not though since they'll probably be too far to care about
+                //}
+                //else
+                //{
+                //    //now should have the mirrored version of the key and quad :)
+                //    //just need to add it to this object's list of neighbors
+                //    AddNeighborKey(index, bottomKey);
+                //}
 
-
+                AddNeighborKey(index, bottomKey);
 
             }
 
-			//if over the top side
-			if ((positions[index].y + viewRange) - (current.position.y + current.halfLength) > 0) {
+            //if over the top side
+            if ((positions[index].y + viewRange) - (current.position.y + current.halfLength) > 0)
+            {
 
                 currentLevel = (int)current.key.GetCount();
                 QuadKey parent = current.key;
@@ -656,26 +730,35 @@ namespace ShepProject {
                 }
 
                 //now check if there are any other children
-                if (topQuad.key.IsDivided)
-                {
-                    //there are other children, so check the top and bottom children on the right side
-                    CheckOverTopLeftAndRightChildren(index, topKey);
+                //if (topQuad.key.IsDivided)
+                //{
+                //    //there are other children, so check the top and bottom children on the right side
+                //    CheckOverTopLeftAndRightChildren(index, topKey);
 
-                    //also might possibly need to check if the quads past these should be included
-                    //most likely not though since they'll probably be too far to care about
-                }
-                else
-                {
-                    //now should have the mirrored version of the key and quad :)
-                    //just need to add it to this object's list of neighbors
-                    AddNeighborKey(index, topKey);
-                }
+                //    //also might possibly need to check if the quads past these should be included
+                //    //most likely not though since they'll probably be too far to care about
+                //}
+                //else
+                //{
+                //    //now should have the mirrored version of the key and quad :)
+                //    //just need to add it to this object's list of neighbors
+                //    AddNeighborKey(index, topKey);
+                //}
 
 
-
+                AddNeighborKey(index, topKey);
 
 
             }
+
+            #endregion
+
+
+
+
+
+
+
 
 
         }
@@ -688,56 +771,59 @@ namespace ShepProject {
 
             parent.RightBranch();
 
-
-			Quad topQuad = new Quad();
             QuadKey topKey = parent;
             topKey.RightBranch();
 
-			quads.TryGetValue(topKey, out topQuad);
+            Quad topQuad = new Quad();
+            topQuad = quads[topKey];
 
-			if (topQuad.key.IsDivided)
-			{
-				CheckOverLeftTopAndBottomChildren(index, topQuad.key);
-			}
-			else
-			{
-				//check if object's range is within this quad
+           
 
-				if(positions[index].x - (topQuad.position.x + topQuad.halfLength) < 0)
-				{
-					//within range of this quad
-					AddNeighborKey(index, topKey);
-				}
+            if (topQuad.key.IsDivided)
+            {
+                CheckOverLeftTopAndBottomChildren(index, topQuad.key);
+            }
+            else
+            {
+                //check if object's range is within this quad
+
+                if (positions[index].x - (topQuad.position.x + topQuad.halfLength) < 0)
+                {
+                    //within range of this quad
+                    AddNeighborKey(index, topQuad.key);
+                }
 
                 //otherwise not in range so no need to add it to list
 
 
             }
-
-            Quad bottomQuad = new Quad();
+            
             QuadKey bottomKey = parent;
             bottomKey.LeftBranch();
 
-            quads.TryGetValue(bottomKey, out bottomQuad);
+            Quad bottomQuad = quads[bottomKey]; //.TryGetValue(bottomKey, out bottomQuad)
+            
 
-            if (bottomQuad.key.IsDivided)
-			{
-				CheckOverLeftTopAndBottomChildren(index, bottomQuad.key);
 
-			}
-			else
-			{
-				//check if object's range is within this quad
+                if (bottomQuad.key.IsDivided)
+                {
+                    CheckOverLeftTopAndBottomChildren(index, bottomQuad.key);
 
-				if (positions[index].x - (bottomQuad.position.x + bottomQuad.halfLength) < 0)
-				{
-					AddNeighborKey(index, bottomKey);
+                }
+                else
+                {
+                    //check if object's range is within this quad
 
-				}
+                    if (positions[index].x - (bottomQuad.position.x + bottomQuad.halfLength) < 0)
+                    {
+                        AddNeighborKey(index, bottomQuad.key);
 
-                //otherwise not in range so no need to add it to list
+                    }
 
-            }
+                    //otherwise not in range so no need to add it to list
+
+                }
+
         }
 
 
@@ -753,51 +839,58 @@ namespace ShepProject {
             QuadKey topKey = parent;
             topKey.RightBranch();
 
-            quads.TryGetValue(topKey, out topQuad);
-
-            if (topQuad.key.IsDivided)
+            if (quads.TryGetValue(topKey, out topQuad))
             {
-                CheckOverRightTopAndBottomChildren(index, topQuad.key);
-            }
-            else
-            {
-                //check if object's range is within this quad
 
-                if (positions[index].x - (topQuad.position.x + topQuad.halfLength) < 0)
+                if (topQuad.key.IsDivided)
                 {
-                    //within range of this quad
-                    AddNeighborKey(index, topKey);
+                    CheckOverRightTopAndBottomChildren(index, topQuad.key);
                 }
+                else
+                {
+                    //check if object's range is within this quad
 
-                //otherwise not in range so no need to add it to list
+                    if (positions[index].x - (topQuad.position.x + topQuad.halfLength) < 0)
+                    {
+                        //within range of this quad
+                        AddNeighborKey(index, topQuad.key);
+                    }
+
+                    //otherwise not in range so no need to add it to list
 
 
+                }
             }
+
 
             Quad bottomQuad = new Quad();
             QuadKey bottomKey = parent;
             bottomKey.LeftBranch();
 
-            quads.TryGetValue(bottomKey, out bottomQuad);
-
-            if (bottomQuad.key.IsDivided)
+            if (quads.TryGetValue(bottomKey, out bottomQuad))
             {
-                CheckOverRightTopAndBottomChildren(index, bottomQuad.key);
 
-            }
-            else
-            {
-                //check if object's range is within this quad
-
-                if (positions[index].x - (bottomQuad.position.x + bottomQuad.halfLength) < 0)
+                if (bottomQuad.key.IsDivided)
                 {
-                    AddNeighborKey(index, bottomKey);
+                    CheckOverRightTopAndBottomChildren(index, bottomQuad.key);
 
                 }
+                else
+                {
+                    //check if object's range is within this quad
 
-                //otherwise not in range so no need to add it to list
+                    if (positions[index].x - (bottomQuad.position.x + bottomQuad.halfLength) < 0)
+                    {
+                        AddNeighborKey(index, bottomQuad.key);
 
+                    }
+
+                    //otherwise not in range so no need to add it to list
+
+                }
             }
+
+
         }
 
 
@@ -811,28 +904,29 @@ namespace ShepProject {
             leftKey.LeftBranch();
             leftKey.RightBranch();
 
-            quads.TryGetValue(leftKey, out topLeft);
-
-            if (topLeft.key.IsDivided)
+            if (quads.TryGetValue(leftKey, out topLeft))
             {
-                CheckOverBottomLeftAndRightChildren(index, topLeft.key);
-            }
-            else
-            {
-                //check if object's range is within this quad
 
-                if (positions[index].x - (topLeft.position.x + topLeft.halfLength) < 0)
+                if (topLeft.key.IsDivided)
                 {
-                    //within range of this quad
-                    AddNeighborKey(index, leftKey);
+                    CheckOverBottomLeftAndRightChildren(index, topLeft.key);
+                }
+                else
+                {
+                    //check if object's range is within this quad
+
+                    if (positions[index].x - (topLeft.position.x + topLeft.halfLength) < 0)
+                    {
+                        //within range of this quad
+                        AddNeighborKey(index, topLeft.key);
+                    }
+
+                    //otherwise not in range so no need to add it to list
+
+
                 }
 
-                //otherwise not in range so no need to add it to list
-
-
             }
-
-
 
 
 
@@ -841,28 +935,31 @@ namespace ShepProject {
             rightKey.RightBranch();
             rightKey.RightBranch();
 
-            quads.TryGetValue(rightKey, out topRight);
-
-			if (topRight.key.IsDivided)
-			{
-                CheckOverBottomLeftAndRightChildren(index, topRight.key);
-
-			}
-			else
-			{
-				//check if object's range is within this quad
-
-				if (positions[index].x - (topRight.position.x + topRight.halfLength) < 0)
-				{
-					AddNeighborKey(index, rightKey);
-
-				}
-
-				//otherwise not in range so no need to add it to list
-
-			}
+            if (quads.TryGetValue(rightKey, out topRight))
+            {
 
 
+
+                if (topRight.key.IsDivided)
+                {
+                    CheckOverBottomLeftAndRightChildren(index, topRight.key);
+
+                }
+                else
+                {
+                    //check if object's range is within this quad
+
+                    if (positions[index].x - (topRight.position.x + topRight.halfLength) < 0)
+                    {
+                        AddNeighborKey(index, topRight.key);
+
+                    }
+
+                    //otherwise not in range so no need to add it to list
+
+                }
+
+            }
 
 
 		}
@@ -878,25 +975,27 @@ namespace ShepProject {
             leftKey.LeftBranch();
             leftKey.RightBranch();
 
-            quads.TryGetValue(leftKey, out bottomLeft);
-
-            if (bottomLeft.key.IsDivided)
+            if (quads.TryGetValue(leftKey, out bottomLeft))
             {
-                CheckOverTopLeftAndRightChildren(index, bottomLeft.key);
-            }
-            else
-            {
-                //check if object's range is within this quad
 
-                if (positions[index].x - (bottomLeft.position.x + bottomLeft.halfLength) < 0)
+                if (bottomLeft.key.IsDivided)
                 {
-                    //within range of this quad
-                    AddNeighborKey(index, leftKey);
+                    CheckOverTopLeftAndRightChildren(index, bottomLeft.key);
                 }
+                else
+                {
+                    //check if object's range is within this quad
 
-                //otherwise not in range so no need to add it to list
+                    if (positions[index].x - (bottomLeft.position.x + bottomLeft.halfLength) < 0)
+                    {
+                        //within range of this quad
+                        AddNeighborKey(index, bottomLeft.key);
+                    }
+
+                    //otherwise not in range so no need to add it to list
 
 
+                }
             }
 
             Quad topRight = new Quad();
@@ -904,28 +1003,29 @@ namespace ShepProject {
             rightKey.RightBranch();
             rightKey.RightBranch();
 
-            quads.TryGetValue(rightKey, out topRight);
-
-            if (topRight.key.IsDivided)
+            if (quads.TryGetValue(rightKey, out topRight))
             {
-                CheckOverTopLeftAndRightChildren(index, topRight.key);
 
-            }
-            else
-            {
-                //check if object's range is within this quad
-
-                if (positions[index].x - (topRight.position.x + topRight.halfLength) < 0)
+                if (topRight.key.IsDivided)
                 {
-                    AddNeighborKey(index, rightKey);
+                    CheckOverTopLeftAndRightChildren(index, topRight.key);
+
+                }
+                else
+                {
+                    //check if object's range is within this quad
+
+                    if (positions[index].x - (topRight.position.x + topRight.halfLength) < 0)
+                    {
+                        AddNeighborKey(index, topRight.key);
+
+                    }
+
+                    //otherwise not in range so no need to add it to list
 
                 }
 
-                //otherwise not in range so no need to add it to list
-
             }
-
-
 
 
         }
