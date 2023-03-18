@@ -391,8 +391,11 @@ namespace ShepProject {
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<Quad> quadsList;
 
-		public NativeArray<byte> neighborCounts;
-		public NativeArray<QuadKey> objectNeighbors;
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<byte> neighborCounts;
+
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<QuadKey> objectNeighbors;
 		public int maxNeighborQuads;
 
         public void Execute(int index)
@@ -422,117 +425,66 @@ namespace ShepProject {
 			if ((positions[index].x - viewRange) - (current.position.x - current.halfLength) < 0) 
 			{
 
-				//check if this position is in right quad, if so, then just get the left quad through the parent
+                //check if this position is in right quad, if so, then just get the left quad through the parent
 
-				currentLevel = (int)current.key.GetCount();
+                //recursively go through each parent
+                //until it finds a parent that contains the quad to the left of the one that contains
+                //the child quad
+                //then after switching the topmost bit, flip other bits to get its mirror location,
+                //until at the lowest level
 
-				//if its in the right quad of its parent
-				if (current.key.GetHeirarchyBit(currentLevel - 2))
+                //check for the first level where its the right quad
+                currentLevel = (int)current.key.GetCount();
+                QuadKey parent = current.key;
+
+				while (!parent.GetHeirarchyBit((int)parent.GetCount() - 2))
 				{
-					QuadKey leftKey = current.key.GetLevelPositionRange(currentLevel - 2);
-					leftKey.LeftBranch();
-
-					//now need to know if its top or bottom quad
-
-					if (current.key.GetHeirarchyBit(currentLevel))
-					{
-						leftKey.RightBranch();
-
-					}
-					else
-					{
-						leftKey.LeftBranch();
-					}
-
-
+					//while its still on the left side
+					parent = parent.GetParentKey();
 				}
-                else //not inside the same quad :( more CPU time required
-                {
-
-					//need to search for the first quad that is to the left of this quad then
-
-					//recursively go through each parent
-					//until it finds a parent that contains the quad to the left of the one that contains
-					//the child quad
-					//then after switching the topmost bit, flip other bits to get its mirror location,
-					//until at the lowest level
-
-					QuadKey parent = current.key.GetParentKey();
-
-					while (parent.GetHeirarchyBit((int)parent.GetCount() - 2))
-					{
-						//while its still on the right side
-						parent = parent.GetParentKey();
-
-					}
 
 
-					//parent key on the right side has been found :)
-					//now flip each of the left bits to be right bits, but leave top/bottom bits alone
+				//this quad is now at the same level as the quad we want to get
+				parent = parent.GetParentKey();
 
+				//now it's the parent of the quad we want to get, which means that we can now go down to the level
 
-					Quad leftQuad = new Quad();
-					QuadKey leftKey = parent;
-					leftKey.LeftBranch();
-                    if (current.key.GetHeirarchyBit((int)leftKey.GetCount()))
-                    {
+				Quad leftQuad = new Quad();
+				QuadKey leftKey = parent;
+				leftKey.LeftBranch();
 
-                        leftKey.RightBranch();
+				CopyBit(current.key, ref leftKey);
 
-                    }
-                    else
-                    {
-                        leftKey.LeftBranch();
+                while (quads.TryGetValue(leftKey, out leftQuad) && leftKey.GetCount() < current.key.GetCount())
+				{
 
-                    }
+                    if (!leftQuad.key.IsDivided)
+						break;
 
-                    while (quads.TryGetValue(leftKey, out leftQuad) && leftKey.GetCount() < current.key.GetCount())
-					{
+                    leftKey.RightBranch();
 
-                        if (!leftQuad.key.IsDivided)
-							break;
+					CopyBit(current.key, ref leftKey);
 
-                        leftKey.RightBranch();
-
-                        if (current.key.GetHeirarchyBit((int)leftKey.GetCount()))
-                        {
-
-                            leftKey.RightBranch();
-
-                        }
-                        else
-                        {
-                            leftKey.LeftBranch();
-
-                        }
-
-						//this only works up until the same level, if the other quad is divided more
-						//then we need to check all the children on the same border
-
-
-                    }
-
-					//now check if there are any other children
-					if (leftQuad.key.IsDivided)
-					{
-
-                        //there are other children, so check the top and bottom children on the right side
-                        CheckRightTopAndBottomChildren(index, leftKey);
-
-						//also might possibly need to check if the quads past these should be included
-						//most likely not though since they'll probably be too far to care about
-
-					}
-					else
-					{
-						//now should have the mirrored version of the key and quad :)
-						//just need to add it to this object's list of neighbors
-						AddNeighborKey(index, leftKey);
-					}
-
-
+					//this only works up until the same level, if the other quad is divided more
+					//then we need to check all the children on the same border
 
                 }
+
+				//now check if there are any other children
+				if (leftQuad.key.IsDivided)
+				{
+                    //there are other children, so check the top and bottom children on the right side
+                    CheckOverLeftTopAndBottomChildren(index, leftKey);
+
+					//also might possibly need to check if the quads past these should be included
+					//most likely not though since they'll probably be too far to care about
+				}
+				else
+				{
+					//now should have the mirrored version of the key and quad :)
+					//just need to add it to this object's list of neighbors
+					AddNeighborKey(index, leftKey);
+				}
 
 
 
@@ -542,243 +494,194 @@ namespace ShepProject {
 			//if over the right side
 			if ((positions[index].x + viewRange) - (current.position.x + current.halfLength) > 0) {
 
-				currentLevel = (int)current.key.GetCount();
 
-				//if its in the right quad of its parent
-				if (current.key.GetHeirarchyBit(currentLevel - 2)) {
-					QuadKey rightKey = current.key.GetLevelPositionRange(currentLevel - 2);
-					rightKey.RightBranch();
+                //need to search for the first quad that is to the left of this quad then
 
-					//now need to know if its top or bottom quad
+                //recursively go through each parent
+                //until it finds a parent that contains the quad to the left of the one that contains
+                //the child quad
+                //then after switching the topmost bit, flip other bits to get its mirror location,
+                //until at the lowest level
 
-					if (current.key.GetHeirarchyBit(currentLevel)) {
-						rightKey.RightBranch();
+                currentLevel = (int)current.key.GetCount();
+                QuadKey parent = current.key;
 
-					}
-					else {
-						rightKey.LeftBranch();
-					}
-
-					//need to add it to the neighbors
-					AddNeighborKey(index, rightKey);
-
-				}
-				else //not inside the same quad :( more CPU time required
-				{
-
-					//need to search for the first quad that is to the left of this quad then
-
-					//recursively go through each parent
-					//until it finds a parent that contains the quad to the left of the one that contains
-					//the child quad
-					//then after switching the topmost bit, flip other bits to get its mirror location,
-					//until at the lowest level
-
-					QuadKey parent = current.key.GetParentKey();
-
-					while (!parent.GetHeirarchyBit((int)parent.GetCount() - 2)) {
-						//while its still on the right side
-						parent = parent.GetParentKey();
-
-					}
+                while (parent.GetHeirarchyBit((int)parent.GetCount() - 2))
+                {
+                    //while its still on the right side
+                    parent = parent.GetParentKey();
+                }
 
 
-					//parent key on the right side has been found :)
-					//now flip each of the left bits to be right bits, but leave top/bottom bits alone
+                //this quad is now at the same level as the quad we want to get
+                parent = parent.GetParentKey();
 
+                //now it's the parent of the quad we want to get, which means that we can now go down to the level
 
-					Quad rightQuad = new Quad();
-					QuadKey rightKey = parent;
-					rightKey.RightBranch();
-					if (current.key.GetHeirarchyBit((int)rightKey.GetCount())) {
+                Quad rightQuad = new Quad();
+                QuadKey rightKey = parent;
+                rightKey.RightBranch();
 
-						rightKey.RightBranch();
+                CopyBit(current.key, ref rightKey);
 
-					}
-					else {
-						rightKey.LeftBranch();
+                while (quads.TryGetValue(rightKey, out rightQuad) && rightKey.GetCount() < current.key.GetCount())
+                {
 
-					}
+                    if (!rightQuad.key.IsDivided)
+                        break;
 
-					while (quads.TryGetValue(rightKey, out rightQuad) && rightKey.GetCount() < current.key.GetCount()) {
+                    rightKey.LeftBranch();
 
-						if (!rightQuad.key.IsDivided)
-							break;
+                    CopyBit(current.key, ref rightKey);
 
-						rightKey.LeftBranch();
+                    //this only works up until the same level, if the other quad is divided more
+                    //then we need to check all the children on the same border
 
-						if (current.key.GetHeirarchyBit((int)rightKey.GetCount())) {
+                }
 
-							rightKey.RightBranch();
+                //now check if there are any other children
+                if (rightQuad.key.IsDivided)
+                {
+                    //there are other children, so check the top and bottom children on the right side
+                    CheckOverRightTopAndBottomChildren(index, rightKey);
 
-						}
-						else {
-							rightKey.LeftBranch();
+                    //also might possibly need to check if the quads past these should be included
+                    //most likely not though since they'll probably be too far to care about
+                }
+                else
+                {
+                    //now should have the mirrored version of the key and quad :)
+                    //just need to add it to this object's list of neighbors
+                    AddNeighborKey(index, rightKey);
+                }
 
-						}
-
-						//this only works up until the same level, if the other quad is divided more
-						//then we need to check all the children on the same border
-
-
-					}
-
-					//now check if there are any other children
-					if (rightQuad.key.IsDivided) {
-
-						//there are other children, so check the top and bottom children on the right side
-						CheckRightTopAndBottomChildren(index, rightKey);
-
-						//also might possibly need to check if the quads past these should be included
-						//most likely not though since they'll probably be too far to care about
-
-					}
-					else {
-						//now should have the mirrored version of the key and quad :)
-						//just need to add it to this object's list of neighbors
-						AddNeighborKey(index, rightKey);
-					}
-
-
-
-
-
-				}
-
-
-			}
+            }
 
 			//if over the bottom side
 			if ((positions[index].y - viewRange) - (current.position.y - current.halfLength) < 0) {
 
-				currentLevel = (int)current.key.GetCount();
+                currentLevel = (int)current.key.GetCount();
+                QuadKey parent = current.key;
 
-				//if its in the right quad of its parent
-				if (current.key.GetHeirarchyBit(currentLevel - 2)) {
-					QuadKey bottomKey = current.key.GetLevelPositionRange(currentLevel - 2);
+                while (!parent.GetHeirarchyBit((int)parent.GetCount() - 1))
+                {
+                    //while its still on the right side
+                    parent = parent.GetParentKey();
+                }
 
+                //this quad is now at the same level as the quad we want to get
+                parent = parent.GetParentKey();
 
-					if (current.key.GetHeirarchyBit(currentLevel)) {
-						bottomKey.RightBranch();
+                //now it's the parent of the quad we want to get, which means that we can now go down to the level
 
-					}
-					else {
-						bottomKey.LeftBranch();
-					}
+                Quad bottomQuad = new Quad();
+                QuadKey bottomKey = parent;
 
+                CopyBit(current.key, ref bottomKey);
+                bottomKey.LeftBranch();
 
-					bottomKey.RightBranch();
+				//now at the bottom portion of the key, where the other one is at the top
 
-					//now need to know if its top or bottom quad
+                while (quads.TryGetValue(bottomKey, out bottomQuad) && bottomKey.GetCount() < current.key.GetCount())
+                {
 
-					AddNeighborKey(index, bottomKey);
+                    if (!bottomQuad.key.IsDivided)
+                        break;
 
+                    CopyBit(current.key, ref bottomKey);
 
-				}
-				else //not inside the same quad :( more CPU time required
-				{
+                    bottomKey.RightBranch();
+                    //this only works up until the same level, if the other quad is divided more
+                    //then we need to check all the children on the same border
 
-					//need to search for the first quad that is to the left of this quad then
+                }
 
-					//recursively go through each parent
-					//until it finds a parent that contains the quad to the left of the one that contains
-					//the child quad
-					//then after switching the topmost bit, flip other bits to get its mirror location,
-					//until at the lowest level
+                //now check if there are any other children
+                if (bottomQuad.key.IsDivided)
+                {
+                    //there are other children, so check the top and bottom children on the right side
+                    CheckOverBottomLeftAndRightChildren(index, bottomKey);
 
-					QuadKey parent = current.key.GetParentKey();
-
-					while (!parent.GetHeirarchyBit((int)parent.GetCount() - 2)) {
-						//while its still on the right side
-						parent = parent.GetParentKey();
-
-					}
-
-
-					//parent key on the right side has been found :)
-					//now flip each of the left bits to be right bits, but leave top/bottom bits alone
-
-
-					Quad bottomQuad = new Quad();
-					QuadKey bottomKey = parent;
-
-					if (current.key.GetHeirarchyBit((int)bottomKey.GetCount())) {
-
-						bottomKey.RightBranch();
-
-					}
-					else {
-						bottomKey.LeftBranch();
-
-					}
-
-
-					bottomKey.LeftBranch();
-
-					while (quads.TryGetValue(bottomKey, out bottomQuad) && bottomKey.GetCount() < current.key.GetCount()) {
-
-						if (!bottomQuad.key.IsDivided)
-							break;
-
-						if (current.key.GetHeirarchyBit((int)bottomKey.GetCount())) {
-
-							bottomKey.RightBranch();
-
-						}
-						else {
-							bottomKey.LeftBranch();
-
-						}
-
-
-						bottomKey.LeftBranch();
+                    //also might possibly need to check if the quads past these should be included
+                    //most likely not though since they'll probably be too far to care about
+                }
+                else
+                {
+                    //now should have the mirrored version of the key and quad :)
+                    //just need to add it to this object's list of neighbors
+                    AddNeighborKey(index, bottomKey);
+                }
 
 
 
-						//this only works up until the same level, if the other quad is divided more
-						//then we need to check all the children on the same border
-
-
-					}
-
-					//now check if there are any other children
-					if (bottomQuad.key.IsDivided) {
-
-						//there are other children, so check the top and bottom children on the right side
-						CheckRightTopAndBottomChildren(index, bottomKey);
-
-						//also might possibly need to check if the quads past these should be included
-						//most likely not though since they'll probably be too far to care about
-
-					}
-					else {
-						//now should have the mirrored version of the key and quad :)
-						//just need to add it to this object's list of neighbors
-						AddNeighborKey(index, bottomKey);
-					}
-
-
-
-
-
-				}
-
-
-
-
-			}
+            }
 
 			//if over the top side
-			if ((positions[index].y + 5) - (current.position.y + current.halfLength) < 0) {
+			if ((positions[index].y + viewRange) - (current.position.y + current.halfLength) > 0) {
+
+                currentLevel = (int)current.key.GetCount();
+                QuadKey parent = current.key;
+
+                while (parent.GetHeirarchyBit((int)parent.GetCount() - 1))
+                {
+                    //while its still on the right side
+                    parent = parent.GetParentKey();
+                }
+
+                //this quad is now at the same level as the quad we want to get
+                parent = parent.GetParentKey();
+
+                //now it's the parent of the quad we want to get, which means that we can now go down to the level
+
+                Quad topQuad = new Quad();
+                QuadKey topKey = parent;
+
+                CopyBit(current.key, ref topKey);
+                topKey.RightBranch();
+
+                //now at the bottom portion of the key, where the other one is at the top
+
+                while (quads.TryGetValue(topKey, out topQuad) && topKey.GetCount() < current.key.GetCount())
+                {
+
+                    if (!topQuad.key.IsDivided)
+                        break;
+
+                    CopyBit(current.key, ref topKey);
+
+                    topKey.LeftBranch();
+                    //this only works up until the same level, if the other quad is divided more
+                    //then we need to check all the children on the same border
+
+                }
+
+                //now check if there are any other children
+                if (topQuad.key.IsDivided)
+                {
+                    //there are other children, so check the top and bottom children on the right side
+                    CheckOverTopLeftAndRightChildren(index, topKey);
+
+                    //also might possibly need to check if the quads past these should be included
+                    //most likely not though since they'll probably be too far to care about
+                }
+                else
+                {
+                    //now should have the mirrored version of the key and quad :)
+                    //just need to add it to this object's list of neighbors
+                    AddNeighborKey(index, topKey);
+                }
 
 
-			}
 
 
-		}
+
+            }
 
 
-        public void CheckRightTopAndBottomChildren(int index, QuadKey parent)
+        }
+
+
+        public void CheckOverLeftTopAndBottomChildren(int index, QuadKey parent)
 		{
 			//will need to check each of these keys to see if they're divided as well as 
 			//whether they're close enough to object
@@ -794,7 +697,7 @@ namespace ShepProject {
 
 			if (topQuad.key.IsDivided)
 			{
-				CheckRightTopAndBottomChildren(index, topKey);
+				CheckOverLeftTopAndBottomChildren(index, topQuad.key);
 			}
 			else
 			{
@@ -811,16 +714,15 @@ namespace ShepProject {
 
             }
 
-
             Quad bottomQuad = new Quad();
             QuadKey bottomKey = parent;
             bottomKey.LeftBranch();
 
             quads.TryGetValue(bottomKey, out bottomQuad);
 
-            if (bottomKey.IsDivided)
+            if (bottomQuad.key.IsDivided)
 			{
-				CheckRightTopAndBottomChildren(index, bottomKey);
+				CheckOverLeftTopAndBottomChildren(index, bottomQuad.key);
 
 			}
 			else
@@ -839,13 +741,223 @@ namespace ShepProject {
         }
 
 
-		public void AddNeighborKey(int index, QuadKey key) {
+        public void CheckOverRightTopAndBottomChildren(int index, QuadKey parent)
+        {
+            //will need to check each of these keys to see if they're divided as well as 
+            //whether they're close enough to object
+
+            parent.LeftBranch();
+
+
+            Quad topQuad = new Quad();
+            QuadKey topKey = parent;
+            topKey.RightBranch();
+
+            quads.TryGetValue(topKey, out topQuad);
+
+            if (topQuad.key.IsDivided)
+            {
+                CheckOverRightTopAndBottomChildren(index, topQuad.key);
+            }
+            else
+            {
+                //check if object's range is within this quad
+
+                if (positions[index].x - (topQuad.position.x + topQuad.halfLength) < 0)
+                {
+                    //within range of this quad
+                    AddNeighborKey(index, topKey);
+                }
+
+                //otherwise not in range so no need to add it to list
+
+
+            }
+
+            Quad bottomQuad = new Quad();
+            QuadKey bottomKey = parent;
+            bottomKey.LeftBranch();
+
+            quads.TryGetValue(bottomKey, out bottomQuad);
+
+            if (bottomQuad.key.IsDivided)
+            {
+                CheckOverRightTopAndBottomChildren(index, bottomQuad.key);
+
+            }
+            else
+            {
+                //check if object's range is within this quad
+
+                if (positions[index].x - (bottomQuad.position.x + bottomQuad.halfLength) < 0)
+                {
+                    AddNeighborKey(index, bottomKey);
+
+                }
+
+                //otherwise not in range so no need to add it to list
+
+            }
+        }
+
+
+        public void CheckOverBottomLeftAndRightChildren(int index, QuadKey parent)
+        {
+            //will need to check each of these keys to see if they're divided as well as 
+            //whether they're close enough to object
+
+            Quad topLeft = new Quad();
+            QuadKey leftKey = parent;
+            leftKey.LeftBranch();
+            leftKey.RightBranch();
+
+            quads.TryGetValue(leftKey, out topLeft);
+
+            if (topLeft.key.IsDivided)
+            {
+                CheckOverBottomLeftAndRightChildren(index, topLeft.key);
+            }
+            else
+            {
+                //check if object's range is within this quad
+
+                if (positions[index].x - (topLeft.position.x + topLeft.halfLength) < 0)
+                {
+                    //within range of this quad
+                    AddNeighborKey(index, leftKey);
+                }
+
+                //otherwise not in range so no need to add it to list
+
+
+            }
+
+
+
+
+
+			Quad topRight = new Quad();
+			QuadKey rightKey = parent;
+            rightKey.RightBranch();
+            rightKey.RightBranch();
+
+            quads.TryGetValue(rightKey, out topRight);
+
+			if (topRight.key.IsDivided)
+			{
+                CheckOverBottomLeftAndRightChildren(index, topRight.key);
+
+			}
+			else
+			{
+				//check if object's range is within this quad
+
+				if (positions[index].x - (topRight.position.x + topRight.halfLength) < 0)
+				{
+					AddNeighborKey(index, rightKey);
+
+				}
+
+				//otherwise not in range so no need to add it to list
+
+			}
+
+
+
+
+		}
+
+
+        public void CheckOverTopLeftAndRightChildren(int index, QuadKey parent)
+        {
+            //will need to check each of these keys to see if they're divided as well as 
+            //whether they're close enough to object
+
+            Quad bottomLeft = new Quad();
+            QuadKey leftKey = parent;
+            leftKey.LeftBranch();
+            leftKey.RightBranch();
+
+            quads.TryGetValue(leftKey, out bottomLeft);
+
+            if (bottomLeft.key.IsDivided)
+            {
+                CheckOverTopLeftAndRightChildren(index, bottomLeft.key);
+            }
+            else
+            {
+                //check if object's range is within this quad
+
+                if (positions[index].x - (bottomLeft.position.x + bottomLeft.halfLength) < 0)
+                {
+                    //within range of this quad
+                    AddNeighborKey(index, leftKey);
+                }
+
+                //otherwise not in range so no need to add it to list
+
+
+            }
+
+            Quad topRight = new Quad();
+            QuadKey rightKey = parent;
+            rightKey.RightBranch();
+            rightKey.RightBranch();
+
+            quads.TryGetValue(rightKey, out topRight);
+
+            if (topRight.key.IsDivided)
+            {
+                CheckOverTopLeftAndRightChildren(index, topRight.key);
+
+            }
+            else
+            {
+                //check if object's range is within this quad
+
+                if (positions[index].x - (topRight.position.x + topRight.halfLength) < 0)
+                {
+                    AddNeighborKey(index, rightKey);
+
+                }
+
+                //otherwise not in range so no need to add it to list
+
+            }
+
+
+
+
+        }
+
+
+
+
+
+        public void AddNeighborKey(int index, QuadKey key) {
 
 			objectNeighbors[(index * maxNeighborQuads) + neighborCounts[index]] = key;
 			neighborCounts[index]++;
 
 		}
 
+
+		private void CopyBit(QuadKey reader, ref QuadKey key)
+		{
+
+            if (reader.GetHeirarchyBit((int)key.GetCount()))
+            {
+
+                key.RightBranch();
+
+            }
+            else
+            {
+                key.LeftBranch();
+
+            }
+
+        }
 
     }
 

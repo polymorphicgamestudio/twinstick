@@ -5,7 +5,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Jobs;
-
+using UnityEngine.Profiling;
 
 namespace ShepProject {
 
@@ -174,49 +174,52 @@ namespace ShepProject {
 			nsj.positions = positions;
 			nsj.neighborCounts = neighborCounts;
 			nsj.objectNeighbors = objectNeighbors;
-			nsj.Run(positionCount);
-			//JobHandle handle = nsj.Schedule(positionCount, SystemInfo.processorCount);
+			//nsj.Run(positionCount);
+			JobHandle handle = nsj.Schedule(positionCount, SystemInfo.processorCount);
 
 
 
 
-			//draw quads for debugging
-			//issue with unity's code getting quads over certain amount, starts at about 150-160
-			//might be from using 2021 instead of a newer version of unity, not sure
-			NativeArray<Quad> q = quads.GetValueArray(Allocator.Temp);
-			for (int i = 0; i < q.Length; i++)
-			{
+			////draw quads for debugging
+			////issue with unity's code getting quads over certain amount, starts at about 150-160
+			////might be from using 2021 instead of a newer version of unity, not sure
+			//NativeArray<Quad> q = quads.GetValueArray(Allocator.Temp);
+			//for (int i = 0; i < q.Length; i++)
+			//{
 
-				float3 pos = new float3(q[i].position.x, 1, q[i].position.y);
-				float3 half = new float3(q[i].halfLength, 0, q[i].halfLength);
-				float hl = q[i].halfLength;
+			//	float3 pos = new float3(q[i].position.x, 1, q[i].position.y);
+			//	float3 half = new float3(q[i].halfLength, 0, q[i].halfLength);
+			//	float hl = q[i].halfLength;
 
-                //top left to top right
-                Debug.DrawLine(pos + new float3(-hl, 0, hl), pos + half);
+			//	//top left to top right
+			//	Debug.DrawLine(pos + new float3(-hl, 0, hl), pos + half);
 
-				//top right to bottom right
-				Debug.DrawLine(pos + half, pos + new float3(hl, 0, -hl));
+			//	//top right to bottom right
+			//	Debug.DrawLine(pos + half, pos + new float3(hl, 0, -hl));
 
-				half.z *= -1;
+			//	half.z *= -1;
 
-                //bottom right to bottom left
-                Debug.DrawLine(pos + half, pos + new float3(-hl, 0, -hl));
-
-
-				half.x *= -1;
-				//bottom left to top left
-
-				Debug.DrawLine(pos + half, pos + new float3(-hl, 0, hl));
+			//	//bottom right to bottom left
+			//	Debug.DrawLine(pos + half, pos + new float3(-hl, 0, -hl));
 
 
+			//	half.x *= -1;
+			//	//bottom left to top left
 
-            }
-
-			q.Dispose();
+			//	Debug.DrawLine(pos + half, pos + new float3(-hl, 0, hl));
 
 
 
-			//handle.Complete();
+			//}
+
+			//q.Dispose();
+
+
+			Profiler.BeginSample("Neighbor Search Job");
+
+			handle.Complete();
+
+			Profiler.EndSample();
 
 		}
 
