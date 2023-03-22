@@ -228,8 +228,8 @@ namespace ShepProject {
 				sij.bucketSize = bucketSize;
 				sij.zSort = false;
 				sij.quads = quads;
-				sij.Run(xQuadsLength);
-				//sij.Schedule(xQuadsLength, SystemInfo.processorCount).Complete();
+				//sij.Run(xQuadsLength);
+				sij.Schedule(xQuadsLength, SystemInfo.processorCount).Complete();
 
 				sij = new SortIterationJob();
 				sij.objectPositions = positions;
@@ -239,8 +239,8 @@ namespace ShepProject {
 				sij.bucketSize = bucketSize;
 				sij.zSort = true;
 				sij.quads = quads;
-				sij.Run(xQuadsLength * 2);
-				//sij.Schedule(xQuadsLength * 2, SystemInfo.processorCount).Complete();
+				//sij.Run(xQuadsLength * 2);
+				sij.Schedule(xQuadsLength * 2, SystemInfo.processorCount).Complete();
 
 
 				QuadFilteringJob fj = new QuadFilteringJob();
@@ -266,8 +266,8 @@ namespace ShepProject {
 			nsj.neighborCounts = neighborCounts;
 			nsj.objectNeighbors = objectNeighbors;
 			nsj.maxNeighborQuads = maxNeighborQuads;
-			nsj.Run(positionCount);
-			//JobHandle handle = nsj.Schedule(positionCount, SystemInfo.processorCount);
+			//nsj.Run(positionCount);
+			JobHandle handle = nsj.Schedule(positionCount, SystemInfo.processorCount);
 
 
 
@@ -275,7 +275,7 @@ namespace ShepProject {
 
 			Profiler.BeginSample("Neighbor Search Job");
 
-			//handle.Complete();
+			handle.Complete();
 
 			Profiler.EndSample();
 

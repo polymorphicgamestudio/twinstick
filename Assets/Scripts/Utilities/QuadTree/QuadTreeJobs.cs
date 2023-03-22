@@ -849,7 +849,7 @@ namespace ShepProject {
                     CheckOverRightTopAndBottomChildren(index, bottomQuad.key, viewRange);
 
                 }
-                else if ((positions[index].x + viewRange) > (bottomQuad.position.x + bottomQuad.halfLength))
+                else if ((positions[index].x + viewRange) > (bottomQuad.position.x - bottomQuad.halfLength))
                 {
                     
 
@@ -905,7 +905,7 @@ namespace ShepProject {
                     CheckOverBottomLeftAndRightChildren(index, topRight.key, viewRange);
 
                 }
-                else if (positions[index].y < (topRight.position.y + topRight.halfLength))
+                else if ((positions[index].y - viewRange) < (topRight.position.y + topRight.halfLength))
                 {
                     //check if object's range is within this quad
 

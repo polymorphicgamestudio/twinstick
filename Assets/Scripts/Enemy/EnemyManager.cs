@@ -95,7 +95,7 @@ namespace ShepProject {
 			//uncomment to add player to list of choosableTargets
 			//choosableTargets.Add(0);
 
-			SpawnSheep();
+			AddSheep();
 
 
 
@@ -168,6 +168,23 @@ namespace ShepProject {
 
         void Update() 
         {
+
+
+            NonWaveUpdate();
+
+            DuringWaveUpdate();
+
+		}
+
+
+        private void NonWaveUpdate()
+        {
+
+        }
+        
+
+        private void DuringWaveUpdate()
+        {
             /*
              * each frame, spawn any new required enemies
              * 
@@ -192,13 +209,15 @@ namespace ShepProject {
             //doesn't matter if bullets do damage before QT update
             //just need to make sure that they all happen before or after
 
+            //need a during wave update and a non-wave update
 
 
             quadTree.NewFrame();
 
             //spawn enemies
 
-            for (int i = 0; i < burrows.Count; i++) {
+            for (int i = 0; i < burrows.Count; i++)
+            {
                 burrows[i].ManualUpdate();
 
             }
@@ -225,7 +244,7 @@ namespace ShepProject {
             AIMovementJob moveJob = new AIMovementJob();
             moveJob.positions = quadTree.positions.Slice(0, quadTree.positionCount + 1);
             moveJob.buckets = quadTree.quadsList.Slice(0, quadTree.QuadsListLength);
-			moveJob.headings = headings;
+            moveJob.headings = headings;
             moveJob.objectIDs = quadTree.objectIDs;
             moveJob.objectQuadIDs = quadTree.objectQuadIDs;
             moveJob.quads = quadTree.quads;
@@ -235,40 +254,46 @@ namespace ShepProject {
             moveJob.neighborCounts = quadTree.neighborCounts;
             moveJob.objectNeighbors = quadTree.objectNeighbors;
             moveJob.maxNeighborCount = quadTree.maxNeighborQuads;
-            moveJob.Run(quadTree.positionCount + 1);
-            //moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
+            //moveJob.Run(quadTree.positionCount + 1);
+            moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
 
             //after movement, write the information back to the transforms
 
             WriteTransformsJob wtj = new WriteTransformsJob();
             wtj.positions = quadTree.positions;
-			wtj.rotation = headings;
-			wtj.Schedule(quadTree.TransformAccess);
+            wtj.rotation = headings;
+            wtj.Schedule(quadTree.TransformAccess);
 
             Profiler.BeginSample("Writing Velocities");
 
-            for (int i = 0; i <= quadTree.positionCount; i++) {
+            for (int i = 0; i <= quadTree.positionCount; i++)
+            {
 
-                if (genes.GetObjectType(i) == ObjectType.Sheep) {
+                if (genes.GetObjectType(i) == ObjectType.Sheep)
+                {
 
                     //if being chased, set velocity, otherwise don't
                     //if (headings[i] != newHeadings[i])
-					quadTree.Transforms[i].gameObject.GetComponent<Rigidbody>().velocity = (quadTree.Transforms[i].forward * 3);
+                    quadTree.Transforms[i].gameObject.GetComponent<Rigidbody>().velocity = (quadTree.Transforms[i].forward * 3);
 
-					continue;
+                    continue;
 
                 }
                 else if (genes.GetObjectType(i) == ObjectType.Slime)
-				    quadTree.Transforms[i].gameObject.GetComponent<Rigidbody>().velocity = (quadTree.Transforms[i].forward * 3.25f);
+                    quadTree.Transforms[i].gameObject.GetComponent<Rigidbody>().velocity = (quadTree.Transforms[i].forward * 3.25f);
 
 
 
-			}
+            }
 
-			Profiler.EndSample();
+            Profiler.EndSample();
 
-		}
+
+
+
+        }
+
 
 
         public void AddEnemyToList(Transform enemy) {
@@ -315,9 +340,7 @@ namespace ShepProject {
             burrow.gameObject.SetActive(true);
 		}
 
-
-
-        private void SpawnSheep() {
+        private void AddSheep() {
 
             for (int i = 0; i < sheepCount; i++) {
 
