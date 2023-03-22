@@ -546,7 +546,7 @@ namespace ShepProject {
             }
 
 
-            #region Other Sides
+            #region Right Side
 
 
             //if over the right side
@@ -600,6 +600,7 @@ namespace ShepProject {
 
 
 
+
                 ////now check if there are any other children
                 //if (rightQuad.key.IsDivided)
                 //{
@@ -616,18 +617,14 @@ namespace ShepProject {
                 //    AddNeighborKey(index, rightKey);
                 //}
 
-                AddNeighborKey(index, rightKey);
+                AddNeighborKey(index, rightQuad.key);
 
 
             }
 
+            #endregion
 
-
-
-
-
-
-
+            #region Bottom Side
 
             //if over the bottom side
             if ((positions[index].y - viewRange) - (current.position.y - current.halfLength) < 0)
@@ -685,9 +682,16 @@ namespace ShepProject {
                 //    AddNeighborKey(index, bottomKey);
                 //}
 
-                AddNeighborKey(index, bottomKey);
+                AddNeighborKey(index, bottomQuad.key);
 
             }
+
+
+
+            #endregion
+
+            #region Top Side
+
 
             //if over the top side
             if ((positions[index].y + viewRange) - (current.position.y + current.halfLength) > 0)
@@ -746,13 +750,14 @@ namespace ShepProject {
                 //}
 
 
-                AddNeighborKey(index, topKey);
+                AddNeighborKey(index, topQuad.key);
 
 
             }
 
-            #endregion
 
+
+            #endregion
 
 
 
