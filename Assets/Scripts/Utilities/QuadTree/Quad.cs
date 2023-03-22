@@ -353,14 +353,14 @@ namespace ShepProject {
         {
             if (GetCount() - 2 == 0)
                 return new QuadKey();
-
+			
             return GetLevelPositionRange((int)GetCount() - 2);
 
         }
 
         public QuadKey GetLevelPositionRange(int endLevel)
         {
-            QuadKey k = new QuadKey(key.GetUnaligned(0, (byte)endLevel));
+            QuadKey k = new QuadKey(key.GetUnaligned(0, (byte)endLevel - 1));
             k.IncreaseCount((byte)endLevel);
 
             if (endLevel < GetCount())

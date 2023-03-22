@@ -40,21 +40,28 @@ namespace ShepProject {
 
         public int sheepCount;
         public int maxEnemies;
-		[SerializeField]
+
+        [ReadOnly]
+        public int TreeObjectCount;
+
+        [SerializeField]
         private bool spawningEnemies;
-
-
 
         public bool SpawningEnemies => spawningEnemies;
 
-
-
-
         private void OnGUI()
         {
-            quadTree.OnGUI();
+            if (quadTree != null)
+                quadTree.OnGUI();
         }
 
+        private void OnDrawGizmos()
+        {
+            if (quadTree!= null) 
+                quadTree.OnDrawGizmos();
+
+
+        }
 
         private void Awake() {
 
@@ -196,6 +203,8 @@ namespace ShepProject {
 
             }
 
+            TreeObjectCount = quadTree.positionCount;
+
             if (quadTree.positionCount >= 1000)
                 spawningEnemies = false;
             quadTree.Update();
@@ -314,7 +323,7 @@ namespace ShepProject {
 
                 GameObject sheep = Instantiate(sheepPrefab);
 
-                sheep.transform.position = new Vector3(Random.Range(-4, 4), 0, Random.Range(-4, 4));
+                sheep.transform.position = new Vector3(Random.Range(1, 4), 0, Random.Range(-4,-3));
 
 				ushort id = quadTree.AddTransform(sheep.transform);
 

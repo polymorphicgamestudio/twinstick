@@ -48,48 +48,93 @@ namespace ShepProject {
 		private NativeArray<bool> sorted;
 
 
+		public void OnDrawGizmos()
+		{
+
+
+            //draw quads for debugging
+            //issue with unity's code getting quads over certain amount, starts at about 150-160
+            //might be from using 2021 instead of a newer version of unity, not sure
+            NativeArray<Quad> q = quads.GetValueArray(Allocator.Temp);
+            for (int i = 0; i < q.Length; i++)
+            {
+
+                DrawQuad(q[i], Color.white);
+
+
+
+                //Handles.Label(pos, q[i].key.GetHeirarchyBinaryString());
+
+
+            }
+            q.Dispose();
+
+
+
+
+
+
+
+            Vector3 pos = new Vector3(0, 1, 0);
+            Vector3 scale = new Vector3(.5f, .5f, .5f);
+
+			Quad quad = quadsList[objectQuadIDs[1]];
+            pos.x = quad.position.x;
+            pos.z = quad.position.y;
+            //DrawQuad();
+            Gizmos.DrawCube(pos, scale);
+
+
+            for (int i = maxNeighborQuads; i < maxNeighborQuads + neighborCounts[1]; i++)
+            {
+                quad = quads[objectNeighbors[i]];
+
+                pos.x = quad.position.x;
+				pos.y = 2;
+                pos.z = quad.position.y;
+                //DrawQuad();
+                Gizmos.DrawCube(pos, scale);
+
+            }
+
+
+        }
+
 		public void OnGUI()
 		{
 
-			//draw quads for debugging
-			//issue with unity's code getting quads over certain amount, starts at about 150-160
-			//might be from using 2021 instead of a newer version of unity, not sure
-			NativeArray<Quad> q = quads.GetValueArray(Allocator.Temp);
-			for (int i = 0; i < q.Length; i++)
-			{
-
-				float3 pos = new float3(q[i].position.x, 1, q[i].position.y);
-				float3 half = new float3(q[i].halfLength, 0, q[i].halfLength);
-				float hl = q[i].halfLength;
-
-				//top left to top right
-				Debug.DrawLine(pos + new float3(-hl, 0, hl), pos + half);
-
-				//top right to bottom right
-				Debug.DrawLine(pos + half, pos + new float3(hl, 0, -hl));
-
-				half.z *= -1;
-
-				//bottom right to bottom left
-				Debug.DrawLine(pos + half, pos + new float3(-hl, 0, -hl));
-
-
-				half.x *= -1;
-				//bottom left to top left
-
-				Debug.DrawLine(pos + half, pos + new float3(-hl, 0, hl));
-
-
-				//Handles.Label(pos, q[i].key.GetHeirarchyBinaryString());
-
-
-			}
-
-			q.Dispose();
 
 
 
-		}
+        }
+
+		private void DrawQuad(Quad q, Color c)
+		{
+            float3 pos = new float3(q.position.x, 1, q.position.y);
+            float3 half = new float3(q.halfLength, 0, q.halfLength);
+            float hl = q.halfLength;
+
+            //top left to top right
+            Debug.DrawLine(pos + new float3(-hl, 0, hl), pos + half);
+
+            //top right to bottom right
+            Debug.DrawLine(pos + half, pos + new float3(hl, 0, -hl));
+
+            half.z *= -1;
+
+            //bottom right to bottom left
+            Debug.DrawLine(pos + half, pos + new float3(-hl, 0, -hl));
+
+
+            half.x *= -1;
+            //bottom left to top left
+
+            Debug.DrawLine(pos + half, pos + new float3(-hl, 0, hl));
+        }
+
+
+
+
 
         /// <summary>
         /// Create this with maximum number of positions that will be sorted for better performance.
