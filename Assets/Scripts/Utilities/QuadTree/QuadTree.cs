@@ -14,8 +14,9 @@ namespace ShepProject {
 
 		public Vector3 origin;
 		public float halfLength;
-		public short positionCount;
+		public int positionCount;
 		public NativeArray<ushort> objectIDs;
+		public NativeArray<ushort> sortedObjectIDs;
 		public NativeArray<ushort> objectQuadIDs;
 		public NativeArray<float2> positions;
 
@@ -48,7 +49,10 @@ namespace ShepProject {
 		private NativeArray<bool> sorted;
 
 
-		public void OnDrawGizmos()
+
+        #region Debugging
+
+        public void OnDrawGizmos()
 		{
 
 
@@ -68,11 +72,6 @@ namespace ShepProject {
 
             }
             q.Dispose();
-
-
-
-
-
 
 
             Vector3 pos = new Vector3(0, 1, 0);
@@ -96,14 +95,6 @@ namespace ShepProject {
                 Gizmos.DrawCube(pos, scale);
 
             }
-
-
-        }
-
-		public void OnGUI()
-		{
-
-
 
 
         }
@@ -132,9 +123,7 @@ namespace ShepProject {
             Debug.DrawLine(pos + half, pos + new float3(-hl, 0, hl));
         }
 
-
-
-
+        #endregion
 
         /// <summary>
         /// Create this with maximum number of positions that will be sorted for better performance.
@@ -143,7 +132,8 @@ namespace ShepProject {
         public QuadTree(int positionCount, ushort bucketSize) {
 
 			objectIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
-			objectQuadIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
+			sortedObjectIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
+            objectQuadIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
 
 			for (ushort i = 0; i < positionCount; i++) {
 
@@ -223,6 +213,7 @@ namespace ShepProject {
 				SortIterationJob sij = new SortIterationJob();
 				sij.objectPositions = positions;
 				sij.objectIDs = objectIDs;
+				sij.sortedObjectIDs = sortedObjectIDs;
 				sij.readFrom = XQuads;
 				sij.writeTo = ZQuads;
 				sij.bucketSize = bucketSize;
@@ -234,7 +225,8 @@ namespace ShepProject {
 				sij = new SortIterationJob();
 				sij.objectPositions = positions;
 				sij.objectIDs = objectIDs;
-				sij.readFrom = ZQuads;
+                sij.sortedObjectIDs = sortedObjectIDs;
+                sij.readFrom = ZQuads;
 				sij.writeTo = XQuads;
 				sij.bucketSize = bucketSize;
 				sij.zSort = true;
@@ -261,6 +253,7 @@ namespace ShepProject {
 			NeighborSearchJob nsj = new NeighborSearchJob();
 			nsj.quadsList = quadsList;
 			nsj.quads = quads;
+			nsj.objectIDs = objectIDs;
 			nsj.objectQuadIDs = objectQuadIDs;
 			nsj.positions = positions;
 			nsj.neighborCounts = neighborCounts;
@@ -285,17 +278,6 @@ namespace ShepProject {
 			lengths[1] = 0;
 			sorted[0] = false;
 			quads.Clear();
-
-			//for (int i = 0; i < neighborCounts.Length; i++)
-			//{
-			//	for (int j = 0; j < neighborCounts[i]; j++)
-			//	{
-			//		objectNeighbors[j * maxNeighborQuads] = new QuadKey();
-
-			//	}
-
-
-			//}
 
 			for (int i = 0; i < neighborCounts.Length; i++)
 			{
@@ -335,6 +317,49 @@ namespace ShepProject {
 			return objectIDs[positionCount];
 
 		}
+
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="objectID"></param>
+		/// <param name="replacementOldID"></param>
+		/// <returns></returns>
+		public Transform RemoveTransform(ushort objectID)
+		{
+
+
+			Transform inactive = transforms[objectID];
+			inactive.gameObject.SetActive(false);
+
+			ushort temp = objectIDs[sortedObjectIDs[objectID]];
+			ushort overwrite = objectIDs[positionCount];
+
+            objectIDs[sortedObjectIDs[objectID]] = overwrite;
+			objectIDs[positionCount] = temp;
+
+
+            //transforms[objectID] = transforms[objectIDs[positionCount]];
+            //transforms[objectIDs[positionCount]] = null;
+
+            //update these pieces of data
+            //objectID
+            //quadID
+
+
+
+            //quadID is easy, just get object id
+            //how to do objectID?
+            //get the end objectID (possible for it to be the player ID) then assign that ID to the 
+            //id that's being removed so that array doesn't need to be refreshed
+
+
+
+            positionCount--;
+			return inactive;
+
+		}
+
 
 		//public void AddPosition(Vector3 position) {
 
@@ -388,6 +413,8 @@ namespace ShepProject {
 
 		public void Dispose() {
 			objectIDs.Dispose();
+			sortedObjectIDs.Dispose();
+
 			positions.Dispose();
 			XQuads.Dispose();
 			ZQuads.Dispose();

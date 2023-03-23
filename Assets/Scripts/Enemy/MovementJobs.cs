@@ -68,7 +68,7 @@ namespace ShepProject {
 
 
 		[NativeDisableContainerSafetyRestriction]
-		public NativeSlice<float2> positions;
+		public NativeArray<float2> positions;
 		[NativeDisableContainerSafetyRestriction]
 		public NativeSlice<Quad> buckets;
 
@@ -110,7 +110,6 @@ namespace ShepProject {
 			if (objType != ObjectType.Sheep)
 				moveTowards = (positions[targetIDs[objectIDs[index]]] - positions[objectIDs[index]]) * 10;
 
-			float2 localPosition = new float2();
 			float maxDist = 16;
 
 

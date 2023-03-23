@@ -13,6 +13,8 @@ namespace ShepProject {
         private float spawnTime;
         private float currentSpawnTime;
 
+        private int enemiesToSpawn;
+
         public void Initialize(EnemyManager manager, float spawnTime) {
 
 			this.manager = manager;
@@ -22,7 +24,7 @@ namespace ShepProject {
 
         public void ManualUpdate() {
 
-            if (!manager.SpawningEnemies)
+            if (enemiesToSpawn <= 0)
                 return;
 
             currentSpawnTime -= Time.deltaTime;
@@ -48,6 +50,13 @@ namespace ShepProject {
 			manager.AddEnemyToList(enemy.transform);
 
 
+
+        }
+
+
+        public void AddEnemyCountToSpawn(int count)
+        {
+            enemiesToSpawn += count;
 
         }
 

@@ -16,7 +16,11 @@ namespace ShepProject {
 
 		[NativeDisableContainerSafetyRestriction]
 		public NativeArray<ushort> objectIDs;
-		[NativeDisableContainerSafetyRestriction]
+
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<ushort> sortedObjectIDs;
+
+        [NativeDisableContainerSafetyRestriction]
 		public NativeArray<float2> objectPositions;
         //public NativeArray<bool> isSorted;
         [NativeDisableContainerSafetyRestriction]
@@ -169,8 +173,10 @@ namespace ShepProject {
 			}
 			else
 			{
+
 				leftQuad.key.SetDivided(false);
-			}
+                SetSortedIndices(leftQuad);
+            }
 
 
             rightQuad.startIndex = endIndex;
@@ -185,6 +191,7 @@ namespace ShepProject {
 			else
 			{
 				rightQuad.key.SetDivided(false);
+                SetSortedIndices(rightQuad);
             }
 
 
@@ -237,6 +244,19 @@ namespace ShepProject {
 			}
 			return false;
 		}
+
+        private void SetSortedIndices(Quad quad)
+        {
+            for (short i = quad.startIndex; i <= quad.endIndex; i++)
+            {
+
+                sortedObjectIDs[objectIDs[i]] = (ushort)i;
+
+            }
+
+
+        }
+
 
 	}
 
@@ -382,7 +402,15 @@ namespace ShepProject {
     public struct NeighborSearchJob : IJobParallelFor
     {
 
-		public NativeArray<float2> positions;
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<float2> positions;
+
+
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<ushort> objectIDs;
+
+
+        [NativeDisableContainerSafetyRestriction]
         public NativeArray<ushort> objectQuadIDs;
 
         [NativeDisableContainerSafetyRestriction]
@@ -398,14 +426,14 @@ namespace ShepProject {
         public NativeArray<QuadKey> objectNeighbors;
 		public int maxNeighborQuads;
 
-        public void Execute(int index)
+        public void Execute(int objectIDsIndex)
         {
 
-			//probably need to add the genesArray in here to check whether
-			//the object type is a wall, or is the players to make less work for the CPU
+            //probably need to add the genesArray in here to check whether
+            //the object type is a wall, or is the players to make less work for the CPU
 
 
-			/*
+            /*
 			 * 
 			 * for each position, check if its within a certain distance of each wall
 			 *		most likely whichever view distance they have it the highest
@@ -416,6 +444,8 @@ namespace ShepProject {
 			 * 
 			 * 
 			 */
+
+            int index = objectIDs[objectIDsIndex];
 
 			int currentLevel = 0;
 			int viewRange = 5;
