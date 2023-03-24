@@ -14,6 +14,10 @@ namespace ShepProject {
 		Attractions,
 		ViewRanges,
 		Resistances,
+		StatStartIndex = 1 // object type
+			+ (int)Attraction.Count //for all the possible attractions an object can have
+			+ (int)ViewRange.Count
+			+ (int)DamageType.Count,
 		Speed,
 		TurnRate,
 		Health,
@@ -24,6 +28,7 @@ namespace ShepProject {
 			+ (int)DamageType.Count
 			+ 1 // for the speed
 			+ 1 // for the turn rate
+			+ 1 // for health
 
 	}
 
@@ -144,7 +149,15 @@ namespace ShepProject {
 		}
 
 		public float GetSpeed(int id) {
-			return 0f;
+
+			
+
+			return genes[IDTypeIndex(id) + (int)GeneGroups.Speed];
+		}
+
+		public void SetSpeed(int id, float speed) {
+
+			genes[IDTypeIndex(id) + (int)GeneGroups.Speed] = speed;
 		}
 
 		/// <summary>
@@ -153,31 +166,39 @@ namespace ShepProject {
 		/// <returns></returns>
 		public float GetResistance(int id, DamageType damageType) {
 
-			return 0f;	
+			return genes[IDTypeIndex(id) + (int)damageType]; 
 		}
+
         public void SetResistance(int id, DamageType damageType, float value)
         {
 
+			genes[IDTypeIndex(id) + (int)damageType] = value;
 
-        }
+		}
         /// <summary>
         /// NO-OP
         /// </summary>
         /// <returns></returns>
         public float GetTurnRate(int id) {
 
-			return 0f;
+			return genes[IDTypeIndex(id) + (int)GeneGroups.TurnRate];
+		}
+
+		public void SetTurnRate(int id, float value) {
+
+			genes[IDTypeIndex(id) + (int)GeneGroups.TurnRate] = value;
+
 		}
 
 		public float GetHealth(int id)
 		{
 
-			return 0f;
+			return 0;// genes[IDTypeIndex(id) + (int)GeneGroups.Health];
 		}
 
-		public void SetHealth (int id, float health)
+		public void SetHealth (int id, float value)
 		{
-
+			//genes[IDTypeIndex(id) + (int)GeneGroups.Health] = value;
 
 		}
 

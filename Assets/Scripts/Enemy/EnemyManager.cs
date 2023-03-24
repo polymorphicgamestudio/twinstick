@@ -13,268 +13,256 @@ namespace ShepProject {
 
 
 
-    public class EnemyManager : SystemBase {
+	public class EnemyManager : SystemBase {
 
-        #region Variables
+		#region Variables
 
-        [SerializeField]
-        private GameObject burrowPrefab;
-        public GameObject sheepPrefab;
-        public GameObject endOfWaveCanvasParent;
+		[SerializeField]
+		private GameObject burrowPrefab;
+		public GameObject sheepPrefab;
+		public GameObject endOfWaveCanvasParent;
 
-        public int sheepCount;
-        public int maxEnemies;
+		public int sheepCount;
+		public int maxEnemies;
 
-        [ReadOnly]
-        public int TreeObjectCount;
+		[ReadOnly]
+		public int TreeObjectCount;
 
-        [SerializeField]
-        private int waveNumber;
-        private bool duringWave;
-        private bool updateInitialize;
+		[SerializeField]
+		private int waveNumber;
+		private bool duringWave;
+		private bool updateInitialize;
 
-        [SerializeField]
-        private float countdownToWave;
-        [SerializeField]
-        private float currentCountdownToWave;
+		[SerializeField]
+		private float countdownToWave;
+		[SerializeField]
+		private float currentCountdownToWave;
 
-        [SerializeField]
-        private int enemiesCountToSpawn;
-        private int enemiesLeftToSpawn;
+		[SerializeField]
+		private int enemiesCountToSpawn;
+		private int enemiesLeftToSpawn;
 
-        private int enemiesLeftToKill;
+		private int enemiesLeftToKill;
 
-        [SerializeField]
-        private bool spawningEnemies;
-        
+		[SerializeField]
+		private bool spawningEnemies;
 
-        private Dictionary<int, EnemyPhysicsMethods> enemyPhysicsMethods;
 
+		private Dictionary<int, EnemyPhysicsMethods> enemyPhysicsMethods;
 
 
-        private List<EnemyBurrow> burrows;
 
-        private GenesArray genes;
+		private List<EnemyBurrow> burrows;
 
-        //will contain IDs of sheep and player, and towers won't be targeted
-        private NativeList<ushort> choosableTargets;
+		private GenesArray genes;
 
+		//will contain IDs of sheep and player, and towers won't be targeted
+		private NativeList<ushort> choosableTargets;
 
-        //will store the target id of the slime
-        private NativeArray<ushort> targetIDs;
 
-        private NativeArray<float> headings;
+		//will store the target id of the slime
+		private NativeArray<ushort> targetIDs;
 
-        private QuadTree quadTree;
+		private NativeArray<float> headings;
 
+		private QuadTree quadTree;
 
-        public bool SpawningEnemies => spawningEnemies;
 
-        #endregion
+		public bool SpawningEnemies => spawningEnemies;
 
-        #region Debugging
+		#endregion
 
-        private void OnGUI()
-        {
+		#region Debugging
 
+		private void OnGUI() {
 
-            if (GUI.Button(new Rect(50, 25, 250, 50), "Damage Random Enemies"))
-            {
-                int enemiesToDamage = 5;
 
+			if (GUI.Button(new Rect(50, 25, 250, 50), "Damage Random Enemies")) {
+				int enemiesToDamage = 5;
 
-                for (int i = quadTree.positionCount; i > 0; i--)
-                {
 
-                    if (genes.GetObjectType(i) != ObjectType.Slime)
-                        continue;
+				for (int i = quadTree.positionCount; i > 0; i--) {
 
-                    enemyPhysicsMethods[i].DealDamage(100, DamageType.Blaster);
+					if (genes.GetObjectType(i) != ObjectType.Slime)
+						continue;
 
-                    enemiesToDamage--;
+					enemyPhysicsMethods[i].DealDamage(100, DamageType.Blaster);
 
-                    if (enemiesToDamage == 0)
-                        break;
+					enemiesToDamage--;
 
-                }
+					if (enemiesToDamage == 0)
+						break;
 
+				}
 
-            }
 
+			}
 
-        }
 
-        private void OnDrawGizmos()
-        {
-            if (quadTree != null)
-                quadTree.OnDrawGizmos();
+		}
 
+		private void OnDrawGizmos() {
+			if (quadTree != null)
+				quadTree.OnDrawGizmos();
 
-        }
 
-        #endregion
+		}
 
-        private void Awake() {
+		#endregion
 
+		private void Awake() {
 
-            genes = new GenesArray(maxEnemies * ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
 
-            choosableTargets = new NativeList<ushort>(100, Allocator.Persistent);
-            targetIDs = new NativeArray<ushort>(maxEnemies, Allocator.Persistent);
-            headings = new NativeArray<float>(maxEnemies, Allocator.Persistent);
-            burrows = new List<EnemyBurrow>();
-            quadTree = new QuadTree(maxEnemies, 25);
+			genes = new GenesArray(maxEnemies * ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
 
-            currentCountdownToWave = countdownToWave;
+			choosableTargets = new NativeList<ushort>(100, Allocator.Persistent);
+			targetIDs = new NativeArray<ushort>(maxEnemies, Allocator.Persistent);
+			headings = new NativeArray<float>(maxEnemies, Allocator.Persistent);
+			burrows = new List<EnemyBurrow>();
+			quadTree = new QuadTree(maxEnemies, 25);
 
-            enemyPhysicsMethods = new Dictionary<int, EnemyPhysicsMethods>(maxEnemies);
+			currentCountdownToWave = countdownToWave;
 
-            for (int i = 0; i < targetIDs.Length; i++)
-                targetIDs[i] = ushort.MaxValue;
+			enemyPhysicsMethods = new Dictionary<int, EnemyPhysicsMethods>(maxEnemies);
 
+			for (int i = 0; i < targetIDs.Length; i++)
+				targetIDs[i] = ushort.MaxValue;
 
 
-        }
 
-        private void Start() {
+		}
 
+		private void Start() {
 
 
-            quadTree.AddTransform(Inst.player.transform);
-            genes.SetObjectType(0, ObjectType.Player);
 
+			quadTree.AddTransform(Inst.player.transform);
+			genes.SetObjectType(0, ObjectType.Player);
 
-            //uncomment to add player to list of choosableTargets
-            //choosableTargets.Add(0);
 
-            AddSheep();
+			//uncomment to add player to list of choosableTargets
+			//choosableTargets.Add(0);
 
+			AddSheep();
 
 
-            //generate a wall surrounding the area
-            Inst.GeneratePlayableAreaWall();
 
+			//generate a wall surrounding the area
+			Inst.GeneratePlayableAreaWall();
 
-            AddBurrow();
-            AddBurrow();
 
+			AddBurrow();
+			AddBurrow();
 
-            #region Spawn Burrows For Testing
 
+			#region Spawn Burrows For Testing
 
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
 
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
 
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
-            //         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
 
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
+			//         AddBurrow();
 
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
-            //AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
 
-            #endregion
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
+			//AddBurrow();
 
-        }
+			#endregion
 
+		}
 
-        void Update()
-        {
-            if (!duringWave)
-            {
-                NonWaveUpdate();
-            }
-            else
-            {
 
-                DuringWaveUpdate();
+		void Update() {
+			if (!duringWave) {
+				NonWaveUpdate();
+			}
+			else {
 
-            }
+				DuringWaveUpdate();
 
-        }
+			}
 
+		}
 
-        private void NonWaveUpdate()
-        {
 
-            if (updateInitialize)
-            {
-                updateInitialize = false;
-                currentCountdownToWave = countdownToWave;
+		private void NonWaveUpdate() {
 
-                if (waveNumber > 0)
-                {
-                    endOfWaveCanvasParent.SetActive(true);
-                }
+			if (updateInitialize) {
+				updateInitialize = false;
+				currentCountdownToWave = countdownToWave;
 
+				if (waveNumber > 0) {
+					endOfWaveCanvasParent.SetActive(true);
+				}
 
 
-                return;
-            }
 
-            //now just countdown timer
-            currentCountdownToWave -= Time.deltaTime;
+				return;
+			}
 
+			//now just countdown timer
+			currentCountdownToWave -= Time.deltaTime;
 
-            if (currentCountdownToWave <= 0)
-            {
-                duringWave = true;
-                updateInitialize = true;
 
-            }
+			if (currentCountdownToWave <= 0) {
+				duringWave = true;
+				updateInitialize = true;
 
+			}
 
 
-        }
 
+		}
 
-        private void DuringWaveUpdate()
-        {
-            /*
+
+		private void DuringWaveUpdate() {
+			/*
              * each frame, spawn any new required enemies
              * 
              * copy the enemy positions to a float2 buffer for jobs since its a 2d representation
@@ -287,190 +275,180 @@ namespace ShepProject {
              * 
              */
 
-            if (updateInitialize)
-            {
-                updateInitialize = false;
+			if (updateInitialize) {
+				updateInitialize = false;
 
-                //spawn any additional required burrows
-                //then set the amount of enemies for them to each spawn
+				//spawn any additional required burrows
+				//then set the amount of enemies for them to each spawn
 
-                enemiesLeftToSpawn = enemiesCountToSpawn;
-                int avg = enemiesCountToSpawn / burrows.Count;
+				enemiesLeftToSpawn = enemiesCountToSpawn;
+				int avg = enemiesCountToSpawn / burrows.Count;
 
-                for (int i = 0; i < burrows.Count; i++)
-                {
+				for (int i = 0; i < burrows.Count; i++) {
 
-                    burrows[i].AddEnemyCountToSpawn(avg);
-                    enemiesLeftToSpawn -= avg;
+					burrows[i].AddEnemyCountToSpawn(avg);
+					enemiesLeftToSpawn -= avg;
 
-                }
+				}
 
-                while (enemiesLeftToSpawn > 0)
-                {
+				while (enemiesLeftToSpawn > 0) {
 
-                    burrows[Random.Range(0, burrows.Count)].AddEnemyCountToSpawn(1);
+					burrows[Random.Range(0, burrows.Count)].AddEnemyCountToSpawn(1);
 
 
-                    enemiesLeftToSpawn--;
+					enemiesLeftToSpawn--;
 
-                }
+				}
 
 
-                //all enemies have been assigned
-                //so now set the enemies left to spawn to the enemiesCountToSpawn
-                //in order to create a signal when all required enemies have been spawned
-                enemiesLeftToSpawn = enemiesCountToSpawn;
-                enemiesLeftToKill = enemiesCountToSpawn;
+				//all enemies have been assigned
+				//so now set the enemies left to spawn to the enemiesCountToSpawn
+				//in order to create a signal when all required enemies have been spawned
+				enemiesLeftToSpawn = enemiesCountToSpawn;
+				enemiesLeftToKill = enemiesCountToSpawn;
 
-                return;
+				return;
 
-            }
+			}
 
-            quadTree.NewFrame();
+			quadTree.NewFrame();
 
-            //spawn enemies
+			//spawn enemies
 
-            if (enemiesLeftToSpawn > 0)
-            {
+			if (enemiesLeftToSpawn > 0) {
 
-                for (int i = 0; i < burrows.Count; i++)
-                {
-                    burrows[i].ManualUpdate();
+				for (int i = 0; i < burrows.Count; i++) {
+					burrows[i].ManualUpdate();
 
-                }
+				}
 
-            }
+			}
 
-            TreeObjectCount = quadTree.positionCount;
+			TreeObjectCount = quadTree.positionCount;
 
-            //if (quadTree.positionCount >= 1000)
-                //spawningEnemies = false;
-            quadTree.Update();
+			//if (quadTree.positionCount >= 1000)
+			//spawningEnemies = false;
+			quadTree.Update();
 
-            if (quadTree.positionCount <= 0)
-                return;
+			if (quadTree.positionCount <= 0)
+				return;
 
-            //get targets before updating movement
+			//get targets before updating movement
 
-            ChooseTargetJob ctj = new ChooseTargetJob();
-            ctj.choosableTargets = choosableTargets;
-            ctj.positions = quadTree.positions;
-            ctj.objectIDs = quadTree.objectIDs;
-            ctj.targetIDs = targetIDs;
-            ctj.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
+			ChooseTargetJob ctj = new ChooseTargetJob();
+			ctj.choosableTargets = choosableTargets;
+			ctj.positions = quadTree.positions;
+			ctj.objectIDs = quadTree.objectIDs;
+			ctj.targetIDs = targetIDs;
+			ctj.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
 
-            AIMovementJob moveJob = new AIMovementJob();
-            moveJob.positions = quadTree.positions;
-            moveJob.buckets = quadTree.quadsList.Slice(0, quadTree.QuadsListLength);
-            moveJob.headings = headings;
-            moveJob.objectIDs = quadTree.objectIDs;
-            moveJob.objectQuadIDs = quadTree.objectQuadIDs;
-            moveJob.quads = quadTree.quads;
-            moveJob.genes = genes;
-            moveJob.targetIDs = targetIDs;
-            moveJob.deltaTime = Time.deltaTime;
-            moveJob.neighborCounts = quadTree.neighborCounts;
-            moveJob.objectNeighbors = quadTree.objectNeighbors;
-            moveJob.maxNeighborCount = quadTree.maxNeighborQuads;
-            //moveJob.Run(quadTree.positionCount + 1);
-            moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
+			AIMovementJob moveJob = new AIMovementJob();
+			moveJob.positions = quadTree.positions;
+			moveJob.buckets = quadTree.quadsList.Slice(0, quadTree.QuadsListLength);
+			moveJob.headings = headings;
+			moveJob.objectIDs = quadTree.objectIDs;
+			moveJob.objectQuadIDs = quadTree.objectQuadIDs;
+			moveJob.quads = quadTree.quads;
+			moveJob.genes = genes;
+			moveJob.targetIDs = targetIDs;
+			moveJob.deltaTime = Time.deltaTime;
+			moveJob.neighborCounts = quadTree.neighborCounts;
+			moveJob.objectNeighbors = quadTree.objectNeighbors;
+			moveJob.maxNeighborCount = quadTree.maxNeighborQuads;
+			//moveJob.Run(quadTree.positionCount + 1);
+			moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
 
-            //after movement, write the information back to the transforms
+			//after movement, write the information back to the transforms
 
-            WriteTransformsJob wtj = new WriteTransformsJob();
-            wtj.positions = quadTree.positions;
-            wtj.rotation = headings;
-            wtj.Schedule(quadTree.TransformAccess);
+			WriteTransformsJob wtj = new WriteTransformsJob();
+			wtj.positions = quadTree.positions;
+			wtj.rotation = headings;
+			wtj.Schedule(quadTree.TransformAccess);
 
-            Profiler.BeginSample("Writing Velocities");
+			Profiler.BeginSample("Writing Velocities");
 
-            for (int i = 0; i <= quadTree.positionCount; i++)
-            {
+			for (int i = 0; i <= quadTree.positionCount; i++) {
 
-                if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Sheep)
-                {
+				if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Sheep) {
 
-                    //if being chased, set velocity, otherwise don't
-                    //if (headings[i] != newHeadings[i])
-                    quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity 
-                        = (quadTree.Transforms[quadTree.objectIDs[i]].forward * 3);
+					//if being chased, set velocity, otherwise don't
+					//if (headings[i] != newHeadings[i])
+					quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
+						= (quadTree.Transforms[quadTree.objectIDs[i]].forward * 3);
 
-                    continue;
+					continue;
 
-                }
-                else if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Slime)
-                {
-                    
-                    quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity 
-                        = (quadTree.Transforms[quadTree.objectIDs[i]].forward * 3.25f);
+				}
+				else if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Slime) {
 
-                }
+					quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
+						= (quadTree.Transforms[quadTree.objectIDs[i]].forward * 3.25f);
 
+				}
 
-            }
 
-            Profiler.EndSample();
+			}
 
+			Profiler.EndSample();
 
 
 
-        }
 
+		}
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="objectID"></param>
-        /// <param name="replacementOldID"></param>
-        private void RemoveObjectFromTree(ushort objectID)
-        {
 
-            quadTree.RemoveTransform(objectID);
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="objectID"></param>
+		/// <param name="replacementOldID"></param>
+		private void RemoveObjectFromTree(ushort objectID) {
 
+			quadTree.RemoveTransform(objectID);
 
-        }
 
+		}
 
 
 
-        #region Adding Object Types To Quad Tree
 
-        public void AddEnemyToList(Transform enemy) {
+		#region Adding Object Types To Quad Tree
 
-            
+		public void AddEnemyToList(Transform enemy) {
 
 
-            enemiesLeftToSpawn--;
-            ushort id =  quadTree.AddTransform(enemy);
 
-            //offset 1 for type, then attractions count
-            genes.SetObjectType(id, ObjectType.Slime);
-            genes.SetAttraction(id, Attraction.Slime, -2);
-            genes.SetAttraction(id, Attraction.Wall, -50);
 
-            genes.SetHealth(id, 50);
+			enemiesLeftToSpawn--;
+			ushort id = quadTree.AddTransform(enemy);
 
-            EnemyPhysicsMethods methods = enemy.GetComponent<EnemyPhysicsMethods>();
+			//offset 1 for type, then attractions count
+			genes.SetObjectType(id, ObjectType.Slime);
+			genes.SetAttraction(id, Attraction.Slime, -2);
+			genes.SetAttraction(id, Attraction.Wall, -50);
 
-            if (!methods.Initialized())
-            {
-                methods.SetInitialInfo(id, genes, this);
-            }
+			genes.SetHealth(id, 50);
 
-            enemyPhysicsMethods.Add(id, methods);
-            
+			EnemyPhysicsMethods methods = enemy.GetComponent<EnemyPhysicsMethods>();
 
+			if (!methods.Initialized()) {
+				methods.SetInitialInfo(id, genes, this);
+			}
 
-        }
+			enemyPhysicsMethods.Add(id, methods);
 
-        public void AddWallToList(Transform wall) {
 
 
-            //for adding all the child points to make sure enemies can avoid them correctly
-            for (int i = 0; i < wall.childCount;) {
+		}
+
+		public void AddWallToList(Transform wall) {
+
+
+			//for adding all the child points to make sure enemies can avoid them correctly
+			for (int i = 0; i < wall.childCount;) {
 
 
 				ushort id = quadTree.AddTransform(wall.transform.GetChild(i));
@@ -480,101 +458,99 @@ namespace ShepProject {
 
 			}
 
-        }
+		}
 
-        private void AddBurrow() {
+		private void AddBurrow() {
 
-            EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
+			EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
 
-            int min = -15;
-            int max = 15;
+			int min = -15;
+			int max = 15;
 
-            //if (Random.value > .5f)
-                burrow.gameObject.transform.position = new Vector3(Random.Range(-15, 15) , 0, Random.Range(min, max));
-            //else
-				//burrow.gameObject.transform.position = new Vector3(Random.Range(-min, -max), 0, Random.Range(-min, -max));
+			//if (Random.value > .5f)
+			burrow.gameObject.transform.position = new Vector3(Random.Range(-15, 15), 0, Random.Range(min, max));
+			//else
+			//burrow.gameObject.transform.position = new Vector3(Random.Range(-min, -max), 0, Random.Range(-min, -max));
 
 			burrow.Initialize(this, .5f);
 
-            burrows.Add(burrow);
-            burrow.gameObject.SetActive(true);
+			burrows.Add(burrow);
+			burrow.gameObject.SetActive(true);
 		}
 
-        private void AddSheep() {
+		private void AddSheep() {
 
-            for (int i = 0; i < sheepCount; i++) {
+			for (int i = 0; i < sheepCount; i++) {
 
-                GameObject sheep = Instantiate(sheepPrefab);
+				GameObject sheep = Instantiate(sheepPrefab);
 
-                sheep.transform.position = new Vector3(Random.Range(1, 4), 0, Random.Range(-4,-3));
+				sheep.transform.position = new Vector3(Random.Range(1, 4), 0, Random.Range(-4, -3));
 
 				ushort id = quadTree.AddTransform(sheep.transform);
 
 				genes.SetObjectType(id, ObjectType.Sheep);
 				genes.SetAttraction(id, Attraction.Slime, -2);
-                genes.SetAttraction(id, Attraction.Wall, -50);
+				genes.SetAttraction(id, Attraction.Wall, -50);
 
-                choosableTargets.Add(id);
+				choosableTargets.Add(id);
 
-                sheep.SetActive(true);
+				sheep.SetActive(true);
 			}
 
 
 
-        }
+		}
 
-        #endregion
+		#endregion
 
-        public void OnEnemyDeath(ushort id)
-        {
+		public void OnEnemyDeath(ushort id) {
 
-            RemoveObjectFromTree(id);
+			RemoveObjectFromTree(id);
 
-            enemyPhysicsMethods.Remove(id);
-
-
-            enemiesLeftToKill--;
-
-            if (enemiesLeftToKill <= 0)
-            {
-                duringWave = false;
-                updateInitialize = true;
-            }
+			enemyPhysicsMethods.Remove(id);
 
 
-            //EnemyPhysicsMethods methods;
+			enemiesLeftToKill--;
 
-            //if (!enemyPhysicsMethods.TryGetValue(replacementOldID, out methods))
-            //    return;
+			if (enemiesLeftToKill <= 0) {
+				duringWave = false;
+				updateInitialize = true;
+			}
 
-            //methods.UpdateID(id);
-            //enemyPhysicsMethods.Remove(replacementOldID);
-            //enemyPhysicsMethods.Add(id, methods);
 
-            //genes.TransferGenes(replacementOldID, id);
+			//EnemyPhysicsMethods methods;
 
-            //update targetID and heading
-            //update genes array as well
+			//if (!enemyPhysicsMethods.TryGetValue(replacementOldID, out methods))
+			//    return;
+
+			//methods.UpdateID(id);
+			//enemyPhysicsMethods.Remove(replacementOldID);
+			//enemyPhysicsMethods.Add(id, methods);
+
+			//genes.TransferGenes(replacementOldID, id);
+
+			//update targetID and heading
+			//update genes array as well
 
 
 
 
 
-            Debug.Log("Enemy Dead!");
+			Debug.Log("Enemy Dead!");
 
 
-        }
+		}
 
 
 
-        private void OnDisable() {
-            quadTree.Dispose();
+		private void OnDisable() {
+			quadTree.Dispose();
 
-            genes.Dispose();
-            headings.Dispose();
+			genes.Dispose();
+			headings.Dispose();
 
-            choosableTargets.Dispose();
-            targetIDs.Dispose();
+			choosableTargets.Dispose();
+			targetIDs.Dispose();
 
 		}
 
