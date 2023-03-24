@@ -86,7 +86,7 @@ namespace ShepProject {
 					if (genes.GetObjectType(i) != ObjectType.Slime)
 						continue;
 
-					enemyPhysicsMethods[i].DealDamage(100, DamageType.Blaster);
+					enemyPhysicsMethods[i].DealDamage(25, DamageType.Blaster);
 
 					enemiesToDamage--;
 

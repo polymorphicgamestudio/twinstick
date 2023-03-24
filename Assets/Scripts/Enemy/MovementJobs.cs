@@ -56,6 +56,19 @@ namespace ShepProject {
 	}
 
 
+	/*
+	 * 
+	 * want to have an optimal distance for slimes and towers
+	 *	both will be different, will have them as genes
+	 *	
+	 * when less than an optimal distance, will move away
+	 * 
+	 * when greater than an optimal distance, will move towards
+	 * 
+	 * 
+	 * 
+	 */
+
 	public struct AIMovementJob : IJobParallelFor {
 
 		[NativeDisableContainerSafetyRestriction]

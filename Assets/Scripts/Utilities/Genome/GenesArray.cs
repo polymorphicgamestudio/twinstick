@@ -192,13 +192,15 @@ namespace ShepProject {
 
 		public float GetHealth(int id)
 		{
+			//int index = IDTypeIndex(id) + (int)GeneGroups.Health;
 
-			return 0;// genes[IDTypeIndex(id) + (int)GeneGroups.Health];
+			return 0;// genes[index];
 		}
 
 		public void SetHealth (int id, float value)
 		{
-			//genes[IDTypeIndex(id) + (int)GeneGroups.Health] = value;
+			//int index = IDTypeIndex(id) + (int)GeneGroups.Health;
+			//genes[index] = value;
 
 		}
 
