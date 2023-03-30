@@ -1,5 +1,6 @@
 using ShepProject;
 using Unity.Mathematics;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -27,9 +28,10 @@ public class RobotController : MonoBehaviour {
 	Vector3 joystickDir;
 	Vector3 mouseDir;
 
-	[SerializeField] bool BuildMode = false;
-	[SerializeField] Transform hologram;
-	Vector3 forwardTilePos;
+    public bool BuildMode = false;
+    public Transform hologram;
+	public Transform TowerToPlace;
+	[HideInInspector] public Vector3 forwardTilePos;
 
 
 
@@ -85,7 +87,13 @@ public class RobotController : MonoBehaviour {
 			//head.rotation = Quaternion.Slerp(head.rotation, snappedLookDir, 10f * Time.deltaTime);
 			Vector3 vectorToHologramPos = Vector3.ProjectOnPlane(hologram.position - root.position,Vector3.up);
 			head.rotation = Quaternion.LookRotation(vectorToHologramPos, Vector3.up);
-		}
+            if (Input.GetMouseButtonDown(0))
+            {
+				Instantiate(this.TowerToPlace, forwardTilePos, Quaternion.identity);
+				BuildMode = false;
+				Destroy(this.hologram.gameObject);
+            }
+        }
 		else
 			head.rotation = Quaternion.Slerp(head.rotation, lookDirection, 5f * Time.deltaTime);
 	}

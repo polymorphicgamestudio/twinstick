@@ -233,7 +233,7 @@ public class LightningBolt : MonoBehaviour {
     public void Trigger() {
         timer = Duration + Mathf.Min(0.0f, timer);
         startIndex = 0;
-        GenerateLightningBolt(transform.position, EndPosition.position, Generations, Generations, 0.0f);
+        GenerateLightningBolt(transform.position, this.EndPosition.position, Generations, Generations, 0.0f);
 		UpdateLightPosition();
 		UpdateLineRenderer();
     }

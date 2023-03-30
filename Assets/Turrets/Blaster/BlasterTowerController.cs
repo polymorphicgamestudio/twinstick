@@ -1,4 +1,5 @@
 using ShepProject;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.FullSerializer;
@@ -71,15 +72,15 @@ public class BlasterTowerController : MonoBehaviour
                 beam.enabled = true;
 
                 StartCoroutine(WaitForHalfASecond());
-                Destroy(exp.gameObject, 0.3f);
+                Destroy(exp.gameObject, 0.1f);
             }
         }
-        
+
     }
 
     IEnumerator WaitForHalfASecond()
     {
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.1f);
         beam.enabled = false;
     }
 

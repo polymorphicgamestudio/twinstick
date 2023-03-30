@@ -19,7 +19,7 @@ public class WeaponController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            var BulletBody = (Rigidbody)Instantiate(bulletPrefab, positions.position, Quaternion.identity);
+            var BulletBody = Instantiate(bulletPrefab, positions.position, Quaternion.identity).GetComponent<Rigidbody>();
             BulletBody.velocity = positions.forward * bulletSpeed;
         }
 

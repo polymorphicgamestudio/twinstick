@@ -8,7 +8,8 @@ public class AcidTowerController : MonoBehaviour
 {
 
     List<Transform> slimes;
-    Transform nearestslime;
+    Transform slimeInRange;
+    bool slimeInRangebool = false;
 
     public Transform positions;
     public Rigidbody bombPrefab;
@@ -32,27 +33,39 @@ public class AcidTowerController : MonoBehaviour
         slimes = ShepGM.GetList(ShepGM.Thing.Slime);
         if (slimes.Count > 0)
         {
-            nearestslime = ShepGM.GetNearestFromList(slimes, this.transform.position);
-            Vector3 newDirection = Vector3.RotateTowards(positions.forward, nearestslime.position - this.transform.position, Time.deltaTime * 15, 0.0f);
-            positions.rotation = Quaternion.LookRotation(newDirection);
+            for (int i = 0; i < slimes.Count; i++)
+            {
+                if (Vector3.Distance(slimes[i].transform.position, this.transform.position) > 15f && Vector3.Distance(slimes[i].transform.position, this.transform.position) < 22f)
+                {
+                    slimeInRange = slimes[i];
+                    slimeInRangebool = true;
+                }
+                else
+                {
+                    slimeInRangebool = false;
+                }
+            }
+            if (slimeInRangebool == true)
+            {
+                Vector3 newDirection = Vector3.RotateTowards(positions.forward, slimeInRange.position - this.transform.position, Time.deltaTime * 15, 0.0f);
+                positions.rotation = Quaternion.LookRotation(newDirection);
+            }
         }
         else
         {
             positions.eulerAngles = new Vector3(0, 0, 0);
+            slimeInRangebool = false;
         }
     }
 
     void ShootTurret()
     {
-        if (slimes.Count > 0)
+        if (slimeInRangebool == true)
         {
-            if (Vector3.Distance(nearestslime.position, this.transform.position) < 20.0f)
-            {
                 anim.Play("Base Layer.Shoot", 0, 0);
                 shoot.Play();
                 var BulletBody = (Rigidbody)Instantiate(bombPrefab, barrel.position, Quaternion.identity);
                 BulletBody.velocity = barrel.forward * bombSpeed;
-            }
         }
     }
 }
