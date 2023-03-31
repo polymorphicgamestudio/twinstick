@@ -1,9 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using System.Reflection;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Jobs;
 using UnityEngine.Profiling;
@@ -20,6 +19,7 @@ namespace ShepProject {
 		public NativeArray<ushort> objectQuadIDs;
 		public NativeArray<float2> positions;
 
+		public EnemyManager enemyManager;
 		private Transform[] transforms;
 		public Transform[] Transforms => transforms;
 
@@ -309,6 +309,90 @@ namespace ShepProject {
 
 		}
 
+		public Transform GetClosestObject(int objectID, ObjectType objectType) {
+
+			if (transforms[objectID] == null) {
+				throw new ArgumentException("Object ID does not exist in the quad tree! :(");
+			}
+
+			Quad current = quadsList[objectID];
+			int closestIndex = -1;
+			float tempSqDist = 0;
+			float sqDist = 1000000;
+			float viewRange = 50;
+			float2 local = new float2();
+
+			for (int i = current.startIndex; i <= current.endIndex; i++) {
+
+				if (enemyManager.Genes.GetObjectType(objectID) != objectType)
+					continue;
+
+				local = (positions[objectIDs[i]] - positions[objectIDs[objectID]]);
+				tempSqDist = (local.x * local.x) + (local.y * local.y);
+				if (tempSqDist > sqDist)
+					continue;
+
+				sqDist = tempSqDist;
+				closestIndex = objectIDs[i];
+				
+			}
+
+			if (closestIndex != -1)
+				return transforms[closestIndex];
+
+
+			//if not within the same quad, then check the surrounding quads
+
+			//check which node is closest to the current quad
+			//continue to do that until object is found
+
+
+
+			return transforms[closestIndex];
+
+		}
+
+		private Quad FindNextClosestQuad(int objectID, float viewRange, ref Quad current) {
+
+
+			//checks if is over, not the closest
+			float4 cardinal = new float4(
+				//left
+				(positions[objectIDs[objectID]].x - viewRange) - (current.position.x - current.halfLength),
+				//top
+				(positions[objectIDs[objectID]].y + viewRange) - (current.position.y + current.halfLength),
+				//right
+				(positions[objectIDs[objectID]].x + viewRange) - (current.position.x + current.halfLength),
+				//bottom
+				(positions[objectIDs[objectID]].y - viewRange) - (current.position.y - current.halfLength)
+				);
+
+			float4 cornerDirections = new float4();
+
+			
+			
+			
+			//after finding closest quad, then call the correct function
+
+
+
+
+			return new Quad();
+
+		}
+
+		private void OverLeftQuad() {
+
+		}
+		private void OverRightQuad() {
+
+		}
+		private void OverTopQuad() {
+
+		}
+		private void OverBottomQuad() {
+
+		}
 
 		public ushort AddTransform(Transform transform) {
 
@@ -359,15 +443,6 @@ namespace ShepProject {
 			return inactive;
 
 		}
-
-
-		//public void AddPosition(Vector3 position) {
-
-		//	objectIDs[positionCount] = positionCount;
-		//	positions[positionCount] = new float2(position.x, position.z);
-		//	positionCount++;
-
-		//}
 
 		private void ReadTransformData() {
 

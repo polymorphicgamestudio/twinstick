@@ -194,9 +194,6 @@ namespace ShepProject {
     }
 
 
-
-
-
     [System.Serializable]
     public struct QuadKey : IEquatable<QuadKey>
     {
@@ -499,6 +496,8 @@ namespace ShepProject {
 
 
     public struct Quad {
+
+
 
 		public QuadKey key;
 

@@ -938,8 +938,6 @@ namespace ShepProject {
 
 
 
-
-
 		public void AddNeighborKey(int index, QuadKey key) {
 
 			objectNeighbors[(index * maxNeighborQuads) + neighborCounts[index]] = key;

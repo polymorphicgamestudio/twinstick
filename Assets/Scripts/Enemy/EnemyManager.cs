@@ -55,6 +55,7 @@ namespace ShepProject {
 		private List<EnemyBurrow> burrows;
 
 		private GenesArray genes;
+		public GenesArray Genes => genes;
 
 		//will contain IDs of sheep and player, and towers won't be targeted
 		private NativeList<ushort> choosableTargets;
@@ -120,6 +121,7 @@ namespace ShepProject {
 			headings = new NativeArray<float>(maxEnemies, Allocator.Persistent);
 			burrows = new List<EnemyBurrow>();
 			quadTree = new QuadTree(maxEnemies, 25);
+			quadTree.enemyManager = this;
 
 			currentCountdownToWave = countdownToWave;
 
