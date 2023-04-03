@@ -41,10 +41,10 @@ namespace ShepProject {
 
 		private NativeArray<int> lengths;
 
-		int xQuadsLength { get => lengths[0]; set => lengths[0] = value; }
+        int xQuadsLength { get => lengths[0]; set => lengths[0] = value; }
 		public int QuadsListLength => lengths[1];
 
-		public ushort bucketSize;
+		public short bucketSize;
 
 		private NativeArray<bool> sorted;
 
@@ -129,7 +129,7 @@ namespace ShepProject {
         /// Create this with maximum number of positions that will be sorted for better performance.
         /// </summary>
         /// <param name="positionCount"></param>
-        public QuadTree(int positionCount, ushort bucketSize) {
+        public QuadTree(int positionCount, short bucketSize) {
 
 			objectIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
 			sortedObjectIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
@@ -246,8 +246,6 @@ namespace ShepProject {
 				fj.Schedule().Complete();
 
 
-
-
 			}
 
 			NeighborSearchJob nsj = new NeighborSearchJob();
@@ -261,9 +259,6 @@ namespace ShepProject {
 			nsj.maxNeighborQuads = maxNeighborQuads;
 			//nsj.Run(positionCount);
 			JobHandle handle = nsj.Schedule(positionCount, SystemInfo.processorCount);
-
-
-
 
 
 			Profiler.BeginSample("Neighbor Search Job");
@@ -309,92 +304,147 @@ namespace ShepProject {
 
 		}
 
-		public Transform GetClosestObject(int objectID, ObjectType objectType) {
 
-			if (transforms[objectID] == null) {
-				throw new ArgumentException("Object ID does not exist in the quad tree! :(");
-			}
+        private int SearchQuadForObjectType(int objectID, Quad current, ObjectType objectType, float minSquareDist = 0, float maxSquareDist = 10)
+        {
 
-			Quad current = quadsList[objectID];
-			int closestIndex = -1;
-			float tempSqDist = 0;
-			float sqDist = 1000000;
-			float viewRange = 50;
-			float2 local = new float2();
+            if (current.Empty)
+                return -1;
 
-			for (int i = current.startIndex; i <= current.endIndex; i++) {
+            int closestIndex = -1;
+            float tempSqDist = 0;
+            float sqDist = 1000000;
+            float2 local = new float2();
 
-				if (enemyManager.Genes.GetObjectType(objectID) != objectType)
+            for (int i = current.startIndex; i <= current.endIndex; i++)
+            {
+
+                if (enemyManager.Genes.GetObjectType(objectIDs[i]) != objectType)
+                    continue;
+
+				local = (positions[objectIDs[i]] - positions[objectID]);
+				tempSqDist = (local.x * local.x) + (local.y * local.y);
+
+				if (tempSqDist < minSquareDist || tempSqDist > maxSquareDist)
 					continue;
 
-				local = (positions[objectIDs[i]] - positions[objectIDs[objectID]]);
-				tempSqDist = (local.x * local.x) + (local.y * local.y);
 				if (tempSqDist > sqDist)
 					continue;
-
 				sqDist = tempSqDist;
-				closestIndex = objectIDs[i];
-				
+
+                closestIndex = objectIDs[i];
 			}
 
-			if (closestIndex != -1)
-				return transforms[closestIndex];
+
+            //doesn't contain this type of item
+            return closestIndex;
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="objectID">ID of the object that is calling this function.</param>
+        /// <param name="objectType">Type of the object that needs to be found.</param>
+        /// <param name="minDist">minimum distance away the object can be.</param>
+        /// <param name="maxDist">maximum distance away the object can be.</param>
+        /// <returns>Transform of object if one is found within range, or null if no object is found within range.</returns>
+        public Transform GetClosestObject(int objectID, ObjectType objectType, float minDist = 0, float maxDist = 10) {
+
+			if (transforms[objectID] == null) {
+				Debug.LogError("Quad tree doesn't contain the object you are trying to search with!");
+				return null;
+				//throw new ArgumentException("Object ID does not exist in the quad tree! :(");
+			}
+
+            QuadKey topKey = new QuadKey();
+            if (positionCount > bucketSize)
+                topKey.SetDivided(true);
+
+            Quad topQuad = quads[topKey];
+
+            int closestObjectID = CheckChildQuadsInRange(topKey, objectID, objectType, minDist, maxDist);
+
+            if (closestObjectID == -1)
+                return null;
+
+            return transforms[closestObjectID];
+
+        }
+
+        private int CheckWhichObjectIsCloser(int objectID, int one, int two)
+        {
+
+            if (two == -1)
+                return one;
+
+            if (one == -1)
+                return two;
+
+            if (math.distancesq(positions[one], positions[objectID]) < math.distancesq(positions[two], positions[objectID]))
+                return one;
+            else
+                return two;
 
 
-			//if not within the same quad, then check the surrounding quads
+        }
 
-			//check which node is closest to the current quad
-			//continue to do that until object is found
+        private int CheckChildQuadsInRange(QuadKey key, int objectID, ObjectType objectType, float minDist, float maxDist)
+        {
 
+            int closestID = -1;
+            int temp = -1;
+            QuadKey checkKey;
 
+            if (!quads[key].key.IsDivided)
+            {
+                //search this quad for the required object
+                return SearchQuadForObjectType(objectID, quads[key], objectType, minDist, maxDist * maxDist);
 
-			return transforms[closestIndex];
-
-		}
-
-		private Quad FindNextClosestQuad(int objectID, float viewRange, ref Quad current) {
-
-
-			//checks if is over, not the closest
-			float4 cardinal = new float4(
-				//left
-				(positions[objectIDs[objectID]].x - viewRange) - (current.position.x - current.halfLength),
-				//top
-				(positions[objectIDs[objectID]].y + viewRange) - (current.position.y + current.halfLength),
-				//right
-				(positions[objectIDs[objectID]].x + viewRange) - (current.position.x + current.halfLength),
-				//bottom
-				(positions[objectIDs[objectID]].y - viewRange) - (current.position.y - current.halfLength)
-				);
-
-			float4 cornerDirections = new float4();
-
-			
-			
-			
-			//after finding closest quad, then call the correct function
+            }
 
 
+            void QuadContains()
+            {
+                if (quads[checkKey].IsWithinDistance(positions[objectID], maxDist))
+                {
+                    temp = CheckChildQuadsInRange(quads[checkKey].key, objectID, objectType, minDist, maxDist);
+
+                    closestID = CheckWhichObjectIsCloser(objectID, closestID, temp);
+
+                }
+            }
+
+            checkKey = key;
+            checkKey.LeftBranch();
+            checkKey.RightBranch();
+
+            QuadContains();
+
+            checkKey = key;
+            checkKey.LeftBranch();
+            checkKey.LeftBranch();
+
+            QuadContains();
+
+            checkKey = key;
+            checkKey.RightBranch();
+            checkKey.LeftBranch();
+
+            QuadContains();
+
+            checkKey = key;
+            checkKey.RightBranch();
+            checkKey.RightBranch();
+
+            QuadContains();
 
 
-			return new Quad();
+            return closestID;
 
-		}
+        }
 
-		private void OverLeftQuad() {
-
-		}
-		private void OverRightQuad() {
-
-		}
-		private void OverTopQuad() {
-
-		}
-		private void OverBottomQuad() {
-
-		}
-
-		public ushort AddTransform(Transform transform) {
+        public ushort AddTransform(Transform transform) {
 
 			positionCount++;
 			transforms[positionCount] = transform;

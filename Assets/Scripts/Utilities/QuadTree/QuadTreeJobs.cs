@@ -151,10 +151,18 @@ namespace ShepProject {
 
 			}
 
+			if (startIndex == -1)
+			{
 
+				leftQuad.startIndex = -1;
+				leftQuad.endIndex = -1;
+			}
+			else
+			{
+				leftQuad.startIndex = readQuad.startIndex;
+				leftQuad.endIndex = startIndex;
+			}
 
-			leftQuad.startIndex = readQuad.startIndex;
-			leftQuad.endIndex = startIndex;
 			leftQuad.key = readQuad.key;
 			leftQuad.key.LeftBranch();
 
@@ -164,12 +172,24 @@ namespace ShepProject {
 			else {
 
 				leftQuad.key.SetDivided(false);
-				SetSortedIndices(leftQuad);
+                if (startIndex > -1)
+                    SetSortedIndices(leftQuad);
 			}
 
 
-			rightQuad.startIndex = endIndex;
-			rightQuad.endIndex = readQuad.endIndex;
+            if (endIndex == -1)
+            {
+
+                rightQuad.startIndex = -1;
+                rightQuad.endIndex = -1;
+
+            }
+			else
+			{
+                rightQuad.startIndex = endIndex;
+                rightQuad.endIndex = readQuad.endIndex;
+            }
+
 			rightQuad.key = readQuad.key;
 			rightQuad.key.RightBranch();
 
@@ -178,7 +198,9 @@ namespace ShepProject {
 			}
 			else {
 				rightQuad.key.SetDivided(false);
-				SetSortedIndices(rightQuad);
+
+                if (endIndex > -1)
+                    SetSortedIndices(rightQuad);
 			}
 
 
@@ -231,6 +253,7 @@ namespace ShepProject {
 		}
 
 		private void SetSortedIndices(Quad quad) {
+
 			for (short i = quad.startIndex; i <= quad.endIndex; i++) {
 
 				sortedObjectIDs[objectIDs[i]] = (ushort)i;
@@ -256,7 +279,7 @@ namespace ShepProject {
 
 		public NativeArray<bool> isSorted;
 
-		public ushort bucketSize;
+		public short bucketSize;
 
 		public void Execute() {
 
@@ -434,8 +457,9 @@ namespace ShepProject {
 			//left, top, right, bottom
 			bool4 neighborDirections = new bool4();
 
-			//if their view is over the left side of the quad
-			if ((positions[index].x - viewRange) - (current.position.x - current.halfLength) < 0) {
+            #region Left Side
+            //if their view is over the left side of the quad
+            if ((positions[index].x - viewRange) - (current.position.x - current.halfLength) < 0) {
 
 				//check if this position is in right quad, if so, then just get the left quad through the parent
 
@@ -499,12 +523,13 @@ namespace ShepProject {
 
 			}
 
+            #endregion
 
-			#region Right Side
+            #region Right Side
 
 
-			//if over the right side
-			if ((positions[index].x + viewRange) - (current.position.x + current.halfLength) > 0) {
+            //if over the right side
+            if ((positions[index].x + viewRange) - (current.position.x + current.halfLength) > 0) {
 
 
 				//need to search for the first quad that is to the left of this quad then
@@ -935,8 +960,6 @@ namespace ShepProject {
 
 
 		}
-
-
 
 		public void AddNeighborKey(int index, QuadKey key) {
 

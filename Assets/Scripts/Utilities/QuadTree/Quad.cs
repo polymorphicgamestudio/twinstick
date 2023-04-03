@@ -497,8 +497,6 @@ namespace ShepProject {
 
     public struct Quad {
 
-
-
 		public QuadKey key;
 
 		public float2 position;
@@ -507,6 +505,8 @@ namespace ShepProject {
 		//bucket
 		public short startIndex;
 		public short endIndex;
+
+        public bool Empty => (startIndex == -1 ) && (endIndex == -1);
 
 		public short BucketSize => (short)((endIndex - startIndex) + 1);
 
@@ -529,7 +529,41 @@ namespace ShepProject {
 		}
 
 
-		public override string ToString() {
+        /// <summary>
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public bool Contains(float2 point)
+        {
+
+            if (math.abs(point.y - position.y) <= halfLength
+                && math.abs(point.x - position.x) <= halfLength)
+                return true;
+
+
+            return false;
+        }
+
+        public bool IsWithinDistance(float2 point, float maxDist)
+        {
+
+            //check if within bounds
+
+            if (math.abs(point.y - position.y) < halfLength + maxDist
+                && math.abs(point.x - position.x) < halfLength + maxDist)
+                return true;
+
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+
+            return (int)(position.x * 1000 + position.y * 1000 + startIndex * 5345 + endIndex * 1461 );
+        }
+
+        public override string ToString() {
 
 
 			return "Start: " + startIndex + " End: " + endIndex;
