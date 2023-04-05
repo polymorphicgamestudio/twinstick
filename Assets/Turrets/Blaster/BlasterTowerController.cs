@@ -2,6 +2,7 @@ using ShepProject;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
@@ -67,9 +68,10 @@ public class BlasterTowerController : MonoBehaviour
                 beam.SetPosition(0, origin);
                 beam.SetPosition(1, endPoint);
 
-
                 ParticleSystem exp = Instantiate(shoot, origin, barrel.rotation);
+                shoot.gameObject.SetActive(true);
                 beam.enabled = true;
+                beam.gameObject.SetActive(true);
 
                 StartCoroutine(WaitForHalfASecond());
                 Destroy(exp.gameObject, 0.1f);
@@ -82,6 +84,8 @@ public class BlasterTowerController : MonoBehaviour
     {
         yield return new WaitForSeconds(0.1f);
         beam.enabled = false;
+        beam.gameObject.SetActive(false);
+        shoot.gameObject.SetActive(false);
     }
 
 }

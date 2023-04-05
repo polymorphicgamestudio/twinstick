@@ -78,6 +78,7 @@ public class LaserTowerController : MonoBehaviour
                 ParticleSystem exp = Instantiate(shoot, origin, barrel.rotation);
                 playing = true;
                 beam.enabled = true;
+                beam.gameObject.SetActive(true);
                 ParticleSystem end = Instantiate(endOfBeam, endPoint, barrel.rotation);
 
                 StartCoroutine(WaitForHalfASecond());
@@ -93,6 +94,7 @@ public class LaserTowerController : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         beam.enabled = false;
         playing = false;
+        beam.gameObject.SetActive(false);
     }
 
 }

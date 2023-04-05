@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class TowerArrays : MonoBehaviour
 {
-    public static GameObject[] Towers;
-    public static GameObject[] Holograms;
+    public Transform[] Towers;
+    public Transform[] Holograms;
 
     // Start is called before the first frame update
     void Start()
@@ -19,12 +19,12 @@ public class TowerArrays : MonoBehaviour
         
     }
 
-    public static GameObject GetTower(int i)
+    public Transform GetTower(int i)
     {
         return Towers[i];
     }
 
-    public static GameObject GetHologram(int i)
+    public Transform GetHologram(int i)
     {
         return Holograms[i];
     }
