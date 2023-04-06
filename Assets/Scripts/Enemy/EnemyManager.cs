@@ -67,6 +67,7 @@ namespace ShepProject {
 		private NativeArray<float> headings;
 
 		private QuadTree quadTree;
+		public QuadTree QuadTree => quadTree;
 
 
 		public bool SpawningEnemies => spawningEnemies;
@@ -358,8 +359,8 @@ namespace ShepProject {
 			moveJob.neighborCounts = quadTree.neighborCounts;
 			moveJob.objectNeighbors = quadTree.objectNeighbors;
 			moveJob.maxNeighborCount = quadTree.maxNeighborQuads;
-			//moveJob.Run(quadTree.positionCount + 1);
-			moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
+			moveJob.Run(quadTree.positionCount + 1);
+			//moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
 
 			//after movement, write the information back to the transforms
@@ -431,6 +432,7 @@ namespace ShepProject {
 			genes.SetObjectType(id, ObjectType.Slime);
 			genes.SetAttraction(id, Attraction.Slime, -2);
 			genes.SetAttraction(id, Attraction.Wall, -50);
+			genes.SetSlimeOptimalDistance(id, 3);
 
 			genes.SetHealth(id, 50);
 
@@ -493,6 +495,7 @@ namespace ShepProject {
 				genes.SetObjectType(id, ObjectType.Sheep);
 				genes.SetAttraction(id, Attraction.Slime, -2);
 				genes.SetAttraction(id, Attraction.Wall, -50);
+				//genes.SetViewRange(id, ViewRange.Slime, )
 
 				choosableTargets.Add(id);
 

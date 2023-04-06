@@ -28,6 +28,7 @@ namespace ShepProject {
 		[SerializeField]
 		private EnemyManager enemyManager;
 
+		public EnemyManager EnemyManager => enemyManager;
 
 
 		public enum Thing {

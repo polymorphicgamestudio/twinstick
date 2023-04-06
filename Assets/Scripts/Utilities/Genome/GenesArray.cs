@@ -21,6 +21,7 @@ namespace ShepProject {
 		Speed,
 		TurnRate,
 		Health,
+		SlimeOptimalDistance,
 		TotalGeneCount =
 			1 // object type
 			+ (int)Attraction.Count //for all the possible attractions an object can have
@@ -29,6 +30,7 @@ namespace ShepProject {
 			+ 1 // for the speed
 			+ 1 // for the turn rate
 			+ 1 // for health
+			+ 1 // slime optimal distance
 
 	}
 
@@ -203,6 +205,26 @@ namespace ShepProject {
 			//genes[index] = value;
 
 		}
+
+		public float GetSlimeOptimalDistance(int id) {
+
+			if (GetObjectType(id) != ObjectType.Slime) {
+				throw new System.Exception("Object is not a slime!");
+			}
+
+			return genes[IDTypeIndex(id) + (int)GeneGroups.SlimeOptimalDistance];
+
+		}
+
+		public void SetSlimeOptimalDistance(int id, float value) {
+
+			if (GetObjectType(id) != ObjectType.Slime)
+				throw new System.Exception("Object is not a slime!");
+
+				genes[IDTypeIndex(id) + (int)GeneGroups.SlimeOptimalDistance] = value;
+
+		}
+
 
 
         #endregion

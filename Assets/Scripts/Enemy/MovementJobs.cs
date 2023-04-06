@@ -121,16 +121,14 @@ namespace ShepProject {
 			float2 moveTowards = new float2();
 
 			if (objType != ObjectType.Sheep)
-				moveTowards = (positions[targetIDs[objectIDs[index]]] - positions[objectIDs[index]]) * 10;
+				moveTowards = (positions[targetIDs[objectIDs[index]]] - positions[objectIDs[index]])
+					* 10; //instead of hardcoded number will use the sheep attraction variable
 
-			float maxDist = 16;
 
+			moveTowards += SearchBucket(index, objType, buckets[objectQuadIDs[objectIDs[index]]].key);
 
-			moveTowards += SearchBucket(index, buckets[objectQuadIDs[objectIDs[index]]].key, maxDist);
-
-			for (int i = 0; i < neighborCounts[index]; i++)
-			{
-				moveTowards += SearchBucket(index, objectNeighbors[index * maxNeighborCount + i], maxDist);
+			for (int i = 0; i < neighborCounts[index]; i++) {
+				moveTowards += SearchBucket(index, objType, objectNeighbors[index * maxNeighborCount + i]);
 
 			}
 
@@ -160,17 +158,16 @@ namespace ShepProject {
 
 			headings[objectIDs[index]] 
 				//= headingCalculation;
-				= math.lerp(headings[objectIDs[index]], headingCalculation, deltaTime * 3);
+				= math.lerp(headings[objectIDs[index]], headingCalculation, deltaTime * 6);
 
 
 		}
 
 
-		private float2 SearchBucket(int index, QuadKey key, float maxDist)
-		{
+		private float2 SearchBucket(int index, ObjectType objType, QuadKey key) {
 
-			
-
+			//float maxDist = 8;
+			float maxDistSq = 64;
 			float2 localPosition = new float2();
 			float2 moveTowards = new float2();
 
@@ -180,40 +177,61 @@ namespace ShepProject {
 			if (current.startIndex < 0)
 				return moveTowards;
 
-            for (int i = current.startIndex; i <= current.endIndex; i++)
-            {
+			for (int i = current.startIndex; i <= current.endIndex; i++) {
 
-                //to ignore itself in all calculationsSS
-                if (objectIDs[i] == objectIDs[index])
-                    continue;
+				//to ignore itself in all calculations
+				if (objectIDs[i] == objectIDs[index])
+					continue;
 
-                localPosition = (positions[objectIDs[i]] - positions[objectIDs[index]]);
+				localPosition = (positions[objectIDs[i]] - positions[objectIDs[index]]);
 
-                float sqDist = (math.pow(localPosition.x, 2) + math.pow(localPosition.y, 2));
+				float sqDist = (math.pow(localPosition.x, 2) + math.pow(localPosition.y, 2));
 
-                //if greater than this distance, ignore and continue on
-                if (sqDist > maxDist)
-                {
+				//if greater than this distance, ignore and continue on
+				if (sqDist > maxDistSq) {
 
-                    continue;
+					continue;
 				}
 
-                moveTowards += (localPosition
-                //attraction level for object type, will mirror vector if wants to get away
-                * genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i]))
-                //distance falloff, further away means it cares less
-                * math.lerp(.5f, 2f, 1 - (sqDist / maxDist)));
+
+				//if it's two slimes close to each other, attraction/avoidance will be determined by
+				//an optimal distance
+				if (genes.GetObjectType(objectIDs[i]) == ObjectType.Slime
+					&& objType == ObjectType.Slime) {
 
 
-            }
+					float optimalDist = genes.GetSlimeOptimalDistance(objectIDs[index]);
+					if (sqDist < optimalDist * optimalDist) {
+
+						//slimes are too close, so get further away
+						moveTowards += localPosition * math.lerp(100, 3, (sqDist / (optimalDist * optimalDist)));
+
+
+					}
+					else {
+
+						//slimes are too far, so get closer
+						moveTowards -= localPosition * math.lerp(1, 2f, 1 - ((optimalDist * optimalDist) / sqDist));
+
+					}
+
+
+				}
+
+				else {
+				moveTowards += (localPosition
+				//attraction level for object type, will mirror vector if wants to get away
+				* genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i]))
+				//distance falloff, further away means it cares less
+				* math.lerp(.5f, 2f, 1 - (sqDist / maxDistSq)));
+				}
+
+			}
 
 
 
-            return moveTowards;
+			return moveTowards;
 		}
-
-
-
 
 
 	}
