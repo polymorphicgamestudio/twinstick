@@ -22,15 +22,15 @@ namespace ShepProject {
 		TurnRate,
 		Health,
 		SlimeOptimalDistance,
-		TotalGeneCount =
-			1 // object type
-			+ (int)Attraction.Count //for all the possible attractions an object can have
-			+ (int)ViewRange.Count 
-			+ (int)DamageType.Count
-			+ 1 // for the speed
-			+ 1 // for the turn rate
-			+ 1 // for health
-			+ 1 // slime optimal distance
+		TotalGeneCount //=
+			//1 // object type
+			//+ (int)Attraction.Count //for all the possible attractions an object can have
+			//+ (int)ViewRange.Count 
+			//+ (int)DamageType.Count
+			//+ 1 // for the speed
+			//+ 1 // for the turn rate
+			//+ 1 // for health
+			//+ 1 // slime optimal distance
 
 	}
 

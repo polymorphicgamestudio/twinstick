@@ -4,7 +4,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.VisualScripting;
-
+using UnityEngine;
 
 namespace ShepProject {
 
@@ -112,6 +112,7 @@ namespace ShepProject {
 			if (objectIDs[index] == 0)
 				return;
 
+			int objectID = objectIDs[index];
 
 			ObjectType objType = genes.GetObjectType(objectIDs[index]);
 
@@ -120,15 +121,17 @@ namespace ShepProject {
 
 			float2 moveTowards = new float2();
 
-			if (objType != ObjectType.Sheep)
-				moveTowards = (positions[targetIDs[objectIDs[index]]] - positions[objectIDs[index]])
+			if (objType != ObjectType.Sheep) {
+
+				moveTowards = (positions[targetIDs[objectIDs[index]]] - positions[objectIDs[index]]) // 500f);
 					* 10; //instead of hardcoded number will use the sheep attraction variable
 
+			}
 
 			moveTowards += SearchBucket(index, objType, buckets[objectQuadIDs[objectIDs[index]]].key);
 
-			for (int i = 0; i < neighborCounts[index]; i++) {
-				moveTowards += SearchBucket(index, objType, objectNeighbors[index * maxNeighborCount + i]);
+			for (int i = 0; i < neighborCounts[objectIDs[index]]; i++) {
+				moveTowards += SearchBucket(index, objType, objectNeighbors[objectIDs[index] * maxNeighborCount + i]);
 
 			}
 
@@ -185,6 +188,17 @@ namespace ShepProject {
 
 				localPosition = (positions[objectIDs[i]] - positions[objectIDs[index]]);
 
+
+
+
+				Vector3 pos = new Vector3();
+				pos.x = positions[objectIDs[index]].x;
+				pos.y = 1;
+				pos.z = positions[objectIDs[index]].y;
+
+				Vector3 local = new Vector3();
+
+
 				float sqDist = (math.pow(localPosition.x, 2) + math.pow(localPosition.y, 2));
 
 				//if greater than this distance, ignore and continue on
@@ -203,17 +217,35 @@ namespace ShepProject {
 					float optimalDist = genes.GetSlimeOptimalDistance(objectIDs[index]);
 					if (sqDist < optimalDist * optimalDist) {
 
+						// .1 * 48 = 4.8
+						// 1 * 20 = 20
+
 						//slimes are too close, so get further away
-						moveTowards += localPosition * math.lerp(100, 3, (sqDist / (optimalDist * optimalDist)));
+						moveTowards = localPosition * math.lerp(50, 3, (sqDist / (optimalDist * optimalDist)));
+						local *= -1;
 
 
+						local.x = localPosition.x * math.lerp(20, 3, (sqDist / (optimalDist * optimalDist)));
+						local.z = localPosition.y * math.lerp(20, 3, (sqDist / (optimalDist * optimalDist)));
+
+						local /= 20f;
+						Debug.DrawRay(pos, local, Color.red);
+						
 					}
 					else {
 
 						//slimes are too far, so get closer
-						moveTowards -= localPosition * math.lerp(1, 2f, 1 - ((optimalDist * optimalDist) / sqDist));
+						moveTowards += localPosition * math.lerp(1, 2f, 1 - ((optimalDist * optimalDist) / sqDist));
+						local.x = localPosition.x * math.lerp(1, 2f, 1 - ((optimalDist * optimalDist) / sqDist));
+						local.z = localPosition.y * math.lerp(1, 2f, 1 - ((optimalDist * optimalDist) / sqDist));
 
+						local /= 20f;
+						Debug.DrawRay(pos, local, Color.green);
 					}
+
+
+
+
 
 
 				}
@@ -225,6 +257,9 @@ namespace ShepProject {
 				//distance falloff, further away means it cares less
 				* math.lerp(.5f, 2f, 1 - (sqDist / maxDistSq)));
 				}
+
+
+
 
 			}
 

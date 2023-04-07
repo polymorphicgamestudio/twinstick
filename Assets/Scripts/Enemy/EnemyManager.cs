@@ -432,7 +432,7 @@ namespace ShepProject {
 			genes.SetObjectType(id, ObjectType.Slime);
 			genes.SetAttraction(id, Attraction.Slime, -2);
 			genes.SetAttraction(id, Attraction.Wall, -50);
-			genes.SetSlimeOptimalDistance(id, 3);
+			genes.SetSlimeOptimalDistance(id, 6);
 
 			genes.SetHealth(id, 50);
 

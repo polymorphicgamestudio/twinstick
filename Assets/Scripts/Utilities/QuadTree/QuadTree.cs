@@ -3,6 +3,7 @@ using System.Reflection;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Jobs;
 using UnityEngine.Profiling;
@@ -95,6 +96,20 @@ namespace ShepProject {
                 Gizmos.DrawCube(pos, scale);
 
             }
+
+
+			Vector3 position = new Vector3();
+			for (int i = 0; i <= positionCount; i++) {
+
+				position.x = positions[i].x;
+				position.z = positions[i].y;
+
+				Handles.Label(position, i.ToString());
+
+			}
+
+
+
 
 
         }
