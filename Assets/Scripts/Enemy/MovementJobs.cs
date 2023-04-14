@@ -169,8 +169,8 @@ namespace ShepProject {
 
 		private float2 SearchBucket(int index, ObjectType objType, QuadKey key) {
 
-			//float maxDist = 8;
-			float maxDistSq = 64;
+			float maxDist = 8;
+			float maxDistSq = maxDist * maxDist;
 			float2 localPosition = new float2();
 			float2 moveTowards = new float2();
 
@@ -189,8 +189,7 @@ namespace ShepProject {
 				localPosition = (positions[objectIDs[i]] - positions[objectIDs[index]]);
 
 
-
-
+				//for debugging rays only
 				Vector3 pos = new Vector3();
 				pos.x = positions[objectIDs[index]].x;
 				pos.y = 1;
@@ -208,39 +207,62 @@ namespace ShepProject {
 				}
 
 
-				//if it's two slimes close to each other, attraction/avoidance will be determined by
+				//that divided by maxDist to get the scaledVector
+				float angle = math.atan2(localPosition.y, localPosition.x);
+					//SignedAngle(positions[objectIDs[index]], positions[objectIDs[i]]));
+				float degrees = math.degrees(angle);
+
+				float2 one = new float2(math.cos(angle), math.sin(angle));
+
+				Debug.DrawRay(pos, new float3(one.x, 0, one.y), Color.yellow);
+
+				localPosition /= maxDist;
+
+				//Debug.DrawLine(pos + new Vector3(one.x, 0, one.y),
+					//pos + new Vector3(one.x, 0, one.y) - new Vector3(localPosition.x, 0, localPosition.y), Color.magenta);
+
+				one -= localPosition;
+				//then 1 - (localPosition percent to max distance) is then the strength of the force that it needs to repel
+
 				//an optimal distance
 				if (genes.GetObjectType(objectIDs[i]) == ObjectType.Slime
 					&& objType == ObjectType.Slime) {
 
 
 					float optimalDist = genes.GetSlimeOptimalDistance(objectIDs[index]);
-					if (sqDist < optimalDist * optimalDist) {
+					if (sqDist < (optimalDist * optimalDist)) {
 
-						// .1 * 48 = 4.8
-						// 1 * 20 = 20
 
 						//slimes are too close, so get further away
-						moveTowards = localPosition * math.lerp(50, 3, (sqDist / (optimalDist * optimalDist)));
-						local *= -1;
+						moveTowards -= one * 10;
+						// math.normalize(localPosition) * math.lerp(1, 64, 1 - distancePercent);
+
+						//* math.lerp(50, 3, (sqDist / (optimalDist * optimalDist)));
 
 
-						local.x = localPosition.x * math.lerp(20, 3, (sqDist / (optimalDist * optimalDist)));
-						local.z = localPosition.y * math.lerp(20, 3, (sqDist / (optimalDist * optimalDist)));
+						local.x = one.x;
+						local.z = one.y;
+						local.y = 0;
+						
 
-						local /= 20f;
+						//local /= 20f;
 						Debug.DrawRay(pos, local, Color.red);
 						
 					}
 					else {
 
 						//slimes are too far, so get closer
-						moveTowards += localPosition * math.lerp(1, 2f, 1 - ((optimalDist * optimalDist) / sqDist));
-						local.x = localPosition.x * math.lerp(1, 2f, 1 - ((optimalDist * optimalDist) / sqDist));
-						local.z = localPosition.y * math.lerp(1, 2f, 1 - ((optimalDist * optimalDist) / sqDist));
+						moveTowards += one * 5;
 
-						local /= 20f;
-						Debug.DrawRay(pos, local, Color.green);
+						//moveTowards += math.normalize(localPosition) * math.lerp(1, 64, 1 - distancePercent);
+
+						//localPosition * math.lerp(1, 2f, 1 - ((optimalDist * optimalDist) / sqDist));
+
+						//local = (localPosition * math.lerp(1, 64, 1 - distancePercent)).xxy;
+						//local.y = 0;
+
+						//local /= 20f;
+						//Debug.DrawRay(pos, local, Color.green);
 					}
 
 
@@ -250,13 +272,13 @@ namespace ShepProject {
 
 				}
 
-				else {
-				moveTowards += (localPosition
-				//attraction level for object type, will mirror vector if wants to get away
-				* genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i]))
-				//distance falloff, further away means it cares less
-				* math.lerp(.5f, 2f, 1 - (sqDist / maxDistSq)));
-				}
+				//else {
+				//moveTowards += (localPosition
+				////attraction level for object type, will mirror vector if wants to get away
+				//* genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i]))
+				////distance falloff, further away means it cares less
+				//* math.lerp(.5f, 2f, 1 - (sqDist / maxDistSq)));
+				//}
 
 
 

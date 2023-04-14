@@ -430,9 +430,9 @@ namespace ShepProject {
 
 			//offset 1 for type, then attractions count
 			genes.SetObjectType(id, ObjectType.Slime);
-			genes.SetAttraction(id, Attraction.Slime, -2);
+			genes.SetAttraction(id, Attraction.Slime, 2);
 			genes.SetAttraction(id, Attraction.Wall, -50);
-			genes.SetSlimeOptimalDistance(id, 6);
+			genes.SetSlimeOptimalDistance(id, 3);
 
 			genes.SetHealth(id, 50);
 
