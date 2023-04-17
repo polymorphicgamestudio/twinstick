@@ -86,7 +86,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _RimPower: 6.81
+    - _RimPower: 5
     - _Scroll: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -96,8 +96,8 @@ Material:
     - _scroll: 0.07
     m_Colors:
     - _Color: {r: 7.7277093, g: 22.363522, b: 0, a: 0}
-    - _ColorA: {r: 0.04705882, g: 0.2831221, b: 1, a: 0.4862745}
-    - _ColorB: {r: 0.34509802, g: 1, b: 0, a: 0.43137255}
+    - _ColorA: {r: 0.04705882, g: 0.3869447, b: 1, a: 0.24705882}
+    - _ColorB: {r: 0.34509796, g: 1, b: 0, a: 0.5019608}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GlowColor: {r: 0.84705883, g: 5.992157, b: 0, a: 1}
     - _HColor: {r: 1, g: 1, b: 1, a: 1}

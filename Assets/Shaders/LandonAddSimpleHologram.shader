@@ -36,9 +36,10 @@ Shader "Landon/Add Simple Hologram" {
 			half fresnel = pow(rim, _RimPower);
 
 			float3 colorA = _ColorA.rgb * 10 * _ColorA.a * hologram;
-			float3 colorB =  _ColorB * 10 * _ColorB.a * (glow + fresnel);
+			float3 colorB =  _ColorB * 10 * _ColorB.a * (glow + fresnel * 0.3);
 
-			o.Albedo = colorA + colorB;
+			o.Albedo = colorA;
+			o.Emission = colorB;
 		}
 		ENDCG
 	}
