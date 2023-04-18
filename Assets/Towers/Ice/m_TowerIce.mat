@@ -7,8 +7,10 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: m_AcidBomberBuildUp
-  m_Shader: {fileID: 4800000, guid: 193655761d6072549baf848d59cef8df, type: 3}
+  m_Name: m_TowerIce
+  m_Shader: {fileID: 4800000, guid: 7f45a6827d8734845852f045ca1edc32, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _METALLICGLOSSMAP
@@ -19,11 +21,12 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
     - _AO:
-        m_Texture: {fileID: 2800000, guid: 67377e2480466a1429a8e22acb425ec2, type: 3}
+        m_Texture: {fileID: 2800000, guid: f5fb45b38302e3f4aaf6d303622720ea, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -47,11 +50,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Glow:
-        m_Texture: {fileID: 2800000, guid: 67377e2480466a1429a8e22acb425ec2, type: 3}
+        m_Texture: {fileID: 2800000, guid: fb9e69e139542e9498af70f4a178ea45, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 2dc9a9a5c69bf3949bcb06e4f69ef612, type: 3}
+        m_Texture: {fileID: 2800000, guid: 1bd82f70995b67f43bf62404379e4780, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -81,22 +84,18 @@ Material:
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
-    - _ObjectHigh: 3.47
-    - _ObjectLow: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Scroll: 1
-    - _ShaderDisplacement: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 7.7277093, g: 22.363522, b: 0, a: 0}
-    - _DispColor: {r: 0, g: 0.06, b: 3.17, a: 0}
+    - _Color: {r: 0.21480839, g: 0.31998724, b: 3.4154592, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _GlowColor: {r: 0.84705883, g: 5.992157, b: 0, a: 1}
+    - _GlowColor: {r: 0.40194184, g: 0.6048996, b: 3.9943, a: 1}
     - _HColor: {r: 1, g: 1, b: 1, a: 1}
     - _SColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

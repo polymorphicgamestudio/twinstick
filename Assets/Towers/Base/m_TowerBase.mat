@@ -7,10 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: m_LaserHologram
-  m_Shader: {fileID: 4800000, guid: 8bd035cd1f4aefd4eaa79231af303697, type: 3}
-  m_Parent: {fileID: 0}
-  m_ModifiedSerializedProperties: 0
+  m_Name: m_TowerBase
+  m_Shader: {fileID: 4800000, guid: 58ffe94cf6aabaa43a372580de609e9d, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _METALLICGLOSSMAP
@@ -21,12 +19,11 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
     - _AO:
-        m_Texture: {fileID: 2800000, guid: 67377e2480466a1429a8e22acb425ec2, type: 3}
+        m_Texture: {fileID: 2800000, guid: 1b7bc65a230f4e74bbf96b24dafb42f1, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -49,12 +46,8 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Glow:
-        m_Texture: {fileID: 2800000, guid: 67377e2480466a1429a8e22acb425ec2, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 137f5f83113693442be43a3ea29f7147, type: 3}
+        m_Texture: {fileID: 2800000, guid: 62c5fe2e82a0af743bcdd778acfd22d2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -86,20 +79,16 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _RimPower: 5
     - _Scroll: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
-    - _scroll: 0.07
     m_Colors:
-    - _Color: {r: 7.7277093, g: 22.363522, b: 0, a: 0}
-    - _ColorA: {r: 0.04705882, g: 0.3869447, b: 1, a: 0.24705882}
-    - _ColorB: {r: 0.6921586, g: 0.2536489, b: 0.8490566, a: 0.5019608}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _GlowColor: {r: 0.84705883, g: 5.992157, b: 0, a: 1}
+    - _GlowColor: {r: 5.3033686, g: 0.76507163, b: 0.5336719, a: 1}
     - _HColor: {r: 1, g: 1, b: 1, a: 1}
     - _SColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
