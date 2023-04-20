@@ -6,7 +6,7 @@ Shader "Landon/Toon/Ramp AO Glow" {
 		[NoScaleOffset] _Glow ("Glow Mask (R) Glow Pattern (G)", 2D) = "white" {}
 		[NoScaleOffset] _Ramp ("Toon Ramp (RGB)", 2D) = "gray" {}
 
-		[HDR] _Color ("Glow Color", Color) = (0.5,0.5,0.5,1.0)
+		[HDR] _Color ("Glow Color (RGB) Strength (A)", Color) = (0.5,0.5,0.5,1.0)
 		_Scroll ("Scroll Speed", Range(0,2)) = 1
 	}
 	
@@ -65,7 +65,7 @@ Shader "Landon/Toon/Ramp AO Glow" {
 
 			o.Albedo = mainTex.rgb;
 			o.Alpha = mainTex.a;
-			o.Emission = glowTex.r * glowScroll.g * _Color;
+			o.Emission = glowTex.r * glowScroll.g * _Color.rgb * _Color.a;
 		}
 		ENDCG
 	}
