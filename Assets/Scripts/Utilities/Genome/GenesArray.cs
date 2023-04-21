@@ -11,9 +11,9 @@ namespace ShepProject {
 	public enum GeneGroups {
 
 		Type,
-		Attractions,
-		ViewRanges,
-		Resistances,
+		//Attractions,
+		//ViewRanges,
+		//Resistances,
 		StatStartIndex = 1 // object type
 			+ (int)Attraction.Count //for all the possible attractions an object can have
 			+ (int)ViewRange.Count
@@ -228,7 +228,6 @@ namespace ShepProject {
 
 
         #endregion
-
 
 		public void ResetIDGenes(int id)
 		{

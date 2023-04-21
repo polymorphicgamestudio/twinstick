@@ -30,6 +30,7 @@ namespace ShepProject {
 
 		public EnemyManager EnemyManager => enemyManager;
 
+		public event EventTrigger gameOver;
 
 		public enum Thing {
 			Slime,
@@ -130,7 +131,10 @@ namespace ShepProject {
 
 		}
 
-
+		public void GameOverEventTrigger()
+		{
+			gameOver.Invoke();
+		}
 
 		static ShepGM() {
 			for (int q = 0; q < things.Length; q++) {

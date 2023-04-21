@@ -18,6 +18,7 @@ namespace ShepProject {
 		public NativeArray<ushort> objectIDs;
 		public NativeArray<ushort> sortedObjectIDs;
 		public NativeArray<ushort> objectQuadIDs;
+		public NativeList<ushort> deletions;
 		public NativeArray<float2> positions;
 
 		public EnemyManager enemyManager;
@@ -78,24 +79,27 @@ namespace ShepProject {
             Vector3 pos = new Vector3(0, 1, 0);
             Vector3 scale = new Vector3(.5f, .5f, .5f);
 
-			Quad quad = quadsList[objectQuadIDs[1]];
-            pos.x = quad.position.x;
-            pos.z = quad.position.y;
-            //DrawQuad();
-            Gizmos.DrawCube(pos, scale);
+
+			//for debugging neighbors
+
+			//Quad quad = quadsList[objectQuadIDs[1]];
+   //         pos.x = quad.position.x;
+   //         pos.z = quad.position.y;
+   //         //DrawQuad();
+   //         Gizmos.DrawCube(pos, scale);
 
 
-            for (int i = maxNeighborQuads; i < maxNeighborQuads + neighborCounts[1]; i++)
-            {
-                quad = quads[objectNeighbors[i]];
+   //         for (int i = maxNeighborQuads; i < maxNeighborQuads + neighborCounts[1]; i++)
+   //         {
+   //             quad = quads[objectNeighbors[i]];
 
-                pos.x = quad.position.x;
-				pos.y = 2;
-                pos.z = quad.position.y;
-                //DrawQuad();
-                Gizmos.DrawCube(pos, scale);
+   //             pos.x = quad.position.x;
+			//	pos.y = 2;
+   //             pos.z = quad.position.y;
+   //             //DrawQuad();
+   //             Gizmos.DrawCube(pos, scale);
 
-            }
+   //         }
 
 
 			Vector3 position = new Vector3();
@@ -149,6 +153,7 @@ namespace ShepProject {
 			objectIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
 			sortedObjectIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
             objectQuadIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
+			deletions = new NativeList<ushort>(100, Allocator.Persistent);
 
 			for (ushort i = 0; i < positionCount; i++) {
 
@@ -209,10 +214,10 @@ namespace ShepProject {
 				sorted[0] = true;
 				lengths[1] = 1;
 
-				for (int i = 0; i <= positionCount; i++) {
+				for (ushort i = 0; i <= positionCount; i++) {
 
-					objectQuadIDs[i] = 0; 
-
+					objectQuadIDs[objectIDs[i]] = 0;
+					sortedObjectIDs[objectIDs[i]] = i;
 				}
 
 			}
@@ -315,7 +320,7 @@ namespace ShepProject {
 			}
 
 			//update the transform's positions
-			NullChecks();
+			//NullChecks();
 
 		}
 
@@ -459,10 +464,31 @@ namespace ShepProject {
 
         }
 
+		public void QueueDeletion(ushort objectID)
+		{
+			deletions.Add(objectID);
+
+		}
+
+        public void ProcessDeletions()
+		{
+			deletions.Sort();
+
+			for (int i = deletions.Length - 1; i >= 0 ; i--)
+			{
+
+				RemoveTransform(deletions[i]);
+
+			}
+
+			deletions.Clear();
+
+		}
+
         public ushort AddTransform(Transform transform) {
 
 			positionCount++;
-			transforms[positionCount] = transform;
+			transforms[objectIDs[positionCount]] = transform;
 			return objectIDs[positionCount];
 
 		}
@@ -480,28 +506,23 @@ namespace ShepProject {
 
 			Transform inactive = transforms[objectID];
 			inactive.gameObject.SetActive(false);
+			transforms[objectID] = null;
 
-			ushort temp = objectIDs[sortedObjectIDs[objectID]];
+
+
+            ushort sorted = sortedObjectIDs[objectID];
 			ushort overwrite = objectIDs[positionCount];
-
-            objectIDs[sortedObjectIDs[objectID]] = overwrite;
-			objectIDs[positionCount] = temp;
-
-
-            //transforms[objectID] = transforms[objectIDs[positionCount]];
-            //transforms[objectIDs[positionCount]] = null;
-
-            //update these pieces of data
-            //objectID
-            //quadID
+			//ushort overwriteSorted = sortedObjectIDs[objectIDs[positionCount]];
 
 
 
-            //quadID is easy, just get object id
-            //how to do objectID?
-            //get the end objectID (possible for it to be the player ID) then assign that ID to the 
-            //id that's being removed so that array doesn't need to be refreshed
+			objectIDs[sorted] = overwrite;
+            objectIDs[positionCount] = objectID;
 
+			//need to update the sortedIDs as well to make sure there are no errors
+
+			sortedObjectIDs[objectIDs[positionCount]] = sortedObjectIDs[objectID];
+			sortedObjectIDs[objectID] = (ushort)positionCount;
 
 
             positionCount--;
@@ -564,9 +585,10 @@ namespace ShepProject {
 			transformAccess.Dispose();
 			objectQuadIDs.Dispose();
 			quads.Dispose();
+			deletions.Dispose();
 
 
-			neighborCounts.Dispose();
+            neighborCounts.Dispose();
 			objectNeighbors.Dispose();
 
 

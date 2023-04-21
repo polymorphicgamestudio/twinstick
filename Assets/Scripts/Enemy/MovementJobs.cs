@@ -5,6 +5,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace ShepProject {
 
@@ -30,12 +31,15 @@ namespace ShepProject {
 			if (targetIDs[objectIDs[index]] != ushort.MaxValue)
 				return;
 
-			//else if no target, check to see which is the closest and start attackingS
+			//else if no target, check to see which is the closest and start attacking
 
 			float minDistSq = 1000000;
 			float current = 0;
 
 			for (ushort i = 0; i < choosableTargets.Length; i++) {
+
+				if (choosableTargets[i] == ushort.MaxValue)
+					continue;
 
 				current = math.distancesq(positions[objectIDs[index]], positions[choosableTargets[i]]);
 
@@ -95,6 +99,8 @@ namespace ShepProject {
 
 		public int maxNeighborCount;
 
+		public NativeArray<float> sheepDistancesToSlime;
+
         //initial headings
         [NativeDisableContainerSafetyRestriction]
 		public NativeSlice<float> headings;
@@ -123,11 +129,20 @@ namespace ShepProject {
 
 			if (objType != ObjectType.Sheep) {
 
-				moveTowards = (positions[targetIDs[objectIDs[index]]] - positions[objectIDs[index]]) // 500f);
-					* 10; //instead of hardcoded number will use the sheep attraction variable
+				float2 localPosition = positions[targetIDs[objectIDs[index]]] - positions[objectIDs[index]];
+
+
+                float angle = math.atan2(localPosition.y, localPosition.x);
+                float2 one = new float2(math.cos(angle), math.sin(angle));
+
+                moveTowards = one - ((positions[targetIDs[objectIDs[index]]] - positions[objectIDs[index]]) / 500f)
+					* 5; //instead of hardcoded number will use the sheep attraction variable
 
 			}
-
+			else
+			{
+				sheepDistancesToSlime[objectIDs[index] - 1] = 10000;
+			}
 			moveTowards += SearchBucket(index, objType, buckets[objectQuadIDs[objectIDs[index]]].key);
 
 			for (int i = 0; i < neighborCounts[objectIDs[index]]; i++) {
@@ -161,7 +176,7 @@ namespace ShepProject {
 
 			headings[objectIDs[index]] 
 				//= headingCalculation;
-				= math.lerp(headings[objectIDs[index]], headingCalculation, deltaTime * 6);
+				= math.lerp(headings[objectIDs[index]], headingCalculation, deltaTime * 2);
 
 
 		}
@@ -200,6 +215,16 @@ namespace ShepProject {
 
 				float sqDist = (math.pow(localPosition.x, 2) + math.pow(localPosition.y, 2));
 
+				if (objType == ObjectType.Sheep && genes.GetObjectType(objectIDs[i]) == ObjectType.Slime)
+				{
+                    int ID = objectIDs[index] - 1;
+
+                    if (sheepDistancesToSlime[objectIDs[index] - 1] > sqDist)
+					{
+						sheepDistancesToSlime[objectIDs[index] - 1] = sqDist;
+					}
+				}
+
 				//if greater than this distance, ignore and continue on
 				if (sqDist > maxDistSq) {
 
@@ -209,18 +234,10 @@ namespace ShepProject {
 
 				//that divided by maxDist to get the scaledVector
 				float angle = math.atan2(localPosition.y, localPosition.x);
-					//SignedAngle(positions[objectIDs[index]], positions[objectIDs[i]]));
-				float degrees = math.degrees(angle);
 
 				float2 one = new float2(math.cos(angle), math.sin(angle));
 
-				Debug.DrawRay(pos, new float3(one.x, 0, one.y), Color.yellow);
-
 				localPosition /= maxDist;
-
-				//Debug.DrawLine(pos + new Vector3(one.x, 0, one.y),
-					//pos + new Vector3(one.x, 0, one.y) - new Vector3(localPosition.x, 0, localPosition.y), Color.magenta);
-
 				one -= localPosition;
 				//then 1 - (localPosition percent to max distance) is then the strength of the force that it needs to repel
 
@@ -234,7 +251,7 @@ namespace ShepProject {
 
 
 						//slimes are too close, so get further away
-						moveTowards -= one * 10;
+						moveTowards -= one * (genes.GetAttraction(objectIDs[index], Attraction.Slime) * 2);
 						// math.normalize(localPosition) * math.lerp(1, 64, 1 - distancePercent);
 
 						//* math.lerp(50, 3, (sqDist / (optimalDist * optimalDist)));
@@ -243,7 +260,7 @@ namespace ShepProject {
 						local.x = one.x;
 						local.z = one.y;
 						local.y = 0;
-						
+						local *= -1;
 
 						//local /= 20f;
 						Debug.DrawRay(pos, local, Color.red);
@@ -252,17 +269,18 @@ namespace ShepProject {
 					else {
 
 						//slimes are too far, so get closer
-						moveTowards += one * 5;
+						moveTowards += one * genes.GetAttraction(objectIDs[index], Attraction.Slime) / 2f;
 
-						//moveTowards += math.normalize(localPosition) * math.lerp(1, 64, 1 - distancePercent);
+                        //moveTowards += math.normalize(localPosition) * math.lerp(1, 64, 1 - maxDist);
 
-						//localPosition * math.lerp(1, 2f, 1 - ((optimalDist * optimalDist) / sqDist));
+                        //localPosition * math.lerp(1, 2f, 1 - ((optimalDist * optimalDist) / sqDist));
 
-						//local = (localPosition * math.lerp(1, 64, 1 - distancePercent)).xxy;
-						//local.y = 0;
+                        local.x = one.x;
+                        local.z = one.y;
+                        local.y = 0;
 
-						//local /= 20f;
-						//Debug.DrawRay(pos, local, Color.green);
+                        //local /= 20f;
+                        Debug.DrawRay(pos, local, Color.green);
 					}
 
 
@@ -271,14 +289,18 @@ namespace ShepProject {
 
 
 				}
+				else
+				{
 
-				//else {
-				//moveTowards += (localPosition
-				////attraction level for object type, will mirror vector if wants to get away
-				//* genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i]))
-				////distance falloff, further away means it cares less
-				//* math.lerp(.5f, 2f, 1 - (sqDist / maxDistSq)));
-				//}
+					moveTowards += (one
+						* genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i])));
+
+                    //moveTowards += (localPosition
+                    ////attraction level for object type, will mirror vector if wants to get away
+                    //* genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i]))
+                    ////distance falloff, further away means it cares less
+                    //* math.lerp(.5f, 2f, 1 - (sqDist / maxDistSq)));
+                }
 
 
 

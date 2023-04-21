@@ -63,6 +63,7 @@ namespace ShepProject {
 
 		//will store the target id of the slime
 		private NativeArray<ushort> targetIDs;
+		private NativeArray<float> sheepDistancesToSlimes;
 
 		private NativeArray<float> headings;
 
@@ -119,9 +120,11 @@ namespace ShepProject {
 
 			choosableTargets = new NativeList<ushort>(100, Allocator.Persistent);
 			targetIDs = new NativeArray<ushort>(maxEnemies, Allocator.Persistent);
+			sheepDistancesToSlimes = new NativeArray<float>(100, Allocator.Persistent);
 			headings = new NativeArray<float>(maxEnemies, Allocator.Persistent);
+
 			burrows = new List<EnemyBurrow>();
-			quadTree = new QuadTree(maxEnemies, 25);
+			quadTree = new QuadTree(maxEnemies, 50);
 			quadTree.enemyManager = this;
 
 			currentCountdownToWave = countdownToWave;
@@ -131,7 +134,7 @@ namespace ShepProject {
 			for (int i = 0; i < targetIDs.Length; i++)
 				targetIDs[i] = ushort.MaxValue;
 
-
+			Inst.gameOver += GameOver;
 
 		}
 
@@ -236,7 +239,11 @@ namespace ShepProject {
 
 		private void NonWaveUpdate() {
 
-			if (updateInitialize) {
+
+            if (choosableTargets.Length == 0)
+                return;
+
+            if (updateInitialize) {
 				updateInitialize = false;
 				currentCountdownToWave = countdownToWave;
 
@@ -265,7 +272,7 @@ namespace ShepProject {
 
 
 		private void DuringWaveUpdate() {
-			/*
+            /*
              * each frame, spawn any new required enemies
              * 
              * copy the enemy positions to a float2 buffer for jobs since its a 2d representation
@@ -278,7 +285,11 @@ namespace ShepProject {
              * 
              */
 
-			if (updateInitialize) {
+            if (choosableTargets.Length == 0)
+             return;
+
+
+            if (updateInitialize) {
 				updateInitialize = false;
 
 				//spawn any additional required burrows
@@ -359,6 +370,7 @@ namespace ShepProject {
 			moveJob.neighborCounts = quadTree.neighborCounts;
 			moveJob.objectNeighbors = quadTree.objectNeighbors;
 			moveJob.maxNeighborCount = quadTree.maxNeighborQuads;
+			moveJob.sheepDistancesToSlime = sheepDistancesToSlimes;
 			moveJob.Run(quadTree.positionCount + 1);
 			//moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
@@ -377,12 +389,82 @@ namespace ShepProject {
 				if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Sheep) {
 
 					//if being chased, set velocity, otherwise don't
-					//if (headings[i] != newHeadings[i])
-					quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
-						= (quadTree.Transforms[quadTree.objectIDs[i]].forward * 3);
+					int ID = quadTree.objectIDs[i] - 1;
 
-					continue;
 
+                    if (sheepDistancesToSlimes[ID] > 64)
+					{
+                        //idle animation
+                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject
+							.GetComponent<Animator>().SetBool("Moving", false);
+                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject
+							.GetComponent<Animator>().SetBool("Running", false);
+
+                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject
+							.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                    }
+                    else if (sheepDistancesToSlimes[ID] > 36)
+                    {
+						//walk animation
+						quadTree.Transforms[quadTree.objectIDs[i]].gameObject
+							.GetComponent<Animator>().SetBool("Moving", true);
+                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject
+							.GetComponent<Animator>().SetBool("Running", false);
+
+                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
+                            = (quadTree.Transforms[quadTree.objectIDs[i]].forward);
+                    }
+                    else if (sheepDistancesToSlimes[ID] > 4)
+                    {
+                        //run animation
+                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject
+							.GetComponent<Animator>().SetBool("Moving", true);
+                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject
+							.GetComponent<Animator>().SetBool("Running", true);
+
+                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
+                            = (quadTree.Transforms[quadTree.objectIDs[i]].forward * 3);
+                    }
+					else
+					{
+
+						for (int j = 0; j < choosableTargets.Length; j++)
+						{
+
+							if (choosableTargets[j] != quadTree.objectIDs[i])
+								continue;
+
+								choosableTargets.RemoveAt(j);
+
+							break;
+
+						}
+                        //choosableTargets[quadTree.objectIDs[i] - 1] = ushort.MaxValue;
+
+						//die
+						genes.ResetIDGenes(quadTree.objectIDs[i]);
+						quadTree.QueueDeletion(quadTree.objectIDs[i]);
+
+						for (int j = 0; j < targetIDs.Length; j++)
+						{
+
+							if (targetIDs[j] == quadTree.objectIDs[i])
+							{
+								targetIDs[j] = ushort.MaxValue;
+							}
+
+						}
+
+						//if all sheep are dead, game over.
+
+						if (choosableTargets.Length == 0)
+						{
+							Inst.GameOverEventTrigger();
+                            //GameOver();
+							break;
+						}
+
+					}
 				}
 				else if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Slime) {
 
@@ -396,7 +478,7 @@ namespace ShepProject {
 
 			Profiler.EndSample();
 
-
+			quadTree.ProcessDeletions();
 
 
 		}
@@ -430,7 +512,7 @@ namespace ShepProject {
 
 			//offset 1 for type, then attractions count
 			genes.SetObjectType(id, ObjectType.Slime);
-			genes.SetAttraction(id, Attraction.Slime, 2);
+			genes.SetAttraction(id, Attraction.Slime, 5);
 			genes.SetAttraction(id, Attraction.Wall, -50);
 			genes.SetSlimeOptimalDistance(id, 3);
 
@@ -488,7 +570,7 @@ namespace ShepProject {
 
 				GameObject sheep = Instantiate(sheepPrefab);
 
-				sheep.transform.position = new Vector3(Random.Range(1, 4), 0, Random.Range(-4, -3));
+				sheep.transform.position = new Vector3(Random.Range(-6, 6), 0, Random.Range(-6, 6));
 
 				ushort id = quadTree.AddTransform(sheep.transform);
 
@@ -546,7 +628,25 @@ namespace ShepProject {
 
 		}
 
+		private void GameOver()
+		{
 
+			Debug.Log("Game Over");
+
+			for (int i = 0; i <= quadTree.positionCount; i++)
+			{
+
+				if (genes.GetObjectType(quadTree.objectIDs[i]) != ObjectType.Slime)
+					continue;
+				Rigidbody rb = quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>();
+
+				rb.velocity = Vector3.zero;
+				rb.angularVelocity = Vector3.zero;
+
+            }
+
+
+		}
 
 		private void OnDisable() {
 			quadTree.Dispose();
@@ -556,6 +656,8 @@ namespace ShepProject {
 
 			choosableTargets.Dispose();
 			targetIDs.Dispose();
+
+			sheepDistancesToSlimes.Dispose();
 
 		}
 
