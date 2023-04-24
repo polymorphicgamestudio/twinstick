@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TEMPLookAtPlayer : MonoBehaviour {
@@ -7,7 +5,7 @@ public class TEMPLookAtPlayer : MonoBehaviour {
 	Transform player;
 	public Vector3 rotationOffset = Vector3.zero;
 
-	void Awake() {
+	void Start() {
 		player = ShepProject.ShepGM.inst.player;
 	}
 
