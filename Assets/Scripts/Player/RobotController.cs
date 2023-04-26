@@ -21,7 +21,6 @@ public class RobotController : MonoBehaviour {
 
 	public Transform[] footTargets; // L, R
 
-
 	bool running = false;
 	Quaternion lookDirection;
 	bool usingController = false;
@@ -32,6 +31,7 @@ public class RobotController : MonoBehaviour {
     public Transform hologram;
 	public Transform TowerToPlace;
 	[HideInInspector] public Vector3 forwardTilePos;
+
 
 
 

@@ -23,7 +23,7 @@ namespace ShepProject {
 		float zoomInput;
         float zoomPercent = 0.8f;
         Vector2 zoomRange = new Vector2(5f, 60f);
-		Vector2 vertAngleRange = new Vector2(30f, 80f);
+		Vector2 vertAngleRange = new Vector2(10f, 85f);
 		float perspAngleVert = 60f;
 		float perspAngleHoz = 0f;
 		bool rotating = false;
