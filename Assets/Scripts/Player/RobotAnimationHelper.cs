@@ -4,10 +4,9 @@ using UnityEngine;
 public class RobotAnimationHelper : MonoBehaviour {
 
 	AudioSource audioSource;
-	[SerializeField] AudioClip wakeSound;
 	[SerializeField] AudioClip shootSound;
+	[SerializeField] ParticleSystem shootParticles;
 	[SerializeField] ParticleSystem buildProjectorParticles;
-	[SerializeField] DynamicBone dynamicDoor;
 
 	void Awake(){
 		audioSource = GetComponent<AudioSource>();
@@ -20,17 +19,8 @@ public class RobotAnimationHelper : MonoBehaviour {
 		buildProjectorParticles.Stop();
 	}
 	void Shoot() {
-
-	}
-	
-	
-	
-	
-	
-	public void PlayWakeSound() {
-		audioSource.PlayOneShot(wakeSound);
-	}
-	public void PlayShootSound() {
+		shootParticles.Play();
 		audioSource.PlayOneShot(shootSound);
 	}
+	
 }

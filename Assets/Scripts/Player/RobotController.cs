@@ -27,12 +27,12 @@ public class RobotController : MonoBehaviour {
 	Vector3 joystickDir;
 	Vector3 mouseDir;
 
-    public bool BuildMode = false;
-    public Transform hologram;
-	public Transform TowerToPlace;
+    public bool buildMode = false;
+	bool lastFrameBuildMode = false;
 	[HideInInspector] public Vector3 forwardTilePos;
+	Vector3 hologramPos;
 
-
+	[SerializeField] Animator animController;
 
 
 	private void Start() {
@@ -61,7 +61,8 @@ public class RobotController : MonoBehaviour {
 			//if running changes set joystickDir to velocity;
 			joystickDir = player.velocity;
 		}
-		SetForwardTilePos();
+		BuildModeChange();
+		//SetForwardTilePos();
 	}
 
 	// By Putting our animation code in LateUpdate, we allow other systems to update the environment first 
@@ -75,40 +76,19 @@ public class RobotController : MonoBehaviour {
 
 		//root.position = Vector3.Lerp(root.position, centerOfBalance + Vector3.up * breathDisplace, 10f * Time.deltaTime);
 		root.position = centerOfBalance + Vector3.up * (yOffset + breathDisplace);
-
 		player.rotation = Quaternion.RotateTowards(player.rotation, lookDirection, 180f * Time.deltaTime);
 
-		if (BuildMode) {
-			Vector3 forwardDir = lookDirection * Vector3.forward;
-			Vector3 inFrontOfRobot = root.position + forwardDir * 4f;
-			forwardTilePos = VectorToNearestTilePos(inFrontOfRobot);
-			//Vector3 vectorToSnappePos = Vector3.ProjectOnPlane(forwardTilePos - head.position,Vector3.up);
-			//Quaternion snappedLookDir = Quaternion.LookRotation(vectorToSnappePos, Vector3.up);
-			//head.rotation = Quaternion.Slerp(head.rotation, snappedLookDir, 10f * Time.deltaTime);
-			Vector3 vectorToHologramPos = Vector3.ProjectOnPlane(hologram.position - root.position,Vector3.up);
-			head.rotation = Quaternion.LookRotation(vectorToHologramPos, Vector3.up);
-            if (Input.GetMouseButtonDown(0))
-            {
-				Instantiate(this.TowerToPlace, forwardTilePos, Quaternion.identity);
-				BuildMode = false;
-				Destroy(this.hologram.gameObject);
-            }
-        }
-		else
-			head.rotation = Quaternion.Slerp(head.rotation, lookDirection, 5f * Time.deltaTime);
+		SetHeadRotation();
 	}
 
-
-	void SetForwardTilePos() {
-		if (BuildMode) {
-			Vector3 inFrontOfRobotHead = head.position + head.forward * 4f;
-			hologram.position = Vector3.Lerp(hologram.position, forwardTilePos, 20f * Time.deltaTime);
-			//Debug.DrawRay(forwardTilePos, Vector3.up * 5f, Color.yellow);
-		}
-		else {
-			forwardTilePos = Vector3.zero;
-		}
+	void BuildModeChange() {
+		bool buildModeChanged = buildMode != lastFrameBuildMode;
+		lastFrameBuildMode = buildMode;
+		if (!buildModeChanged) return;
+		if (buildMode) animController.SetTrigger("BuildMode");
+		if (!buildMode) animController.SetTrigger("AttackMode");
 	}
+	
 	Vector3 VectorToNearestTilePos(Vector3 inputVector) {
 		return new Vector3(SnapNumber(inputVector.x), 0, SnapNumber(inputVector.z));
 	}
@@ -125,6 +105,16 @@ public class RobotController : MonoBehaviour {
 		Vector3 dir = running ? player.velocity : usingController? joystickDir : mouseDir;
 		if (dir == Vector3.zero) return;
 		lookDirection = Quaternion.LookRotation(dir, Vector3.up);
+	}
+	void SetHeadRotation() {
+		if (buildMode) {
+			Vector3 forwardFromRobot = root.position + lookDirection * Vector3.forward * 4f;
+			forwardTilePos = VectorToNearestTilePos(forwardFromRobot);
+			hologramPos = Vector3.Lerp(hologramPos, forwardTilePos, 20f * Time.deltaTime);
+			Vector3 vectorToHologramPos = Vector3.ProjectOnPlane(hologramPos - root.position, Vector3.up);
+			head.rotation = Quaternion.LookRotation(vectorToHologramPos, Vector3.up);
+		}
+		else head.rotation = Quaternion.Slerp(head.rotation, lookDirection, 5f * Time.deltaTime);
 	}
 	void SetNeckAngle(float minDist, float maxDist, float minAngle, float maxAngle) {
 		distFromMousePos = Vector3.Distance(root.position, mousePos);
