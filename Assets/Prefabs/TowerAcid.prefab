@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 822805762073733012}
   - component: {fileID: 3105414572072855986}
   - component: {fileID: 4502911868630231006}
+  - component: {fileID: -6452706148326020063}
   m_Layer: 0
   m_Name: TowerAcid
   m_TagString: Untagged
@@ -68,7 +69,7 @@ Transform:
   - {fileID: 1152388241345456815}
   - {fileID: 5172683211812970943}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8705273261156181435
 MeshFilter:
@@ -252,6 +253,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-6452706148326020063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3162570614528031948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31238cd0225bd5648ae49c2ab1b426a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RotationBoneHoz: {fileID: 5172683211812970943}
+  RotationBoneVert: {fileID: 7698009924099055247}
 --- !u!1 &3302327193128445562
 GameObject:
   m_ObjectHideFlags: 0

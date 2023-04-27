@@ -5348,6 +5348,7 @@ GameObject:
   - component: {fileID: 919294012575211727}
   - component: {fileID: 8278658474680881840}
   - component: {fileID: 2998269063295051018}
+  - component: {fileID: 5361726921865591811}
   m_Layer: 0
   m_Name: TowerFire
   m_TagString: Untagged
@@ -5370,7 +5371,7 @@ Transform:
   - {fileID: 3374730477782200946}
   - {fileID: 5916002734980033242}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8519897364006894746
 MeshFilter:
@@ -5554,3 +5555,17 @@ MonoBehaviour:
   wakeSound: {fileID: 8300000, guid: 3001b1e5c88be0d4bbe933e5736f644c, type: 3}
   shootSound: {fileID: 8300000, guid: 03ad1f5e7e9cc254392c6462fc0fdfb2, type: 3}
   shootParticles: {fileID: 2962419707355523096}
+--- !u!114 &5361726921865591811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8310487648821542239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31238cd0225bd5648ae49c2ab1b426a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RotationBoneHoz: {fileID: 5916002734980033242}
+  RotationBoneVert: {fileID: 6013516840170974966}

@@ -201,6 +201,8 @@ GameObject:
   - component: {fileID: 6782752747467867448}
   - component: {fileID: 8556814621635228915}
   - component: {fileID: 727117834669051989}
+  - component: {fileID: -570944647341748449}
+  - component: {fileID: 5956989190832097747}
   m_Layer: 0
   m_Name: BuildUpAcid
   m_TagString: Untagged
@@ -225,7 +227,7 @@ Transform:
   - {fileID: 111666773500207582}
   - {fileID: 5004068408039348282}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6782752747467867448
 MeshFilter:
@@ -298,6 +300,32 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-570944647341748449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5384734035660255152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 549fc1e6134ca924b91590a9cfcd9fac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5956989190832097747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5384734035660255152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31238cd0225bd5648ae49c2ab1b426a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RotationBoneHoz: {fileID: 111666773500207582}
+  RotationBoneVert: {fileID: 5803905414367755640}
 --- !u!1 &6506666483564961160
 GameObject:
   m_ObjectHideFlags: 0

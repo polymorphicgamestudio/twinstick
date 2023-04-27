@@ -15062,6 +15062,8 @@ GameObject:
   - component: {fileID: 82679572650077331}
   - component: {fileID: 7637379373341724129}
   - component: {fileID: 7067855202864198660}
+  - component: {fileID: 4570762008034883742}
+  - component: {fileID: 3441436293464889295}
   m_Layer: 0
   m_Name: BuildUpLaser
   m_TagString: Untagged
@@ -15086,7 +15088,7 @@ Transform:
   - {fileID: 763407542420948159}
   - {fileID: 1178259537076435968}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &82679572650077331
 MeshFilter:
@@ -15159,6 +15161,32 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &4570762008034883742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6555521609580945563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 549fc1e6134ca924b91590a9cfcd9fac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3441436293464889295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6555521609580945563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31238cd0225bd5648ae49c2ab1b426a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RotationBoneHoz: {fileID: 1178259537076435968}
+  RotationBoneVert: {fileID: 8268245179476675643}
 --- !u!1 &8630892339996365982
 GameObject:
   m_ObjectHideFlags: 0
