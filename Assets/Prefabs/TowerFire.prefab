@@ -5349,6 +5349,7 @@ GameObject:
   - component: {fileID: 8278658474680881840}
   - component: {fileID: 2998269063295051018}
   - component: {fileID: 5361726921865591811}
+  - component: {fileID: -5007548118545212137}
   m_Layer: 0
   m_Name: TowerFire
   m_TagString: Untagged
@@ -5569,3 +5570,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RotationBoneHoz: {fileID: 5916002734980033242}
   RotationBoneVert: {fileID: 6013516840170974966}
+--- !u!114 &-5007548118545212137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8310487648821542239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1b7a96fd33c4de47845b7ee4cdfd55f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

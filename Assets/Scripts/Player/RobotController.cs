@@ -27,12 +27,12 @@ public class RobotController : MonoBehaviour {
 	Vector3 joystickDir;
 	Vector3 mouseDir;
 
-    public bool buildMode = false;
+	[HideInInspector] public bool buildMode = false;
 	bool lastFrameBuildMode = false;
 	[HideInInspector] public Vector3 forwardTilePos;
-	Vector3 hologramPos;
+	[HideInInspector] public Vector3 hologramPos;
 
-	[SerializeField] Animator animController;
+	public Animator animController;
 
 
 	private void Start() {
@@ -115,6 +115,10 @@ public class RobotController : MonoBehaviour {
 			head.rotation = Quaternion.LookRotation(vectorToHologramPos, Vector3.up);
 		}
 		else head.rotation = Quaternion.Slerp(head.rotation, lookDirection, 5f * Time.deltaTime);
+	}
+	public void ForceHologramPosUpdate() {
+		forwardTilePos = VectorToNearestTilePos(root.position + lookDirection * Vector3.forward * 4f);
+		hologramPos = forwardTilePos;
 	}
 	void SetNeckAngle(float minDist, float maxDist, float minAngle, float maxAngle) {
 		distFromMousePos = Vector3.Distance(root.position, mousePos);

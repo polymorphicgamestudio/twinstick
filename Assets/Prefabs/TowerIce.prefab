@@ -10107,6 +10107,7 @@ GameObject:
   - component: {fileID: 3566126137869024845}
   - component: {fileID: 6988562160897906424}
   - component: {fileID: 7029736239938932660}
+  - component: {fileID: 2503628535143691749}
   m_Layer: 0
   m_Name: TowerIce
   m_TagString: Untagged
@@ -10327,6 +10328,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RotationBoneHoz: {fileID: 572765258766886739}
   RotationBoneVert: {fileID: 8184455842856494744}
+--- !u!114 &2503628535143691749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6673977207240727913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1b7a96fd33c4de47845b7ee4cdfd55f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6847040003165695686
 GameObject:
   m_ObjectHideFlags: 0

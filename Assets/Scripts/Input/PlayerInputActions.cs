@@ -107,6 +107,24 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ActionSelectionDown"",
+                    ""type"": ""Button"",
+                    ""id"": ""2e18426a-a473-443a-b6ca-5866bf5b95eb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ActionSelectionUp"",
+                    ""type"": ""Button"",
+                    ""id"": ""d1a36199-ee7a-4622-8645-1913b07fe256"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -448,6 +466,50 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Run"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f1492d38-4aaa-48e7-bc6f-b5a306267b07"",
+                    ""path"": ""<Gamepad>/dpad/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActionSelectionDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""33bae921-5494-4b30-8e51-4ad0bef253f3"",
+                    ""path"": ""<Gamepad>/dpad/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActionSelectionDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""486bd5e2-2d74-4dfe-bd5a-1b87c1ae42b4"",
+                    ""path"": ""<Gamepad>/dpad/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActionSelectionUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""40163a2e-7f43-4935-b333-342db8b61104"",
+                    ""path"": ""<Gamepad>/dpad/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActionSelectionUp"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -912,6 +974,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_MousePosition = m_Player.FindAction("MousePosition", throwIfNotFound: true);
         m_Player_MouseDelta = m_Player.FindAction("MouseDelta", throwIfNotFound: true);
         m_Player_Run = m_Player.FindAction("Run", throwIfNotFound: true);
+        m_Player_ActionSelectionDown = m_Player.FindAction("ActionSelectionDown", throwIfNotFound: true);
+        m_Player_ActionSelectionUp = m_Player.FindAction("ActionSelectionUp", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -994,6 +1058,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_MousePosition;
     private readonly InputAction m_Player_MouseDelta;
     private readonly InputAction m_Player_Run;
+    private readonly InputAction m_Player_ActionSelectionDown;
+    private readonly InputAction m_Player_ActionSelectionUp;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -1007,6 +1073,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @MousePosition => m_Wrapper.m_Player_MousePosition;
         public InputAction @MouseDelta => m_Wrapper.m_Player_MouseDelta;
         public InputAction @Run => m_Wrapper.m_Player_Run;
+        public InputAction @ActionSelectionDown => m_Wrapper.m_Player_ActionSelectionDown;
+        public InputAction @ActionSelectionUp => m_Wrapper.m_Player_ActionSelectionUp;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1043,6 +1111,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Run.started += instance.OnRun;
             @Run.performed += instance.OnRun;
             @Run.canceled += instance.OnRun;
+            @ActionSelectionDown.started += instance.OnActionSelectionDown;
+            @ActionSelectionDown.performed += instance.OnActionSelectionDown;
+            @ActionSelectionDown.canceled += instance.OnActionSelectionDown;
+            @ActionSelectionUp.started += instance.OnActionSelectionUp;
+            @ActionSelectionUp.performed += instance.OnActionSelectionUp;
+            @ActionSelectionUp.canceled += instance.OnActionSelectionUp;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1074,6 +1148,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Run.started -= instance.OnRun;
             @Run.performed -= instance.OnRun;
             @Run.canceled -= instance.OnRun;
+            @ActionSelectionDown.started -= instance.OnActionSelectionDown;
+            @ActionSelectionDown.performed -= instance.OnActionSelectionDown;
+            @ActionSelectionDown.canceled -= instance.OnActionSelectionDown;
+            @ActionSelectionUp.started -= instance.OnActionSelectionUp;
+            @ActionSelectionUp.performed -= instance.OnActionSelectionUp;
+            @ActionSelectionUp.canceled -= instance.OnActionSelectionUp;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1238,6 +1318,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnMousePosition(InputAction.CallbackContext context);
         void OnMouseDelta(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
+        void OnActionSelectionDown(InputAction.CallbackContext context);
+        void OnActionSelectionUp(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

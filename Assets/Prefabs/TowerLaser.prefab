@@ -14949,6 +14949,7 @@ GameObject:
   - component: {fileID: 8411314635501248331}
   - component: {fileID: 5862463602725531882}
   - component: {fileID: 3574457919150541638}
+  - component: {fileID: -290678486241801863}
   m_Layer: 0
   m_Name: TowerLaser
   m_TagString: Untagged
@@ -15169,3 +15170,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RotationBoneHoz: {fileID: 2277576498445254763}
   RotationBoneVert: {fileID: 8477705371668461651}
+--- !u!114 &-290678486241801863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8778488622978463248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1b7a96fd33c4de47845b7ee4cdfd55f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

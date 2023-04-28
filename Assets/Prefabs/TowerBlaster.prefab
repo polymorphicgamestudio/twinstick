@@ -211,6 +211,7 @@ GameObject:
   - component: {fileID: 7199148465906660910}
   - component: {fileID: 5547770341547254285}
   - component: {fileID: 3378295116791570761}
+  - component: {fileID: 3546030252267013480}
   m_Layer: 0
   m_Name: TowerBlaster
   m_TagString: Untagged
@@ -431,6 +432,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RotationBoneHoz: {fileID: 3770160217998941399}
   RotationBoneVert: {fileID: 5855215440035512831}
+--- !u!114 &3546030252267013480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4077111011296779276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1b7a96fd33c4de47845b7ee4cdfd55f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5339181460291822323
 GameObject:
   m_ObjectHideFlags: 0

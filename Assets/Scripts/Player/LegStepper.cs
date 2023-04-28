@@ -1,5 +1,6 @@
 ﻿using ShepProject;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class LegStepper : MonoBehaviour {
@@ -18,19 +19,17 @@ public class LegStepper : MonoBehaviour {
 	bool[] moving;
 	Vector3[] home;
 	//private Quaternion[] footRotOffset;
+	AudioSource audioSource;
+	public AudioClip[] stepSounds;
 
 
-	private void Awake() {
-
-	}
 	void Start() {
-
 		playerController = ShepGM.inst.player.GetComponent<PlayerMovementController>();
+		audioSource = ShepGM.inst.player.GetComponent<AudioSource>();
 
 		distFromHome = new float[2];
 		moving = new bool[2];
 		home = new Vector3[2];
-		//SetFootRotOffsets();
 	}
 
 	void Update() {
@@ -109,9 +108,12 @@ public class LegStepper : MonoBehaviour {
 			yield return null;
 		} while (timeElapsed < moveDuration);
 
+		if (moving[index]) PlayStepSound();
 		moving[index] = false;
 	}
-	
+	void PlayStepSound() {
+		audioSource.PlayOneShot(stepSounds[Random.Range(0, stepSounds.Length)]);
+	}
 	void UpdateHomePositions() {
 		home[0] = controller.TransformPoint(new Vector3(-homeOffset.x, homeOffset.y, homeOffset.z));
 		home[1] = controller.TransformPoint(homeOffset);

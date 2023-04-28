@@ -6,6 +6,8 @@ public class RobotAnimationHelper : MonoBehaviour {
 	AudioSource audioSource;
 	[SerializeField] AudioClip shootSound;
 	[SerializeField] ParticleSystem shootParticles;
+	[SerializeField] AudioClip enterBuildModeSound;
+	[SerializeField] AudioClip enterAttackModeSound;
 	[SerializeField] ParticleSystem buildProjectorParticles;
 
 	void Awake(){
@@ -14,13 +16,14 @@ public class RobotAnimationHelper : MonoBehaviour {
 	
 	void EnterBuildMode() {
 		buildProjectorParticles.Play();
+		audioSource.PlayOneShot(enterBuildModeSound);
 	}
 	void EnterAttackMode() {
 		buildProjectorParticles.Stop();
+		audioSource.PlayOneShot(enterAttackModeSound);
 	}
 	void Shoot() {
 		shootParticles.Play();
 		audioSource.PlayOneShot(shootSound);
 	}
-	
 }
