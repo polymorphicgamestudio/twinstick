@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class WallPlacement : MonoBehaviour {
 
-	//Vector2 bounds = new Vector2(72,40);  // (5, 3) * 16 - 8
+	Vector2 bounds = new Vector2(72,40);  // (5, 3) * 16 - 8
 
 	Color colorValid = new Color(0.05f, 0.39f, 1f, 0.25f);
 	Color colorInvalid = new Color(1f, 0.07f, 0.07f, 0.25f);
@@ -17,6 +17,7 @@ public class WallPlacement : MonoBehaviour {
 	[SerializeField] GameObject wall;
 	float buildTime = 7f;
 
+	public bool validLocation;
 
 	public void PositionWall(Vector3 pos, Quaternion rot) {
 		Vector3 hoz = new Vector3(SnapNumber(pos.x, 0), 0, SnapNumber(pos.z, 8));
@@ -37,8 +38,18 @@ public class WallPlacement : MonoBehaviour {
 		transform.position = Vector3.Lerp(pos, smoothPosition, lerpFraction);
 		transform.rotation = Quaternion.Lerp(rot, smoothRotation, lerpFraction);
 
-		Color hologramColor = lerpFraction == 1 ? colorValid : colorInvalid;
+		CheckValidLocation();
+
+		Color hologramColor = validLocation? colorValid : colorInvalid;
 		GetComponent<Renderer>().material.color = hologramColor;
+	}
+
+	void CheckValidLocation() {
+		bool obstructed = Physics.Raycast(targetPosition - Vector3.up, Vector3.up, 3f, LayerMask.GetMask("Wall"));
+		bool onGrid = lerpFraction == 1;
+		bool inBounds = Mathf.Abs(targetPosition.x) <= bounds.x && Mathf.Abs(targetPosition.z) <= bounds.y;
+
+		validLocation = !obstructed && onGrid && inBounds;
 	}
 	public void InitializeSmoothValues(Vector3 pos, Quaternion rot) {
 		smoothPosition = pos;

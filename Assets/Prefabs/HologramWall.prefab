@@ -16,9 +16,9 @@ GameObject:
   - component: {fileID: 8653616374335650617}
   - component: {fileID: 2962487812631988365}
   - component: {fileID: 7695359252614764623}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: HologramWall
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -266,7 +266,7 @@ GameObject:
   - component: {fileID: 5638051999894001210}
   - component: {fileID: 6639518328839369660}
   - component: {fileID: 7713849931253886504}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BuildUpWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

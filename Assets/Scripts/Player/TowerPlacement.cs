@@ -24,6 +24,8 @@ public class TowerPlacement : MonoBehaviour {
 
 	bool buildMode = false;
 
+	[SerializeField] AudioClip errorSound;
+
 	[HideInInspector] public int actionSelectionNumber = 1; // 1 - 10
 
 
@@ -45,16 +47,16 @@ public class TowerPlacement : MonoBehaviour {
 	//! this should be updated to use the new input system!
 	void UpdateActionSelectionNumber() {
 		//Temporary bad way of doing things
-		if (Input.GetKeyDown(KeyCode.Alpha1)) actionSelectionNumber = 1;
-		if (Input.GetKeyDown(KeyCode.Alpha2)) actionSelectionNumber = 2;
-		if (Input.GetKeyDown(KeyCode.Alpha3)) actionSelectionNumber = 3;
-		if (Input.GetKeyDown(KeyCode.Alpha4)) actionSelectionNumber = 4;
-		if (Input.GetKeyDown(KeyCode.Alpha5)) actionSelectionNumber = 5;
-		if (Input.GetKeyDown(KeyCode.Alpha6)) actionSelectionNumber = 6;
-		if (Input.GetKeyDown(KeyCode.Alpha7)) actionSelectionNumber = 7;
-		if (Input.GetKeyDown(KeyCode.Alpha8)) actionSelectionNumber = 8;
-		if (Input.GetKeyDown(KeyCode.Alpha9)) actionSelectionNumber = 9;
-		if (Input.GetKeyDown(KeyCode.Alpha0)) actionSelectionNumber = 0;
+		if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) actionSelectionNumber = 1;
+		if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) actionSelectionNumber = 2;
+		if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)) actionSelectionNumber = 3;
+		if (Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Keypad4)) actionSelectionNumber = 4;
+		if (Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Keypad5)) actionSelectionNumber = 5;
+		if (Input.GetKeyDown(KeyCode.Alpha6) || Input.GetKeyDown(KeyCode.Keypad6)) actionSelectionNumber = 6;
+		if (Input.GetKeyDown(KeyCode.Alpha7) || Input.GetKeyDown(KeyCode.Keypad7)) actionSelectionNumber = 7;
+		if (Input.GetKeyDown(KeyCode.Alpha8) || Input.GetKeyDown(KeyCode.Keypad8)) actionSelectionNumber = 8;
+		if (Input.GetKeyDown(KeyCode.Alpha9) || Input.GetKeyDown(KeyCode.Keypad9)) actionSelectionNumber = 9;
+		if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0)) actionSelectionNumber = 0;
 
 		if (ShepGM.inst.actions.Player.ActionSelectionDown.triggered) actionSelectionNumber--;
 		if (ShepGM.inst.actions.Player.ActionSelectionUp.triggered) actionSelectionNumber++;
@@ -82,11 +84,17 @@ public class TowerPlacement : MonoBehaviour {
 			robotController.forwardTilePos, AwayFromPlayer(), 7f, towers[index]);
 	}
 	void PlaceWall() {
+		if (!wallPlacement.validLocation) {
+			PlayErrorSound();
+			return;
+		}
 		wallPlacement.PlaceWall();
 		activeWallHologram = null;
 		ReplaceHologram();
 	}
-
+	void PlayErrorSound() {
+		ShepGM.inst.player.GetComponent<AudioSource>().PlayOneShot(errorSound);
+	}
 
 
 Quaternion AwayFromPlayer() {
