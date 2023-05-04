@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6081117176222296807}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: CrystalBackLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3941833845663878318}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: CrystalBackRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 1078248687075624805}
   - component: {fileID: 9104818232437412826}
   - component: {fileID: 5991164405602683263}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -154,7 +154,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8268245179476675643}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: VertRotation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -188,7 +188,7 @@ GameObject:
   m_Component:
   - component: {fileID: 763407542420948159}
   - component: {fileID: 7502988152284581066}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LaserHologram
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -285,7 +285,7 @@ GameObject:
   - component: {fileID: 4179167470687426737}
   - component: {fileID: 4704628070296503897}
   - component: {fileID: 7391720716755096311}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LeftSide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5111,7 +5111,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7274475403542869254}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5149,7 +5149,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7032427709502625720}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Shell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5182,7 +5182,7 @@ GameObject:
   - component: {fileID: 1201992355457799669}
   - component: {fileID: 4043301622399617241}
   - component: {fileID: 3723088573157167032}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ShootParticlesLaser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10010,7 +10010,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3547240604387296373}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: CrystalFrontRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10042,7 +10042,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9200432578504625759}
   - component: {fileID: 2285925097040183020}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Laser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10137,7 +10137,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7747088827506471104}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10171,7 +10171,7 @@ GameObject:
   - component: {fileID: 3293923277560298837}
   - component: {fileID: 5676908414826488687}
   - component: {fileID: 5468665076975299086}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RightSide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14997,7 +14997,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4161161037185681088}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: CrystalFrontLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15028,7 +15028,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6787649451931761038}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15065,12 +15065,13 @@ GameObject:
   - component: {fileID: 4570762008034883742}
   - component: {fileID: 3441436293464889295}
   - component: {fileID: -3246778260963776453}
-  m_Layer: 0
+  - component: {fileID: 7119920834104371548}
+  m_Layer: 10
   m_Name: BuildUpLaser
-  m_TagString: Untagged
+  m_TagString: Tower
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7129189053306342853
 Transform:
@@ -15284,6 +15285,27 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!135 &7119920834104371548
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6555521609580945563}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.3
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &8630892339996365982
 GameObject:
   m_ObjectHideFlags: 0
@@ -15293,7 +15315,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6952665862946270908}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BarrelCover
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15324,7 +15346,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1178259537076435968}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LaserSkeleton
   m_TagString: Untagged
   m_Icon: {fileID: 0}

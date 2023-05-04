@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1172731315782770068}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: WingLeftBlade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2029548722457396352}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,7 +74,7 @@ GameObject:
   - component: {fileID: 5727185873685736157}
   - component: {fileID: 2552815330980176072}
   - component: {fileID: 4810570520275473072}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ShootParticlesIce
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4924,7 +4924,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1884424552905430681}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ToothTopMiddle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4955,7 +4955,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2711093788943232215}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: WingLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4989,7 +4989,7 @@ GameObject:
   - component: {fileID: 7068577802786314272}
   - component: {fileID: 210947235208725678}
   - component: {fileID: 1773781406481702256}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SparksLong
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9836,7 +9836,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4493591833954116186}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ToothTopRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9867,7 +9867,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8504368410812997007}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9907,7 +9907,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1510625523001091104}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Shell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9938,7 +9938,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 572765258766886739}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: IceSkeleton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9971,7 +9971,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3917758029918261622}
   - component: {fileID: 2648844806289112260}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ice
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10070,7 +10070,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8078029687824127829}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ToothBottomRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10108,12 +10108,13 @@ GameObject:
   - component: {fileID: 6988562160897906424}
   - component: {fileID: 7029736239938932660}
   - component: {fileID: 2503628535143691749}
-  m_Layer: 0
+  - component: {fileID: 4681635859766158242}
+  m_Layer: 10
   m_Name: TowerIce
-  m_TagString: Untagged
+  m_TagString: Tower
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &583691879637738322
 Transform:
@@ -10340,6 +10341,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1b7a96fd33c4de47845b7ee4cdfd55f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!135 &4681635859766158242
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6673977207240727913}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.3
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &6847040003165695686
 GameObject:
   m_ObjectHideFlags: 0
@@ -10349,7 +10371,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4407617022714519708}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: WingRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10381,7 +10403,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4075053319600072369}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ToothTopLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10414,7 +10436,7 @@ GameObject:
   - component: {fileID: 5351765853616051638}
   - component: {fileID: 8585403644967770838}
   - component: {fileID: 7800911991908021114}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ShockWave
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15252,7 +15274,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8184455842856494744}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: VertRotation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15285,7 +15307,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9098688355920111670}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ToothBottomLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15316,7 +15338,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6649003696041520929}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: WingRightBlade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15347,7 +15369,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5934589406894079707}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ToothBottomMiddle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15380,7 +15402,7 @@ GameObject:
   - component: {fileID: 1339586836089061486}
   - component: {fileID: 2375105886751714293}
   - component: {fileID: 3776203223682628980}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: DarkSmoke
   m_TagString: Untagged
   m_Icon: {fileID: 0}

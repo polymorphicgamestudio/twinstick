@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9102455082255568183}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BarrelCover
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 3551388156558177719}
   - component: {fileID: 7452329505511964727}
   - component: {fileID: 2635630367340175771}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ShootParticlesLaser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4870,7 +4870,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8477705371668461651}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: VertRotation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4905,7 +4905,7 @@ GameObject:
   - component: {fileID: 1531397553089136567}
   - component: {fileID: 6479366051322598528}
   - component: {fileID: 5660886889397541256}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RightSide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9731,7 +9731,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5169781108092894041}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: CrystalBackRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9762,7 +9762,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1833093641265345786}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9793,7 +9793,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5055020797128941639}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: CrystalFrontLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9824,7 +9824,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8948465999041691157}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9862,7 +9862,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8651014502119829143}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: CrystalFrontRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9894,7 +9894,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6204316887650969414}
   - component: {fileID: 8999187384209844094}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Laser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9989,7 +9989,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2277576498445254763}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LaserSkeleton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10021,7 +10021,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2406367023948991211}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Shell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10054,7 +10054,7 @@ GameObject:
   - component: {fileID: 5442749004083858074}
   - component: {fileID: 1252578653580658938}
   - component: {fileID: 4514003154728873722}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LeftSide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14880,7 +14880,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4672074938207985494}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: CrystalBackLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14911,7 +14911,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4521860926282335090}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14950,12 +14950,13 @@ GameObject:
   - component: {fileID: 5862463602725531882}
   - component: {fileID: 3574457919150541638}
   - component: {fileID: -290678486241801863}
-  m_Layer: 0
+  - component: {fileID: 6219620478223568691}
+  m_Layer: 10
   m_Name: TowerLaser
-  m_TagString: Untagged
+  m_TagString: Tower
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7945243780388984195
 Transform:
@@ -15182,3 +15183,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1b7a96fd33c4de47845b7ee4cdfd55f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!135 &6219620478223568691
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8778488622978463248}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.3
+  m_Center: {x: 0, y: 0.5, z: 0}

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7674956110091221981}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,12 +48,13 @@ GameObject:
   - component: {fileID: 4502911868630231006}
   - component: {fileID: -6452706148326020063}
   - component: {fileID: 1978777054867466762}
-  m_Layer: 0
+  - component: {fileID: 6436634769766007443}
+  m_Layer: 10
   m_Name: TowerAcid
-  m_TagString: Untagged
+  m_TagString: Tower
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1383114887226050735
 Transform:
@@ -280,6 +281,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1b7a96fd33c4de47845b7ee4cdfd55f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!135 &6436634769766007443
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3162570614528031948}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.3
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &3302327193128445562
 GameObject:
   m_ObjectHideFlags: 0
@@ -289,7 +311,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8929438857223527815}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Vents
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -320,7 +342,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7698009924099055247}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: VertRotation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -353,7 +375,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5172683211812970943}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: AcidSkeleton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -387,7 +409,7 @@ GameObject:
   - component: {fileID: 5262024900210565480}
   - component: {fileID: 3051284964824976971}
   - component: {fileID: 708106404011713251}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ShootParticlesAcid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5271,7 +5293,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4226543573153672095}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ArmRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5302,7 +5324,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5574830460614188955}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5337,7 +5359,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6032181036920477341}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BarrelEnd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5369,7 +5391,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1152388241345456815}
   - component: {fileID: 7350400731472416010}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Acid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5462,7 +5484,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1395329876138973866}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ArmLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5493,7 +5515,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6980247063929417482}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}

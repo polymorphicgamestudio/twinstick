@@ -9,6 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: m_Robot
   m_Shader: {fileID: 4800000, guid: 7f45a6827d8734845852f045ca1edc32, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _METALLICGLOSSMAP
@@ -19,6 +21,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -90,7 +93,7 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.8000062, g: 0.66052693, b: 2.283126, a: 1}
+    - _Color: {r: 2.111229, g: 1.7431409, b: 6.0252056, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GlowColor: {r: 0.40194184, g: 0.6048996, b: 3.9943, a: 1}
     - _HColor: {r: 1, g: 1, b: 1, a: 1}

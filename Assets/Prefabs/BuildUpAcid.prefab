@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5004068408039348282}
   - component: {fileID: 1510319088272104171}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: AcidHologram
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7426229560208611450}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ArmLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,7 +134,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5363526596068298846}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -166,7 +166,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 111666773500207582}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: AcidSkeleton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,12 +204,13 @@ GameObject:
   - component: {fileID: -570944647341748449}
   - component: {fileID: 5956989190832097747}
   - component: {fileID: -1073765867492089794}
-  m_Layer: 0
+  - component: {fileID: 4846792864707836576}
+  m_Layer: 10
   m_Name: BuildUpAcid
-  m_TagString: Untagged
+  m_TagString: Tower
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4188972756337192837
 Transform:
@@ -423,6 +424,27 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!135 &4846792864707836576
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5384734035660255152}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.3
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &6506666483564961160
 GameObject:
   m_ObjectHideFlags: 0
@@ -432,7 +454,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5803905414367755640}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: VertRotation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -464,7 +486,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2077859624789664838}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -499,7 +521,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4820384654627724170}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -531,7 +553,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4813995348682082068}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BarrelEnd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -564,7 +586,7 @@ GameObject:
   - component: {fileID: 8226974895636399665}
   - component: {fileID: 437714336321619644}
   - component: {fileID: 622071108499664752}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -645,7 +667,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 987026381398269073}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ArmRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -677,7 +699,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1711069751107537615}
   - component: {fileID: 3206311110513352402}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Acid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -770,7 +792,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8302805485043074699}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Vents
   m_TagString: Untagged
   m_Icon: {fileID: 0}

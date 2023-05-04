@@ -1,6 +1,4 @@
 using ShepProject;
-using Unity.Mathematics;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -28,7 +26,6 @@ public class RobotController : MonoBehaviour {
 	Vector3 mouseDir;
 
 	[HideInInspector] public bool buildMode = false;
-	bool lastFrameBuildMode = false;
 	[HideInInspector] public Vector3 forwardTilePos;
 	[HideInInspector] public Vector3 hologramPos;
 
@@ -61,7 +58,6 @@ public class RobotController : MonoBehaviour {
 			//if running changes set joystickDir to velocity;
 			joystickDir = player.velocity;
 		}
-		BuildModeChange();
 		//SetForwardTilePos();
 	}
 
@@ -81,14 +77,6 @@ public class RobotController : MonoBehaviour {
 		SetHeadRotation();
 	}
 
-	void BuildModeChange() {
-		bool buildModeChanged = buildMode != lastFrameBuildMode;
-		lastFrameBuildMode = buildMode;
-		if (!buildModeChanged) return;
-		if (buildMode) animController.SetTrigger("BuildMode");
-		if (!buildMode) animController.SetTrigger("AttackMode");
-	}
-	
 	Vector3 VectorToNearestTilePos(Vector3 inputVector) {
 		return new Vector3(SnapNumber(inputVector.x), 0, SnapNumber(inputVector.z));
 	}

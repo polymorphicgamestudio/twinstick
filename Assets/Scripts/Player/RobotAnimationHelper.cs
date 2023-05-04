@@ -8,18 +8,16 @@ public class RobotAnimationHelper : MonoBehaviour {
 	[SerializeField] ParticleSystem shootParticles;
 	[SerializeField] AudioClip enterBuildModeSound;
 	[SerializeField] AudioClip enterAttackModeSound;
-	[SerializeField] ParticleSystem buildProjectorParticles;
+	//[SerializeField] ParticleSystem buildProjectorParticles // handled in tower placement script
 
 	void Awake(){
 		audioSource = GetComponent<AudioSource>();
     }
 	
 	void EnterBuildMode() {
-		buildProjectorParticles.Play();
 		audioSource.PlayOneShot(enterBuildModeSound);
 	}
 	void EnterAttackMode() {
-		buildProjectorParticles.Stop();
 		audioSource.PlayOneShot(enterAttackModeSound);
 	}
 	void Shoot() {

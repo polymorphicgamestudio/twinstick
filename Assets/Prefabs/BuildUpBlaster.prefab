@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 641869384720244990}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: GunLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5051361794906073509}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RightShoulderBlade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 322929945958451134}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Shell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2251007013487644826}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BlasterSkeleton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,7 +134,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5441791029354516144}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RightWing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -165,7 +165,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7287893803398938602}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,7 +204,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 310226641902833386}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -236,7 +236,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8447851669792957926}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: GunRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -268,7 +268,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7850112643005057697}
   - component: {fileID: 320450964543677492}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Blaster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -364,7 +364,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6458146229401706730}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LeftShoulderBlade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -397,7 +397,7 @@ GameObject:
   - component: {fileID: 2123821181268815890}
   - component: {fileID: 4204820812216479548}
   - component: {fileID: 8262280551688143326}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -478,7 +478,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 741169891731789755}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LeftWing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -510,7 +510,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8532987451225648354}
   - component: {fileID: 3097187960275286394}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BlasterHologram
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -606,7 +606,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2526939965560300916}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: GunMain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -643,12 +643,13 @@ GameObject:
   - component: {fileID: -7932272864446250605}
   - component: {fileID: 6880924847600522413}
   - component: {fileID: 8405867376803667470}
-  m_Layer: 0
+  - component: {fileID: 7875355063307811092}
+  m_Layer: 10
   m_Name: BuildUpBlaster
-  m_TagString: Untagged
+  m_TagString: Tower
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &185185487439854967
 Transform:
@@ -862,6 +863,27 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!135 &7875355063307811092
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8438984773925518862}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.3
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &8742997890080927069
 GameObject:
   m_ObjectHideFlags: 0
@@ -871,7 +893,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8157846443416328662}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: VertRotation
   m_TagString: Untagged
   m_Icon: {fileID: 0}

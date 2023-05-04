@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5396024551252912439}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Rings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8178832355930669478}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,7 +74,7 @@ GameObject:
   - component: {fileID: 8549268575653591250}
   - component: {fileID: 7180737070408250016}
   - component: {fileID: 6592013389347074181}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -155,7 +155,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 309573090805215445}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RodRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -186,7 +186,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6316671271544932115}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,7 +223,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3894880761014645003}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LeftWing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -254,7 +254,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9076986007550681279}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RightWing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -285,7 +285,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2530006163683781017}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: VertRotation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -323,12 +323,13 @@ GameObject:
   - component: {fileID: 4178450857153534503}
   - component: {fileID: 5399093896069360391}
   - component: {fileID: 455218619603095683}
-  m_Layer: 0
+  - component: {fileID: 1434054652462499714}
+  m_Layer: 10
   m_Name: BuildUpShock
-  m_TagString: Untagged
+  m_TagString: Tower
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8213443611233708412
 Transform:
@@ -542,6 +543,27 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!135 &1434054652462499714
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4569788366886820251}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.3
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &4616690667025670219
 GameObject:
   m_ObjectHideFlags: 0
@@ -552,7 +574,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8412267418809872773}
   - component: {fileID: 6210438001507186674}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Shock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -648,7 +670,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5346535691629405426}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BatteryRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -681,7 +703,7 @@ GameObject:
   m_Component:
   - component: {fileID: 39273622053844566}
   - component: {fileID: 3335439531841649382}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ShockHologram
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -777,7 +799,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 552219275372144639}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BatteryLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -809,7 +831,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9042632080840870508}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RodLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -840,7 +862,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4813234965755597402}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ShockSkeleton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -872,7 +894,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5295752452741836427}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ConductionEnd
   m_TagString: Untagged
   m_Icon: {fileID: 0}

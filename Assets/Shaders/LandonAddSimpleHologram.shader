@@ -1,6 +1,6 @@
 Shader "Landon/Add Simple Hologram" {
 	Properties {
-		_ColorA ("ColorA (RGB), Stregth(A)", Color) = (0.5,0.5,0.5,0.5)
+		[MainColor] _ColorA ("ColorA (RGB), Stregth(A)", Color) = (0.5,0.5,0.5,0.5)
 		_ColorB ("ColorB (RGB), Stregth(A)", Color) = (0.5,0.5,0.5,0.5)
 		[NoScaleOffset] _MainTex ("Glow Area (R), HologramTex(B)", 2D) = "white" {}
 		_RimPower ("Rim Power", Range(0.5,8.0)) = 3.0

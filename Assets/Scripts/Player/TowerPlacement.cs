@@ -1,6 +1,7 @@
 using ShepProject;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Build.Reporting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,11 +11,18 @@ public class TowerPlacement : MonoBehaviour {
 	[SerializeField] GameObject[] transitions;
 	[SerializeField] GameObject[] towers;
 
-	RobotController robotController;
+	[SerializeField] GameObject hologramWall;
+	WallPlacement wallPlacement;
+	[SerializeField] GameObject wall;
+	[SerializeField] ParticleSystem projectorParticles; // also used as reference for positioning wall hologram;
+	GameObject activeWallHologram = null;
 
-	GameObject currentHologram = null;
+	RobotController robotController;
+	GameObject currentHologram = null; //tower holograms
 	int index = -1;
 	int prevIndex = -1;
+
+	bool buildMode = false;
 
 	[HideInInspector] public int actionSelectionNumber = 1; // 1 - 10
 
@@ -64,18 +72,32 @@ public class TowerPlacement : MonoBehaviour {
 		if (currentHologram) {
 			PlaceTower();
 		}
+		if (activeWallHologram) {
+			PlaceWall();
+		}
 	}
 	void PlaceTower() {
 		GameObject tower = Instantiate(transitions[index], robotController.forwardTilePos, Quaternion.identity);
 		tower.GetComponent<TowerBuildUpEffect>().Initialize(
 			robotController.forwardTilePos, AwayFromPlayer(), 7f, towers[index]);
 	}
-	Quaternion AwayFromPlayer() {
+	void PlaceWall() {
+		wallPlacement.PlaceWall();
+		activeWallHologram = null;
+		ReplaceHologram();
+	}
+
+
+
+Quaternion AwayFromPlayer() {
 		return Quaternion.LookRotation(currentHologram.transform.position - ShepGM.inst.player.position, Vector3.up);
 	}
 	void UpdateHologramPosition() {
 		if (currentHologram) {
 			currentHologram.transform.position = robotController.hologramPos;
+		}
+		if (activeWallHologram) {
+			wallPlacement.PositionWall(WallReferencePosition(), WallReferenceRotation());
 		}
 	}
 	void ReplaceHologram() {
@@ -83,14 +105,46 @@ public class TowerPlacement : MonoBehaviour {
 			Destroy(currentHologram);
 			currentHologram = null;
 		}
+		if (activeWallHologram) {
+			Destroy(activeWallHologram);
+			activeWallHologram = null;
+		}
 		if (index < holograms.Length && index >= 0) {
 			robotController.ForceHologramPosUpdate();
 			currentHologram = Instantiate(holograms[index], robotController.forwardTilePos, Quaternion.identity);
+		}
+		if (actionSelectionNumber == 10) {
+			activeWallHologram = Instantiate(hologramWall, WallReferencePosition(), WallReferenceRotation());
+			wallPlacement = activeWallHologram.GetComponent<WallPlacement>();
+			wallPlacement.InitializeSmoothValues(WallReferencePosition(), WallReferenceRotation());
+		}
+		BuildModeChange();
+	}
+	void BuildModeChange() {
+		bool newBuildMode = actionSelectionNumber >= 4;
+		bool buildModeChanged = newBuildMode != buildMode;
+		buildMode = newBuildMode;
+		if (!buildModeChanged) return;
+		if (buildMode) {
+			robotController.animController.SetTrigger("BuildMode");
+			projectorParticles.Play();
+		}
+		if (!buildMode) {
+			robotController.animController.SetTrigger("AttackMode");
+			projectorParticles.Stop();
 		}
 	}
 	bool IndexChanged() {
 		bool indexChanged = index != prevIndex;
 		prevIndex = index;
 		return indexChanged;
+	}
+	Vector3 WallReferencePosition() {
+		Vector3 wallRefPos = projectorParticles.transform.position + projectorParticles.transform.forward * 5f;
+		wallRefPos.y = 0;
+		return wallRefPos;
+	}
+	Quaternion WallReferenceRotation() {
+		return Quaternion.Euler(0, projectorParticles.transform.eulerAngles.y, 0);
 	}
 }

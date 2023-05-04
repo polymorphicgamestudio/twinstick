@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7681733435148849609}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HandLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2745482671091248022}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -76,7 +76,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5916002734980033242}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: FireSkeleton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -108,7 +108,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7717165831841610116}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TankRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 3224734613087288092}
   - component: {fileID: 2962419707355523096}
   - component: {fileID: 592488026988024442}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ShootParticlesFire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5025,7 +5025,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3474414645557671681}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ArmRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5057,7 +5057,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1834392425369959419}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5089,7 +5089,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6600784619927576588}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5120,7 +5120,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4985500415358618802}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HandRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5151,7 +5151,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6013516840170974966}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: VertRotation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5184,7 +5184,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4464970798226281723}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TankLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5215,7 +5215,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6031450238312546009}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ArmLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5248,7 +5248,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3374730477782200946}
   - component: {fileID: 8473592467802522860}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5350,12 +5350,13 @@ GameObject:
   - component: {fileID: 2998269063295051018}
   - component: {fileID: 5361726921865591811}
   - component: {fileID: -5007548118545212137}
-  m_Layer: 0
+  - component: {fileID: 3648295651087623304}
+  m_Layer: 10
   m_Name: TowerFire
-  m_TagString: Untagged
+  m_TagString: Tower
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8446961751772376529
 Transform:
@@ -5582,3 +5583,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1b7a96fd33c4de47845b7ee4cdfd55f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!135 &3648295651087623304
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8310487648821542239}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.3
+  m_Center: {x: 0, y: 0.5, z: 0}
