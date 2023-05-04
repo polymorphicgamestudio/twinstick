@@ -1,6 +1,7 @@
 using ShepProject;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,6 +11,11 @@ public class TowerPlacement : MonoBehaviour {
 	[SerializeField] GameObject[] holograms;
 	[SerializeField] GameObject[] transitions;
 	[SerializeField] GameObject[] towers;
+
+	Vector2 bounds = new Vector2(72, 40);  // (5, 3) * 16 - 8
+	Color colorValid = new Color(0.05f, 0.39f, 1f, 0.25f);
+	Color colorInvalid = new Color(1f, 0.07f, 0.07f, 0.25f);
+
 
 	[SerializeField] GameObject hologramWall;
 	WallPlacement wallPlacement;
@@ -79,6 +85,10 @@ public class TowerPlacement : MonoBehaviour {
 		}
 	}
 	void PlaceTower() {
+		if (!ValidTowerLocation(robotController.forwardTilePos)) {
+			PlayErrorSound();
+			return;
+		}
 		GameObject tower = Instantiate(transitions[index], robotController.forwardTilePos, Quaternion.identity);
 		tower.GetComponent<TowerBuildUpEffect>().Initialize(
 			robotController.forwardTilePos, AwayFromPlayer(), 7f, towers[index]);
@@ -95,14 +105,28 @@ public class TowerPlacement : MonoBehaviour {
 	void PlayErrorSound() {
 		ShepGM.inst.player.GetComponent<AudioSource>().PlayOneShot(errorSound);
 	}
+	bool ValidTowerLocation(Vector3 pos) {
+		bool obstructed = Physics.Raycast(pos - Vector3.up, Vector3.up, 3f, LayerMask.GetMask("Tower"));
+		bool inBounds = Mathf.Abs(pos.x) <= bounds.x && Mathf.Abs(pos.z) <= bounds.y;
+		return !obstructed && inBounds;
+	}
+	void UpdateHologramColor() {
+		foreach (Renderer r in currentHologram.GetComponentsInChildren<Renderer>()) {
+			if (ValidTowerLocation(robotController.forwardTilePos))
+				r.material.color = colorValid;
+			else
+				r.material.color = colorInvalid;
+		}
+	}
 
 
-Quaternion AwayFromPlayer() {
+	Quaternion AwayFromPlayer() {
 		return Quaternion.LookRotation(currentHologram.transform.position - ShepGM.inst.player.position, Vector3.up);
 	}
 	void UpdateHologramPosition() {
 		if (currentHologram) {
 			currentHologram.transform.position = robotController.hologramPos;
+			UpdateHologramColor();
 		}
 		if (activeWallHologram) {
 			wallPlacement.PositionWall(WallReferencePosition(), WallReferenceRotation());
