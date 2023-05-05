@@ -28,6 +28,8 @@ namespace ShepProject {
 		float perspAngleHoz = 0f;
 		bool rotating = false;
 
+		Vector3 perspCamSmoothPos;
+
 		[HideInInspector]
 		public Vector3 directionForward = Vector3.forward, directionRight = Vector3.right;
 
@@ -126,6 +128,7 @@ namespace ShepProject {
 				cam.transform.rotation = Quaternion.Slerp(startRot, endRot, progress);
 				yield return new WaitForEndOfFrame();
 			}
+			perspCamSmoothPos = cam.transform.position;
 			CamFollowPlayer = true;
 		}
 		void ToggleOrtho() {
@@ -144,8 +147,11 @@ namespace ShepProject {
             directionForward = Quaternion.AngleAxis(perspAngleHoz, Vector3.up) * Vector3.forward;
 			directionRight = Vector3.Cross(-directionForward, Vector3.up);
 			Vector3 camDirection = Quaternion.AngleAxis(perspAngleVert, directionRight) * -directionForward;
-			cam.transform.position = player.position + Vector3.up + camDirection * zoom;
+			Vector3 followPosition = player.position + Vector3.up + camDirection * zoom;
+			perspCamSmoothPos = Vector3.Lerp(perspCamSmoothPos, followPosition, Time.deltaTime * 10f);
+			cam.transform.position = followPosition;
 			cam.transform.LookAt(player.position + Vector3.up);
+			cam.transform.position = perspCamSmoothPos;
 		}
 		void AlignPerspCamForward() {
 			perspAngleHoz = 0f;
