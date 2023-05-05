@@ -88,7 +88,7 @@ public class TowerPlacement : MonoBehaviour {
 	void ShowHologramsAfterRunning(InputAction.CallbackContext context) {
 		running = false;
 		ReplaceHologram();
-		projectorParticles.Play();
+		if (currentHologram || activeWallHologram) projectorParticles.Play();
 	}
 	void Action_performed(InputAction.CallbackContext context) {
 		if (actionSelectionNumber > 0 && actionSelectionNumber < 4)
