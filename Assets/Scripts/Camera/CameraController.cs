@@ -21,7 +21,7 @@ namespace ShepProject {
 		Transform player;
 
 		float zoomInput;
-        float zoomPercent = 0.8f;
+        float zoomPercent = 0.5f;
         Vector2 zoomRange = new Vector2(5f, 60f);
 		Vector2 vertAngleRange = new Vector2(10f, 85f);
 		float perspAngleVert = 60f;
@@ -66,7 +66,7 @@ namespace ShepProject {
 
 
 		void Update() {
-			zoomPercent = Mathf.Clamp01(zoomPercent + zoomInput * 0.005f);
+			zoomPercent = Mathf.Clamp01(zoomPercent + zoomInput * (zoomPercent + 0.05f) * 0.01f);
 			RotateCamera();
 			PerspectiveCameraControls();
 		}

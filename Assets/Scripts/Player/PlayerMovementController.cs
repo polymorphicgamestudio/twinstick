@@ -11,6 +11,8 @@ namespace ShepProject {
 		[SerializeField] CameraController cameraController;
 		[HideInInspector] public bool running = false;
 
+		[SerializeField] ParticleSystem runParticles;
+
 		private void Awake() {
 
 		}
@@ -40,9 +42,11 @@ namespace ShepProject {
 		}
 		void Run_performed(InputAction.CallbackContext context) {
 			running = true;
+			runParticles.Play();
 		}
 		void Run_canceled(InputAction.CallbackContext context) {
 			running = false;
+			runParticles.Stop();
 		}
 	}
 }

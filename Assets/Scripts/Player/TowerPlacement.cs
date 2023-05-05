@@ -1,8 +1,4 @@
 using ShepProject;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using UnityEditor.Build.Reporting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -29,6 +25,7 @@ public class TowerPlacement : MonoBehaviour {
 	int prevIndex = -1;
 
 	bool buildMode = false;
+	bool running = false;
 
 	[SerializeField] AudioClip errorSound;
 
@@ -40,6 +37,8 @@ public class TowerPlacement : MonoBehaviour {
 	}
 	private void Start() {
 		ShepGM.inst.actions.Player.Action.performed += Action_performed;
+		ShepGM.inst.actions.Player.Run.performed += HideHologramsWhileRunning;
+		ShepGM.inst.actions.Player.Run.canceled += ShowHologramsAfterRunning;
 	}
 	void Update() {
 		UpdateActionSelectionNumber();
@@ -52,7 +51,6 @@ public class TowerPlacement : MonoBehaviour {
 
 	//! this should be updated to use the new input system!
 	void UpdateActionSelectionNumber() {
-		//Temporary bad way of doing things
 		if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) actionSelectionNumber = 1;
 		if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) actionSelectionNumber = 2;
 		if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)) actionSelectionNumber = 3;
@@ -63,6 +61,8 @@ public class TowerPlacement : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Alpha8) || Input.GetKeyDown(KeyCode.Keypad8)) actionSelectionNumber = 8;
 		if (Input.GetKeyDown(KeyCode.Alpha9) || Input.GetKeyDown(KeyCode.Keypad9)) actionSelectionNumber = 9;
 		if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0)) actionSelectionNumber = 0;
+		if (Input.GetKeyDown(KeyCode.Q)) actionSelectionNumber--;
+		if (Input.GetKeyDown(KeyCode.E)) actionSelectionNumber++;
 
 		if (ShepGM.inst.actions.Player.ActionSelectionDown.triggered) actionSelectionNumber--;
 		if (ShepGM.inst.actions.Player.ActionSelectionUp.triggered) actionSelectionNumber++;
@@ -73,7 +73,23 @@ public class TowerPlacement : MonoBehaviour {
 		index = actionSelectionNumber - 4;
 		robotController.buildMode = index < holograms.Length && index >= 0;
 	}
-
+	void HideHologramsWhileRunning(InputAction.CallbackContext context) {
+		running = true;
+		if (currentHologram) {
+			Destroy(currentHologram);
+			currentHologram = null;
+		}
+		if (activeWallHologram) {
+			Destroy(activeWallHologram);
+			activeWallHologram = null;
+		}
+		projectorParticles.Stop();
+	}
+	void ShowHologramsAfterRunning(InputAction.CallbackContext context) {
+		running = false;
+		ReplaceHologram();
+		projectorParticles.Play();
+	}
 	void Action_performed(InputAction.CallbackContext context) {
 		if (actionSelectionNumber > 0 && actionSelectionNumber < 4)
 			robotController.animController.SetTrigger("Shoot");
@@ -141,11 +157,11 @@ public class TowerPlacement : MonoBehaviour {
 			Destroy(activeWallHologram);
 			activeWallHologram = null;
 		}
-		if (index < holograms.Length && index >= 0) {
+		if (index < holograms.Length && index >= 0 && !running) {
 			robotController.ForceHologramPosUpdate();
 			currentHologram = Instantiate(holograms[index], robotController.forwardTilePos, Quaternion.identity);
 		}
-		if (actionSelectionNumber == 10) {
+		if (actionSelectionNumber == 10 && !running) {
 			activeWallHologram = Instantiate(hologramWall, WallReferencePosition(), WallReferenceRotation());
 			wallPlacement = activeWallHologram.GetComponent<WallPlacement>();
 			wallPlacement.InitializeSmoothValues(WallReferencePosition(), WallReferenceRotation());
