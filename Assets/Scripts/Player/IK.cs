@@ -67,7 +67,9 @@ public class IK : MonoBehaviour {
 		parent.rotation = Quaternion.LookRotation(transform.position - parent.position, Quaternion.AngleAxis(lowerRotation, end.position - parent.position) * (en));
 		parent.rotation *= Quaternion.Inverse(Quaternion.FromToRotation(Vector3.forward, end.localPosition));
 		//end
-		end.rotation = transform.rotation * Quaternion.Euler(endRotation);
+		Vector3 endForward = Vector3.ProjectOnPlane((transform.rotation * Quaternion.Euler(endRotation)) * Vector3.forward, Vector3.up);
+		end.rotation = Quaternion.LookRotation(endForward);
+		//end.rotation = transform.rotation * Quaternion.Euler(endRotation);
 		//end.rotation = greatGrandParent.rotation * Quaternion.Euler(endRotation);
 		#endregion
 	}

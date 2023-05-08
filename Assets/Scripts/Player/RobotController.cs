@@ -25,6 +25,8 @@ public class RobotController : MonoBehaviour {
 	Vector3 joystickDir;
 	Vector3 mouseDir;
 
+	float neckAngle = 0f;
+
 	[HideInInspector] public bool buildMode = false;
 	[HideInInspector] public Vector3 forwardTilePos;
 	[HideInInspector] public Vector3 hologramPos;
@@ -58,12 +60,7 @@ public class RobotController : MonoBehaviour {
 			//if running changes set joystickDir to velocity;
 			joystickDir = player.velocity;
 		}
-		//SetForwardTilePos();
-	}
 
-	// By Putting our animation code in LateUpdate, we allow other systems to update the environment first 
-	// this allows the animation to adapt before the frame is drawn.
-	void LateUpdate() {
 		SetNeckAngle(1f, 20f, -20f, 35f);
 		SetLookDirection();
 
@@ -75,7 +72,24 @@ public class RobotController : MonoBehaviour {
 		player.rotation = Quaternion.RotateTowards(player.rotation, lookDirection, 180f * Time.deltaTime);
 
 		SetHeadRotation();
+		//SetForwardTilePos();
 	}
+
+	// By Putting our animation code in LateUpdate, we allow other systems to update the environment first 
+	// this allows the animation to adapt before the frame is drawn.
+	/*void LateUpdate() {
+		SetNeckAngle(1f, 20f, -20f, 35f);
+		SetLookDirection();
+
+		centerOfBalance = (footTargets[0].position + footTargets[1].position) / 2f;
+		float breathDisplace = Mathf.Sin(Time.time * 2f) * 0.05f;
+
+		//root.position = Vector3.Lerp(root.position, centerOfBalance + Vector3.up * breathDisplace, 10f * Time.deltaTime);
+		root.position = centerOfBalance + Vector3.up * (yOffset + breathDisplace);
+		player.rotation = Quaternion.RotateTowards(player.rotation, lookDirection, 180f * Time.deltaTime);
+
+		SetHeadRotation();
+	}*/
 
 	Vector3 VectorToNearestTilePos(Vector3 inputVector) {
 		return new Vector3(SnapNumber(inputVector.x), 0, SnapNumber(inputVector.z));
@@ -111,7 +125,8 @@ public class RobotController : MonoBehaviour {
 	void SetNeckAngle(float minDist, float maxDist, float minAngle, float maxAngle) {
 		distFromMousePos = Vector3.Distance(root.position, mousePos);
 		float distPercent = (distFromMousePos - minDist) / (maxDist - minDist);
-		float neckAngle = Mathf.Lerp(minAngle, maxAngle, distPercent);
+		float newNeckAngle = Mathf.Lerp(minAngle, maxAngle, distPercent);
+		Mathf.Lerp(neckAngle, newNeckAngle, 5f * Time.deltaTime);
 		neck.localEulerAngles = new Vector3(neckAngle, 0f, 0f);
 	}
 }
