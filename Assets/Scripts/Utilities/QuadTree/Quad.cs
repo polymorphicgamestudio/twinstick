@@ -501,9 +501,32 @@ namespace ShepProject {
 
 		public float2 position;
 		public float halfLength;
+        private bool4 contains;
 
-		//bucket
-		public short startIndex;
+        public bool ContainsSlimes 
+        {
+            get => contains[0];
+            set => contains[0] = value;    
+        }
+
+        public bool ContainsTowers
+        {
+            get => contains[1];
+            set => contains[1] = value;
+        }
+        public bool ContainsSheep
+        {
+            get => contains[2];
+            set => contains[2] = value;
+        }
+        public bool ContainsPlayer
+        {
+            get => contains[3];
+            set => contains[3] = value;
+        }
+
+        //bucket
+        public short startIndex;
 		public short endIndex;
 
         public bool Empty => (startIndex == -1 ) && (endIndex == -1);
@@ -517,6 +540,8 @@ namespace ShepProject {
 			position= new float2(0, 0);
 			halfLength = 0;
             this.key = key;
+            contains = new bool4();
+
 		}
 
 		public float Middle(bool zsort) {

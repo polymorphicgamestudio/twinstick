@@ -17,11 +17,13 @@ namespace ShepProject {
 		StatStartIndex = 1 // object type
 			+ (int)Attraction.Count //for all the possible attractions an object can have
 			+ (int)ViewRange.Count
-			+ (int)DamageType.Count,
+			+ (int)DamageType.Count
+			+ (int)OptimalDistance.Count,
 		Speed,
 		TurnRate,
 		Health,
-		SlimeOptimalDistance,
+		//SlimeOptimalDistance,
+		//TowerOptimalDistance,
 		TotalGeneCount //=
 			//1 // object type
 			//+ (int)Attraction.Count //for all the possible attractions an object can have
@@ -38,14 +40,23 @@ namespace ShepProject {
 		Slime = 0,
 		Sheep,
 		Wall,
-		BlasterTower,
-		FireTower,
-		AcidTower,
-		LightningTower,
-		IceTower,
-		LaserTower,
+		Tower,
+		//BlasterTower,
+		//FireTower,
+		//AcidTower,
+		//LightningTower,
+		//IceTower,
+		//LaserTower,
         Player,
         Count
+	}
+
+	public enum OptimalDistance
+	{
+		Slime,
+		Tower,
+		Player,
+		Count
 	}
 
 	public enum ViewRange {
@@ -74,30 +85,22 @@ namespace ShepProject {
 		Slime,
 		Sheep,
         Wall,
-        BlasterTower,
-		FireTower,
-		AcidTower,
-		LightningTower,
-		IceTower,
-		LaserTower,
+		Tower,
+		//BlasterTower,
+		//FireTower,
+		//AcidTower,
+		//LightningTower,
+		//IceTower,
+		//LaserTower,
         Player,
 		Count
 
     }
 
-	public struct GenesSlice
-	{
-
-
-	}
-
-
 	public struct GenesArray {
 
 		[NativeDisableContainerSafetyRestriction]
 		private NativeArray<float> genes;
-
-		//public float this[int index] { get { return genes[index]; } }
 
 
 		public GenesArray(int genesCount, Allocator type) {
@@ -112,7 +115,17 @@ namespace ShepProject {
 			return id * (int)GeneGroups.TotalGeneCount;
 		}
 
-		public float GetAttraction(int id, int attraction)
+        public ObjectType GetObjectType(int id)
+        {
+            return (ObjectType)genes[IDTypeIndex(id)];
+        }
+
+        public void SetObjectType(int id, ObjectType type)
+        {
+            genes[IDTypeIndex(id)] = (int)type;
+        }
+
+        public float GetAttraction(int id, int attraction)
 		{
             return genes[IDTypeIndex(id) + 1 + attraction];
         }
@@ -137,35 +150,6 @@ namespace ShepProject {
 			genes[IDTypeIndex(id) + 1 + (int)Attraction.Count + (int)range] = value;
 		}
 
-
-		public ObjectType GetObjectType(int id) {
-
-			return (ObjectType)genes[IDTypeIndex(id)];
-
-		}
-
-		public void SetObjectType(int id, ObjectType type) {
-
-			genes[IDTypeIndex(id)] = (int)type;
-
-		}
-
-		public float GetSpeed(int id) {
-
-			
-
-			return genes[IDTypeIndex(id) + (int)GeneGroups.Speed];
-		}
-
-		public void SetSpeed(int id, float speed) {
-
-			genes[IDTypeIndex(id) + (int)GeneGroups.Speed] = speed;
-		}
-
-		/// <summary>
-		/// NO-OP
-		/// </summary>
-		/// <returns></returns>
 		public float GetResistance(int id, DamageType damageType) {
 
 			return genes[IDTypeIndex(id) + (int)damageType]; 
@@ -173,14 +157,35 @@ namespace ShepProject {
 
         public void SetResistance(int id, DamageType damageType, float value)
         {
-
 			genes[IDTypeIndex(id) + (int)damageType] = value;
-
 		}
-        /// <summary>
-        /// NO-OP
-        /// </summary>
-        /// <returns></returns>
+
+        public float GetOptimalDistance(int id, OptimalDistance optimalDistance)
+        {
+            return genes[IDTypeIndex(id)
+                + (int)Attraction.Count + (int)ViewRange.Count
+                + (int)DamageType.Count + (int)optimalDistance];
+        }
+
+        public void SetOptimalDistance(int id, OptimalDistance optimalDistance, float value)
+        {
+            genes[IDTypeIndex(id)
+                + (int)Attraction.Count + (int)ViewRange.Count
+                + (int)DamageType.Count + (int)optimalDistance] = value;
+        }
+
+        public float GetSpeed(int id)
+        {
+
+            return genes[IDTypeIndex(id) + (int)GeneGroups.Speed];
+        }
+
+        public void SetSpeed(int id, float speed)
+        {
+
+            genes[IDTypeIndex(id) + (int)GeneGroups.Speed] = speed;
+        }
+
         public float GetTurnRate(int id) {
 
 			return genes[IDTypeIndex(id) + (int)GeneGroups.TurnRate];
@@ -206,28 +211,8 @@ namespace ShepProject {
 
 		}
 
-		public float GetSlimeOptimalDistance(int id) {
 
-			if (GetObjectType(id) != ObjectType.Slime) {
-				throw new System.Exception("Object is not a slime!");
-			}
-
-			return genes[IDTypeIndex(id) + (int)GeneGroups.SlimeOptimalDistance];
-
-		}
-
-		public void SetSlimeOptimalDistance(int id, float value) {
-
-			if (GetObjectType(id) != ObjectType.Slime)
-				throw new System.Exception("Object is not a slime!");
-
-				genes[IDTypeIndex(id) + (int)GeneGroups.SlimeOptimalDistance] = value;
-
-		}
-
-
-
-        #endregion
+		#endregion
 
 		public void ResetIDGenes(int id)
 		{

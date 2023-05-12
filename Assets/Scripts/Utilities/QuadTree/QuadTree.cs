@@ -17,7 +17,7 @@ namespace ShepProject {
 		public int positionCount;
 		public NativeArray<ushort> objectIDs;
 		public NativeArray<ushort> sortedObjectIDs;
-		public NativeArray<ushort> objectQuadIDs;
+		//public NativeArray<ushort> objectQuadIDs;
 		public NativeList<ushort> deletions;
 		public NativeArray<float2> positions;
 
@@ -30,7 +30,7 @@ namespace ShepProject {
 
 
 		public NativeParallelHashMap<QuadKey, Quad> quads;
-		public NativeArray<Quad> quadsList;
+		//public NativeArray<Quad> quadsList;
 
 
         public int maxNeighborQuads;
@@ -152,7 +152,7 @@ namespace ShepProject {
 
 			objectIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
 			sortedObjectIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
-            objectQuadIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
+            //objectQuadIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
 			deletions = new NativeList<ushort>(100, Allocator.Persistent);
 
 			for (ushort i = 0; i < positionCount; i++) {
@@ -171,7 +171,7 @@ namespace ShepProject {
 			objectNeighbors = new NativeArray<QuadKey>(positionCount * maxNeighborQuads, Allocator.Persistent);
 
 
-			quadsList = new NativeArray<Quad>(positionCount, Allocator.Persistent);
+			//quadsList = new NativeArray<Quad>(positionCount, Allocator.Persistent);
 			XQuads = new NativeArray<Quad>(positionCount, Allocator.Persistent);
 			ZQuads = new NativeArray<Quad>(positionCount, Allocator.Persistent);
 			quads = new NativeParallelHashMap<QuadKey, Quad>((int)((float)positionCount / bucketSize) * 4, Allocator.Persistent);
@@ -210,13 +210,13 @@ namespace ShepProject {
 			xQuadsLength = 1;
 			lengths[1] = 0;
 			if (XQuads[0].BucketSize <= bucketSize) {
-				quadsList[0] = XQuads[0];
+				//quadsList[0] = XQuads[0];
 				sorted[0] = true;
 				lengths[1] = 1;
 
 				for (ushort i = 0; i <= positionCount; i++) {
 
-					objectQuadIDs[objectIDs[i]] = 0;
+					//objectQuadIDs[objectIDs[i]] = 0;
 					sortedObjectIDs[objectIDs[i]] = i;
 				}
 
@@ -257,9 +257,9 @@ namespace ShepProject {
 
 				QuadFilteringJob fj = new QuadFilteringJob();
 				fj.readFrom = XQuads;
-				fj.quadsList = quadsList;
+				//fj.quadsList = quadsList;
 				fj.objectIDs = objectIDs;
-				fj.quadsID = objectQuadIDs;
+				//fj.quadsID = objectQuadIDs;
 				fj.isSorted = sorted;
 				fj.lengths = lengths;
 				fj.bucketSize = bucketSize;	
@@ -268,24 +268,24 @@ namespace ShepProject {
 
 			}
 
-			NeighborSearchJob nsj = new NeighborSearchJob();
-			nsj.quadsList = quadsList;
-			nsj.quads = quads;
-			nsj.objectIDs = objectIDs;
-			nsj.objectQuadIDs = objectQuadIDs;
-			nsj.positions = positions;
-			nsj.neighborCounts = neighborCounts;
-			nsj.objectNeighbors = objectNeighbors;
-			nsj.maxNeighborQuads = maxNeighborQuads;
-			//nsj.Run(positionCount);
-			JobHandle handle = nsj.Schedule(positionCount, SystemInfo.processorCount);
+			//NeighborSearchJob nsj = new NeighborSearchJob();
+			////nsj.quadsList = quadsList;
+			//nsj.quads = quads;
+			//nsj.objectIDs = objectIDs;
+			//nsj.objectQuadIDs = objectQuadIDs;
+			//nsj.positions = positions;
+			//nsj.neighborCounts = neighborCounts;
+			//nsj.objectNeighbors = objectNeighbors;
+			//nsj.maxNeighborQuads = maxNeighborQuads;
+			////nsj.Run(positionCount);
+			//JobHandle handle = nsj.Schedule(positionCount, SystemInfo.processorCount);
 
 
-			Profiler.BeginSample("Neighbor Search Job");
+			//Profiler.BeginSample("Neighbor Search Job");
 
-			handle.Complete();
+			//handle.Complete();
 
-			Profiler.EndSample();
+			//Profiler.EndSample();
 
 		}
 
@@ -307,17 +307,17 @@ namespace ShepProject {
 				ZQuads[i] = new Quad(-1, -1);
 			}
 
-			for (int i = 0; i < quadsList.Length; i++) {
+			//for (int i = 0; i < quadsList.Length; i++) {
 
-				quadsList[i] = new Quad();
+			//	quadsList[i] = new Quad();
 
-			}
+			//}
 
-			for (int i = 0; i < objectQuadIDs.Length; i++) {
+			//for (int i = 0; i < objectQuadIDs.Length; i++) {
 
-				objectQuadIDs[i] = ushort.MaxValue;
+			//	objectQuadIDs[i] = ushort.MaxValue;
 
-			}
+			//}
 
 			//update the transform's positions
 			//NullChecks();
@@ -377,13 +377,13 @@ namespace ShepProject {
 				//throw new ArgumentException("Object ID does not exist in the quad tree! :(");
 			}
 
-            QuadKey topKey = new QuadKey();
+            QuadKey topLevelKey = new QuadKey();
             if (positionCount > bucketSize)
-                topKey.SetDivided(true);
+                topLevelKey.SetDivided(true);
 
-            Quad topQuad = quads[topKey];
+            Quad topLevelQuad = quads[topLevelKey];
 
-            int closestObjectID = CheckChildQuadsInRange(topKey, objectID, objectType, minDist, maxDist);
+            int closestObjectID = CheckChildQuadsInRange(topLevelKey, objectID, objectType, minDist, maxDist);
 
             if (closestObjectID == -1)
                 return null;
@@ -542,36 +542,6 @@ namespace ShepProject {
 
 		}
 
-
-		private void NullChecks() {
-
-			//this function will remove the need to remove transforms from the quad tree
-			//will check whether objects are either null if they've been destroyed
-			//or set as inactive if they've been killed
-
-
-			ushort temp = 0;
-			for (int i = 0; i < positionCount; i++) {
-
-				if (transforms[i] == null) {
-					temp = objectIDs[i];
-					objectIDs[i] = objectIDs[positionCount - 1];
-					objectIDs[positionCount - 1] = temp;
-
-					transforms[i] = transforms[positionCount- 1];
-					transforms[positionCount - 1] = null;
-					positionCount--;
-					continue;
-
-				}
-					
-
-			}
-
-
-
-		}
-
 		public void Dispose() {
 			objectIDs.Dispose();
 			sortedObjectIDs.Dispose();
@@ -581,9 +551,9 @@ namespace ShepProject {
 			ZQuads.Dispose();
 			sorted.Dispose();
 			lengths.Dispose();
-			quadsList.Dispose();
+			//quadsList.Dispose();
 			transformAccess.Dispose();
-			objectQuadIDs.Dispose();
+			//objectQuadIDs.Dispose();
 			quads.Dispose();
 			deletions.Dispose();
 
