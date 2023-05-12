@@ -10407,6 +10407,7 @@ MonoBehaviour:
   stepTargets:
   - {fileID: 473122219}
   - {fileID: 677491522}
+  stepSounds: []
 --- !u!114 &106794892
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10426,10 +10427,10 @@ MonoBehaviour:
   footTargets:
   - {fileID: 473122219}
   - {fileID: 677491522}
-  BuildMode: 0
-  hologram: {fileID: 0}
-  TowerToPlace: {fileID: 0}
+  buildMode: 0
   forwardTilePos: {x: 0, y: 0, z: 0}
+  hologramPos: {x: 0, y: 0, z: 0}
+  animController: {fileID: 0}
 --- !u!4 &106794893
 Transform:
   m_ObjectHideFlags: 0
@@ -76634,6 +76635,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraController: {fileID: 1093104251}
   running: 0
+  runParticles: {fileID: 0}
 --- !u!54 &1040431159
 Rigidbody:
   m_ObjectHideFlags: 0

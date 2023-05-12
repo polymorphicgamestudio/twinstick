@@ -441,7 +441,6 @@ namespace ShepProject {
 
         #endregion
 
-
         #region Debug Related
 
 
@@ -497,41 +496,55 @@ namespace ShepProject {
 
     public struct Quad {
 
+		#region Variables
+
 		public QuadKey key;
 
 		public float2 position;
 		public float halfLength;
-        private bool4 contains;
+        private bool3 containsBuffer1;
+        private bool2 containsBuffer2;
+		//bucket
+		public short startIndex;
+		public short endIndex;
 
-        public bool ContainsSlimes 
+		#region Accessors
+
+		public bool ContainsSlimes 
         {
-            get => contains[0];
-            set => contains[0] = value;    
+            get => containsBuffer1[0];
+            set => containsBuffer1[0] = value;    
         }
 
         public bool ContainsTowers
         {
-            get => contains[1];
-            set => contains[1] = value;
+            get => containsBuffer1[1];
+            set => containsBuffer1[1] = value;
         }
         public bool ContainsSheep
         {
-            get => contains[2];
-            set => contains[2] = value;
+            get => containsBuffer1[2];
+            set => containsBuffer1[2] = value;
         }
         public bool ContainsPlayer
         {
-            get => contains[3];
-            set => contains[3] = value;
+            get => containsBuffer2[0];
+            set => containsBuffer1[0] = value;
         }
 
-        //bucket
-        public short startIndex;
-		public short endIndex;
+		public bool ContainsWalls {
+			get => containsBuffer2[1];
+			set => containsBuffer1[1] = value;
+		}
 
-        public bool Empty => (startIndex == -1 ) && (endIndex == -1);
+		public bool Empty => (startIndex == -1) && (endIndex == -1);
 
 		public short BucketSize => (short)((endIndex - startIndex) + 1);
+
+		#endregion
+
+
+		#endregion
 
 		public Quad(short startIndex, short endIndex, QuadKey key = new QuadKey()) {
 
@@ -540,8 +553,8 @@ namespace ShepProject {
 			position= new float2(0, 0);
 			halfLength = 0;
             this.key = key;
-            contains = new bool4();
-
+            containsBuffer1 = new bool3();
+			containsBuffer2 = new bool2();
 		}
 
 		public float Middle(bool zsort) {
@@ -568,6 +581,23 @@ namespace ShepProject {
 
             return false;
         }
+
+        public bool ContainsObjectType(ObjectType objType) 
+        {
+            switch (objType) 
+            {
+                case ObjectType.Tower: return ContainsTowers;
+                case ObjectType.Sheep: return ContainsSheep;
+                case ObjectType.Player: return ContainsPlayer;
+                case ObjectType.Slime: return ContainsSlimes;
+                case ObjectType.Wall: return ContainsWalls;
+
+                default : return false;
+            }
+
+
+        }
+
 
         public bool IsWithinDistance(float2 point, float maxDist)
         {

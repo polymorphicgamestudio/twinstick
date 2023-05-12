@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Collections;
 using Unity.Collections.LowLevel;
 using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Jobs;
 using UnityEngine.Profiling;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 namespace ShepProject {
 
@@ -64,6 +68,8 @@ namespace ShepProject {
 		//will store the target id of the slime
 		private NativeArray<ushort> targetIDs;
 		private NativeArray<float> sheepDistancesToSlimes;
+		private NativeArray<ObjectForces> objectForces;
+		private NativeArray<QuadKey> divisionOneKeys;
 
 		private NativeArray<float> headings;
 
@@ -113,14 +119,20 @@ namespace ShepProject {
 
 		#endregion
 
+
 		private void Awake() {
 
 
+
+			int targetCount = 100;
 			genes = new GenesArray(maxEnemies * ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
 
-			choosableTargets = new NativeList<ushort>(100, Allocator.Persistent);
+			choosableTargets = new NativeList<ushort>(targetCount, Allocator.Persistent);
 			targetIDs = new NativeArray<ushort>(maxEnemies, Allocator.Persistent);
-			sheepDistancesToSlimes = new NativeArray<float>(100, Allocator.Persistent);
+			sheepDistancesToSlimes = new NativeArray<float>(targetCount * 4, Allocator.Persistent);
+
+			objectForces = new NativeArray<ObjectForces>(targetCount * 4, Allocator.Persistent);
+
 			headings = new NativeArray<float>(maxEnemies, Allocator.Persistent);
 
 			burrows = new List<EnemyBurrow>();
@@ -223,7 +235,6 @@ namespace ShepProject {
 
 		}
 
-
 		void Update() {
 			if (!duringWave) {
 				NonWaveUpdate();
@@ -235,7 +246,6 @@ namespace ShepProject {
 			}
 
 		}
-
 
 		private void NonWaveUpdate() {
 
@@ -269,7 +279,6 @@ namespace ShepProject {
 
 
 		}
-
 
 		private void DuringWaveUpdate() {
             /*
@@ -356,6 +365,22 @@ namespace ShepProject {
 			ctj.targetIDs = targetIDs;
 			ctj.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
+			
+			//LEFT OFF HERE
+			//
+			// need to instantiate couple variables
+			// then assign them, as well as update them in job
+			//
+			//
+			GatherForcesWithinRangeJob gfj = new GatherForcesWithinRangeJob();
+			gfj.positions = quadTree.positions;
+			gfj.objectIDs = quadTree.objectIDs;
+			gfj.targetIDs = targetIDs;
+			gfj.genes = genes;
+			gfj.objectForces = objectForces;
+			gfj.quads = quadTree.quads;
+			gfj.startingKeys = divisionOneKeys;
+			//gfj.targetType
 
 			//AIMovementJob moveJob = new AIMovementJob();
 			//moveJob.positions = quadTree.positions;
@@ -390,6 +415,8 @@ namespace ShepProject {
 
 					//if being chased, set velocity, otherwise don't
 					int ID = quadTree.objectIDs[i] - 1;
+
+					
 
 
                     if (sheepDistancesToSlimes[ID] > 64)
@@ -483,8 +510,6 @@ namespace ShepProject {
 
 		}
 
-
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -496,9 +521,6 @@ namespace ShepProject {
 
 
 		}
-
-
-
 
 		#region Adding Object Types To Quad Tree
 

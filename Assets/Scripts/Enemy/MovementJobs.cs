@@ -7,6 +7,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using static System.Collections.Specialized.BitVector32;
 
 namespace ShepProject {
 
@@ -107,9 +108,9 @@ namespace ShepProject {
 
         [NativeDisableContainerSafetyRestriction]
         public NativeParallelHashMap<QuadKey, Quad> quads;
-
-        //[NativeDisableContainerSafetyRestriction]
-        //public NativeArray<float> sheepDistancesToSlime;
+         
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<float> sheepDistancesToSlime;
 
         //this array should only have either 1 or 4 elements
         //depending on whether it's the top level or first level of divisions
@@ -117,7 +118,7 @@ namespace ShepProject {
         public NativeArray<QuadKey> startingKeys;
 
         [NativeDisableContainerSafetyRestriction]
-        public NativeArray<float2> forces;
+        public NativeArray<ObjectForces> objectForces;
 
 		public ObjectType targetType;
 
@@ -125,119 +126,202 @@ namespace ShepProject {
         public void Execute(int index)
         {
 
-            int objectID = objectIDs[index];
+            int objectID = objectIDs[index] /= 4;
 
-            //checking for player ID, since player is always the first thing spawned
-            if (objectIDs[objectID] == 0)
+			//checking for player ID, since player is always the first thing spawned
+			if (objectIDs[objectID] == 0)
                 return;
 
-            ObjectType objType = genes.GetObjectType(objectIDs[objectID]);
+			ObjectType objType = genes.GetObjectType(objectIDs[objectID]);
 
-            if (objType == ObjectType.Wall)
+            if (objType == ObjectType.Wall || objType == ObjectType.Tower)
                 return;
 
-            float2 moveTowards = new float2();
+            //now at this point, should only be sheep and slimes
+			ushort sectionID = objectIDs[index] %= 4;
+			float2 moveTowards = new float2();
 
             if (objType != ObjectType.Sheep)
             {
 
-                moveTowards = math.normalize(positions[targetIDs[objectIDs[index]]] - positions[objectIDs[index]])
+                moveTowards = math.normalize(positions[targetIDs[objectID]] - positions[objectID])
                     * genes.GetAttraction(objectID, Attraction.Sheep);
 
 
             }
-            //else
-            //{
-
-            //    sheepDistancesToSlime[objectIDs[index] - 1] = 10000;
-
-            //}
+            else 
+            {
+                
+                sheepDistancesToSlime[(objectID * 4) + sectionID] = 
+				SearchChildrenForClosestObjectDistance(startingKeys[sectionID], objectID, ObjectType.Slime, 8);
+            }
 
             //now search all the buckets including neighbors
             //will only be the bucket 
 
-
-
-
-
-
-            //moveTowards += SearchBucket(index, objType, );
-
-
+            SearchChildrenForForce(startingKeys[sectionID], objectID, sectionID, objType);
 
 
         }
 
-
-        private void CheckChildQuadsInRange(QuadKey parentKey, int objectID, ObjectType objectType, float maxDist)
+        private void SearchChildrenForForce(QuadKey parentKey, int objectID, int sectionID, ObjectType objType)
         {
             //this will search through all child quads for bottom level quads and then check if those quads 
             //have the required objects inside of them and a search of the bucket will be required
 
-            int closestID = -1;
-            int temp = -1;
-            QuadKey checkKey;
+            //int closestID = -1;
+            //int temp = -1;
+            QuadKey checkKey = parentKey;
+            float maxDistance = genes.GetViewRange(objectID, ViewRange.Tower);
+
+            //slime max distance
+            if (8 > maxDistance) 
+            {
+                maxDistance = 8;
+            }
+
 
             if (!quads[parentKey].key.IsDivided)
             {
-                //search this quad for the required object
                 //check this quad for the required object
 
+                //need to update return type from float2 to objectForces
+                //objectForces[(objectID * 4) + sectionID] += GatherBucketForces(objectID, objType, parentKey);
 
-                //return SearchQuadForObjectType(objectID, quads[key], objectType, minDist, maxDist * maxDist);
+                return; // SearchQuadForObjectType(objectID, quads[key], objectType, minDist, maxDist * maxDist);
+
+            }
+            //else only check children
+
+            //top left quad
+			checkKey = parentKey;
+			checkKey.LeftBranch();
+			checkKey.RightBranch();
+			if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
+            {
+				SearchChildrenForForce(parentKey, objectID, sectionID, objType);
+            }
+
+			checkKey = parentKey;
+			checkKey.LeftBranch();
+            checkKey.LeftBranch();
+            if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
+            {
+				SearchChildrenForForce(parentKey, objectID, sectionID, objType);
+			}
+
+			checkKey = parentKey;
+            checkKey.RightBranch();
+            checkKey.LeftBranch();
+            if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
+            {
+				SearchChildrenForForce(parentKey, objectID, sectionID, objType);
+			}
+
+			checkKey = parentKey;
+            checkKey.RightBranch();
+            checkKey.RightBranch();
+            if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
+            {
+				SearchChildrenForForce(parentKey, objectID, sectionID, objType);
+			}
+
+		}
+
+        private float SearchChildrenForClosestObjectDistance(QuadKey parentKey, int objectID, ObjectType objType, float maxDistance) 
+        {
+
+            //top down for searching for this object
+            QuadKey checkKey = parentKey;
+            float minDistance = 10000;
+            float tempMin = 0;
+			if (!quads[parentKey].key.IsDivided) {
+				//check this quad for the required object
+
+				return SearchBucketForClosestObject(parentKey, objectID, objType, maxDistance);
+
+			}
+
+
+			//top left quad
+			checkKey = parentKey;
+			checkKey.LeftBranch();
+			checkKey.RightBranch();
+			if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
+            {
+                minDistance = SearchChildrenForClosestObjectDistance(checkKey, objectID, objType, maxDistance);
+			}
+
+			checkKey = parentKey;
+			checkKey.LeftBranch();
+			checkKey.LeftBranch();
+			if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
+            {
+                tempMin = SearchChildrenForClosestObjectDistance(checkKey, objectID, objType, maxDistance);
+
+                if (tempMin < minDistance)
+                    minDistance = tempMin;
+
+			}
+
+			checkKey = parentKey;
+			checkKey.RightBranch();
+			checkKey.LeftBranch();
+			if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
+            {
+				tempMin = SearchChildrenForClosestObjectDistance(checkKey, objectID, objType, maxDistance);
+
+				if (tempMin < minDistance)
+					minDistance = tempMin;
+			}
+
+			checkKey = parentKey;
+			checkKey.RightBranch();
+			checkKey.RightBranch();
+			if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
+            {
+				tempMin = SearchChildrenForClosestObjectDistance(checkKey, objectID, objType, maxDistance);
+
+				if (tempMin < minDistance)
+					minDistance = tempMin;
+			}
+
+            return minDistance;
+
+		}
+
+        private float SearchBucketForClosestObject(QuadKey key, int objectID, ObjectType objType, float maxDistance) 
+        {
+
+
+			float minDist = 10000;
+
+			if (!quads[key].ContainsObjectType(objType))
+                return minDist;
+
+            float tempMin = 0;
+            for (int i = quads[key].startIndex; i <= quads[key].endIndex; i++) 
+            {
+                if (genes.GetObjectType(objectIDs[i]) != objType) 
+                    continue;
+                tempMin = math.distancesq(positions[objectIDs[i]], positions[objectID]);
+
+				if (tempMin < minDist)
+                    minDist = tempMin;
 
             }
 
 
-            //void QuadContains()
-            //{
-            //    if (quads[checkKey].IsWithinDistance(positions[objectID], maxDist))
-            //    {
-            //        temp = CheckChildQuadsInRange(quads[checkKey].key, objectID, objectType, minDist, maxDist);
-
-            //        closestID = CheckWhichObjectIsCloser(objectID, closestID, temp);
-            //    }
-            //}
-
-            //checkKey = key;
-            //checkKey.LeftBranch();
-            //checkKey.RightBranch();
-            //QuadContains();
-
-            //checkKey = key;
-            //checkKey.LeftBranch();
-            //checkKey.LeftBranch();
-            //QuadContains();
-
-            //checkKey = key;
-            //checkKey.RightBranch();
-            //checkKey.LeftBranch();
-            //QuadContains();
-
-            //checkKey = key;
-            //checkKey.RightBranch();
-            //checkKey.RightBranch();
-
-            //QuadContains();
-
-
-
-
-            //then will assign the value to the correct float2 value inside the forces array
-            //will use this object's id and then the object type to determine which spot this float2 values goes into
-
+            return minDist;
         }
 
 
-        private float2 SearchBucket(int index, ObjectType objType, QuadKey key)
+		private float2 GatherBucketForces(int objectID, ObjectType objType, QuadKey key)
         {
-
-
 
             float maxDist = 8;
             float maxDistSq = maxDist * maxDist;
             float2 localPosition = new float2();
-            //float2 moveTowards = new float2();
 
             float2 moveTowards = new float2();
 
@@ -251,21 +335,21 @@ namespace ShepProject {
             {
 
                 //to ignore itself in all calculations
-                if (objectIDs[i] == objectIDs[index])
+                if (objectIDs[i] == objectID)
                     continue;
 
                 //ignore it if it is not the type we're looking for
                 if (genes.GetObjectType(objectIDs[i]) != targetType)
                     continue;
 
-                localPosition = (positions[objectIDs[i]] - positions[objectIDs[index]]);
+                localPosition = (positions[objectIDs[i]] - positions[objectID]);
 
 
                 //for debugging rays only
                 Vector3 pos = new Vector3();
-                pos.x = positions[objectIDs[index]].x;
+                pos.x = positions[objectID].x;
                 pos.y = 1;
-                pos.z = positions[objectIDs[index]].y;
+                pos.z = positions[objectID].y;
 
                 Vector3 local = new Vector3();
 
@@ -308,11 +392,11 @@ namespace ShepProject {
                         if (objType == ObjectType.Slime)
                         {
 
-                            float optimalDist = genes.GetOptimalDistance(objectIDs[index], OptimalDistance.Slime);
+                            float optimalDist = genes.GetOptimalDistance(objectID, OptimalDistance.Slime);
                             if (sqDist < (optimalDist * optimalDist))
                             {
                                 //slimes are too close, so get further away
-                                moveTowards -= one * (genes.GetAttraction(objectIDs[index], Attraction.Slime) * 4);
+                                moveTowards -= one * (genes.GetAttraction(objectID, Attraction.Slime) * 4);
 
                                 local.x = one.x;
                                 local.z = one.y;
@@ -326,7 +410,7 @@ namespace ShepProject {
                             {
 
                                 //slimes are too far, so get closer
-                                moveTowards += one * (genes.GetAttraction(objectIDs[index], Attraction.Slime));
+                                moveTowards += one * (genes.GetAttraction(objectID, Attraction.Slime));
 
                                 local.x = one.x;
                                 local.z = one.y;
@@ -339,7 +423,7 @@ namespace ShepProject {
                         }
                         else
                         {
-                            moveTowards -= one * genes.GetAttraction(objectIDs[index], Attraction.Slime);
+                            moveTowards -= one * genes.GetAttraction(objectID, Attraction.Slime);
 
 
                             local.x = one.x;
@@ -363,7 +447,7 @@ namespace ShepProject {
 
                         //everything wants to avoid walls
                         moveTowards -= (one
-                            * genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i])));
+                            * genes.GetAttraction(objectID, (int)genes.GetObjectType(objectIDs[i])));
                         break;
                     }
                     case ObjectType.Tower:
@@ -373,14 +457,14 @@ namespace ShepProject {
                         if (objType == ObjectType.Slime)
                         {
                             moveTowards -= (one
-                                * genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i])));
+                                * genes.GetAttraction(objectID, (int)genes.GetObjectType(objectIDs[i])));
 
                         }
                         //sheep want to get closer to towers
                         else if (objType == ObjectType.Sheep)
                         {
                             moveTowards += (one
-                                * genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i])));
+                                * genes.GetAttraction(objectID, (int)genes.GetObjectType(objectIDs[i])));
                         }
 
                         break;
@@ -485,15 +569,11 @@ namespace ShepProject {
         /// <param name="minDist">minimum distance away the object can be.</param>
         /// <param name="maxDist">maximum distance away the object can be.</param>
         /// <returns>Transform of object if one is found within range, or null if no object is found within range.</returns>
-        public void GetClosestObject(int objectID, ObjectType objectType, float maxDist = 10)
+        public float GetClosestObjectDistance(int objectID, ObjectType objectType, QuadKey key, float maxDist = 10)
         {
 
-            //if (transforms[objectID] == null)
-            //{
-            //    Debug.LogError("Quad tree doesn't contain the object you are trying to search with!");
-            //    return null;
-            //    //throw new ArgumentException("Object ID does not exist in the quad tree! :(");
-            //}
+
+
 
             //QuadKey topKey = new QuadKey();
             //if (positionCount > bucketSize)
@@ -507,6 +587,9 @@ namespace ShepProject {
             //    return null;
 
             //return transforms[closestObjectID];
+
+
+            return 0;
 
         }
 
