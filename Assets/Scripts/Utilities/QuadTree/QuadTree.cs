@@ -392,6 +392,13 @@ namespace ShepProject {
 
         }
 
+		public Transform GetClosestVisibleObject(int objectID, ObjectType objectType, float minDist = 0, float maxDist = 10) 
+		{
+
+			return null;
+		}
+
+
         private int CheckWhichObjectIsCloser(int objectID, int one, int two)
         {
 
