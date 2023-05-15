@@ -12,11 +12,11 @@ public class FireTowerController : MonoBehaviour
 
     public Transform positions;
     public Rigidbody bombPrefab;
-    public float bombSpeed;
+    public static float bombSpeed;
     public Transform barrel;
     public ParticleSystem shoot;
 
-    public float timeBetweenShots;
+    public static float timeBetweenShots;
 
     // Start is called before the first frame update
     void Start()

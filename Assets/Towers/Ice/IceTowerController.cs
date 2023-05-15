@@ -15,11 +15,12 @@ public class IceTowerController : MonoBehaviour
     public Transform positions;
     public Transform barrel;
     public ParticleSystem shoot;
+    public static float iceDuration;
 
     private Boolean playing = false;
 
     //private Animator anim;
-    public float timeBetweenShots;
+    public static float timeBetweenShots;
 
     // Start is called before the first frame update
     void Start()
@@ -55,7 +56,7 @@ public class IceTowerController : MonoBehaviour
             {
                 ParticleSystem exp = Instantiate(shoot, barrel.position, positions.rotation);
                 playing = true;
-                Destroy(exp.gameObject, 3f);
+                Destroy(exp.gameObject, iceDuration);
                 StartCoroutine(WaitForThreeSeconds());
             }
         }
@@ -64,7 +65,7 @@ public class IceTowerController : MonoBehaviour
 
     IEnumerator WaitForThreeSeconds()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(iceDuration);
         playing = false;
     }
 }

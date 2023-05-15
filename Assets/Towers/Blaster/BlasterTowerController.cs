@@ -17,7 +17,7 @@ public class BlasterTowerController : MonoBehaviour
     public ParticleSystem shoot;
 
     public LineRenderer beam;
-    public float timeBetweenShots;
+    public static float timeBetweenShots;
 
     private Vector3 origin;
     private Vector3 endPoint;

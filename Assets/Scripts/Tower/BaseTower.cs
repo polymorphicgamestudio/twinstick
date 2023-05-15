@@ -12,8 +12,8 @@ public class BaseTower : MonoBehaviour
     float timer;
     float currentTimer;
 
-    public float minDist;
-    public float maxDist;
+    public static float minDist;
+    public static float maxDist;
 
     public Transform slimeTarget;
     public Transform tower;
@@ -23,7 +23,7 @@ public class BaseTower : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator>();
+        //anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
