@@ -31,23 +31,11 @@ public class BlasterTowerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        slimes = ShepGM.GetList(ShepGM.Thing.Slime);
-        if (slimes.Count > 0)
-        {
-            nearestslime = ShepGM.GetNearestFromList(slimes, this.transform.position);
-            Vector3 newDirection = Vector3.RotateTowards(positions.forward, nearestslime.position - this.transform.position, Time.deltaTime, 0.0f);
-            positions.rotation = Quaternion.LookRotation(newDirection);
-        }
-        else
-        {
-            positions.eulerAngles = new Vector3(0, 0, 0);
-        }
+
     }
 
     void ShootTurret()
     {
-        if (slimes.Count > 0)
-        {
             origin = barrel.position;
             endPoint = nearestslime.position;
 
@@ -55,27 +43,26 @@ public class BlasterTowerController : MonoBehaviour
             dir.Normalize();
             RaycastHit hit;
 
-            if (Vector3.Distance(nearestslime.position, this.transform.position) < 50.0f)
+        if (Vector3.Distance(nearestslime.position, this.transform.position) < 50.0f)
+        {
+            if (Physics.Raycast(origin, dir, out hit))
             {
-                if (Physics.Raycast(origin, dir, out hit))
+                endPoint = hit.point;
+                if (hit.collider.gameObject.CompareTag("Slime"))
                 {
-                    endPoint = hit.point;
-                    if (hit.collider.gameObject.CompareTag("Slime"))
-                    {
-                        Destroy(hit.collider.gameObject);
-                    }
+                    Destroy(hit.collider.gameObject);
                 }
-                beam.SetPosition(0, origin);
-                beam.SetPosition(1, endPoint);
-
-                ParticleSystem exp = Instantiate(shoot, origin, barrel.rotation);
-                shoot.gameObject.SetActive(true);
-                beam.enabled = true;
-                beam.gameObject.SetActive(true);
-
-                StartCoroutine(WaitForHalfASecond());
-                Destroy(exp.gameObject, 0.1f);
             }
+            beam.SetPosition(0, origin);
+            beam.SetPosition(1, endPoint);
+
+            ParticleSystem exp = Instantiate(shoot, origin, barrel.rotation);
+            shoot.gameObject.SetActive(true);
+            beam.enabled = true;
+            beam.gameObject.SetActive(true);
+
+            StartCoroutine(WaitForHalfASecond());
+            Destroy(exp.gameObject, 0.1f);
         }
 
     }

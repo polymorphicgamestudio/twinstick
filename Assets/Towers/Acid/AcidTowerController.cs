@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class AcidTowerController : MonoBehaviour
 {
-
     List<Transform> slimes;
     Transform slimeInRange;
     bool slimeInRangebool = false;

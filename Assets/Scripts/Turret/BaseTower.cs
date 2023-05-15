@@ -18,10 +18,12 @@ public class BaseTower : MonoBehaviour
     public Transform slimeTarget;
     public Transform tower;
 
+    private Animator anim;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -29,6 +31,7 @@ public class BaseTower : MonoBehaviour
     {
         if (slimebool == false)
         {
+            tower.eulerAngles = new Vector3(0, 0, 0);
             SearchForSlime();
             if (slimeTarget != null)
             {
@@ -48,13 +51,14 @@ public class BaseTower : MonoBehaviour
         {
             Vector3 newDirection = Vector3.RotateTowards(tower.forward, slimeTarget.position - this.transform.position, Time.deltaTime * 15, 0.0f);
             tower.rotation = Quaternion.LookRotation(newDirection);
-            ShootTurret();
         }
     }
 
     public void LateUpdate()
     {
-        //shooting and attacking
+        if (slimebool == true) {
+            ShootTurret();
+        }
     }
 
 
@@ -65,7 +69,8 @@ public class BaseTower : MonoBehaviour
 
     private void SearchForSlime()
     {
-        slimeTarget = ShepProject.ShepGM.inst.EnemyManager.QuadTree.GetClosestVisibleObject(objectID, ShepProject.ObjectType.Slime, minDist, maxDist);
+        //slimeTarget = ShepProject.ShepGM.inst.EnemyManager.QuadTree.GetClosestVisibleObject(objectID, ShepProject.ObjectType.Slime, minDist, maxDist);
+        slimeTarget = ShepProject.ShepGM.inst.EnemyManager.QuadTree.GetClosestObject(objectID, ShepProject.ObjectType.Slime, minDist, maxDist);
     }
 
 }
