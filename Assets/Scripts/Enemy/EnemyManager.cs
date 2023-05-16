@@ -506,6 +506,10 @@ namespace ShepProject {
 		public void AddEnemyToList(Transform enemy) {
 
 
+			//this needs to have object pooling attached to it
+			//probably will eventually need to also have specific settings 
+			//to control exactly what type of enemy is spawned
+			//and to control its genes
 
 
 			enemiesLeftToSpawn--;
@@ -576,6 +580,15 @@ namespace ShepProject {
 
 
         }
+		
+		private void AddTowerToList(BaseTower tower)
+		{
+			tower.objectID = QuadTree.AddTransform(tower.transform);
+			genes.SetObjectType(tower.objectID, ObjectType.Tower);
+
+
+		}
+
 
         private void AddBurrow(int count = 1) {
 
