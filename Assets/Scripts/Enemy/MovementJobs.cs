@@ -112,13 +112,8 @@ namespace ShepProject {
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<float> sheepDistancesToSlime;
 
-        //this array should only have either 1 or 4 elements
-        //depending on whether it's the top level or first level of divisions
         [NativeDisableContainerSafetyRestriction]
-        public NativeArray<QuadKey> startingKeys;
-
-        [NativeDisableContainerSafetyRestriction]
-        public NativeArray<ObjectForces> objectForces;
+        public NativeArray<float2> objectForces;
 
 		public ObjectType targetType;
 
@@ -126,51 +121,53 @@ namespace ShepProject {
         public void Execute(int index)
         {
 
-            int objectID = objectIDs[index] /= 4;
+            int objectID = objectIDs[index];
 
 			//checking for player ID, since player is always the first thing spawned
-			if (objectIDs[objectID] == 0)
+			if (objectID == 0)
                 return;
 
-			ObjectType objType = genes.GetObjectType(objectIDs[objectID]);
+			ObjectType objType = genes.GetObjectType(objectID);
 
             if (objType == ObjectType.Wall || objType == ObjectType.Tower)
                 return;
 
             //now at this point, should only be sheep and slimes
-			ushort sectionID = objectIDs[index] %= 4;
-			float2 moveTowards = new float2();
 
-            if (objType != ObjectType.Sheep)
+            if (objType == ObjectType.Slime && targetType == ObjectType.Sheep)
             {
 
-                moveTowards = math.normalize(positions[targetIDs[objectID]] - positions[objectID])
+                objectForces[(objectID * (int)ObjectType.Count) + (int)targetType]
+                    = math.normalize(positions[targetIDs[objectID]] - positions[objectID])
                     * genes.GetAttraction(objectID, Attraction.Sheep);
 
 
             }
-            else 
+            else if (objType == ObjectType.Sheep && targetType == ObjectType.Slime)
             {
-                
-                sheepDistancesToSlime[(objectID * 4) + sectionID] = 
-				SearchChildrenForClosestObjectDistance(startingKeys[sectionID], objectID, ObjectType.Slime, 8);
+                if (targetType == ObjectType.Slime)
+                {
+                    sheepDistancesToSlime[(objectID)] =
+                        SearchChildrenForClosestObjectDistance(quads[new QuadKey()].key, objectID, ObjectType.Slime, 8);
+                }
             }
 
             //now search all the buckets including neighbors
             //will only be the bucket 
 
-            SearchChildrenForForce(startingKeys[sectionID], objectID, sectionID, objType);
+            SearchChildrenForForce(quads[new QuadKey()].key, objectID, objType);
 
 
         }
 
-        private void SearchChildrenForForce(QuadKey parentKey, int objectID, int sectionID, ObjectType objType)
+        private void SearchChildrenForForce(QuadKey parentKey, int objectID, ObjectType objType)
         {
             //this will search through all child quads for bottom level quads and then check if those quads 
             //have the required objects inside of them and a search of the bucket will be required
 
-            //int closestID = -1;
-            //int temp = -1;
+            if (!quads[parentKey].ContainsObjectType(objType))
+                return;
+
             QuadKey checkKey = parentKey;
             float maxDistance = genes.GetViewRange(objectID, ViewRange.Tower);
 
@@ -186,9 +183,11 @@ namespace ShepProject {
                 //check this quad for the required object
 
                 //need to update return type from float2 to objectForces
-                //objectForces[(objectID * 4) + sectionID] += GatherBucketForces(objectID, objType, parentKey);
+                objectForces[(objectID * (int)ObjectType.Count) + (int)targetType] += 
+                    //(objectForces[(objectID * (int)ObjectType.Count) + (int)targetType]
+                    GatherBucketForces(objectID, objType, parentKey);
 
-                return; // SearchQuadForObjectType(objectID, quads[key], objectType, minDist, maxDist * maxDist);
+                return;
 
             }
             //else only check children
@@ -199,7 +198,7 @@ namespace ShepProject {
 			checkKey.RightBranch();
 			if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
             {
-				SearchChildrenForForce(parentKey, objectID, sectionID, objType);
+				SearchChildrenForForce(checkKey, objectID, objType);
             }
 
 			checkKey = parentKey;
@@ -207,7 +206,7 @@ namespace ShepProject {
             checkKey.LeftBranch();
             if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
             {
-				SearchChildrenForForce(parentKey, objectID, sectionID, objType);
+				SearchChildrenForForce(checkKey, objectID, objType);
 			}
 
 			checkKey = parentKey;
@@ -215,7 +214,7 @@ namespace ShepProject {
             checkKey.LeftBranch();
             if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
             {
-				SearchChildrenForForce(parentKey, objectID, sectionID, objType);
+				SearchChildrenForForce(checkKey, objectID, objType);
 			}
 
 			checkKey = parentKey;
@@ -223,7 +222,7 @@ namespace ShepProject {
             checkKey.RightBranch();
             if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
             {
-				SearchChildrenForForce(parentKey, objectID, sectionID, objType);
+				SearchChildrenForForce(checkKey, objectID, objType);
 			}
 
 		}
@@ -241,7 +240,6 @@ namespace ShepProject {
 				return SearchBucketForClosestObject(parentKey, objectID, objType, maxDistance);
 
 			}
-
 
 			//top left quad
 			checkKey = parentKey;
@@ -353,18 +351,7 @@ namespace ShepProject {
 
                 Vector3 local = new Vector3();
 
-
                 float sqDist = (math.pow(localPosition.x, 2) + math.pow(localPosition.y, 2));
-
-                //if (objType == ObjectType.Sheep && genes.GetObjectType(objectIDs[i]) == ObjectType.Slime)
-                //{
-                //    int ID = objectIDs[index] - 1;
-
-                //    if (sheepDistancesToSlime[objectIDs[index] - 1] > sqDist)
-                //    {
-                //        sheepDistancesToSlime[objectIDs[index] - 1] = sqDist;
-                //    }
-                //}
 
                 //if greater than this distance, ignore and continue on
                 if (sqDist > maxDistSq)
@@ -478,126 +465,16 @@ namespace ShepProject {
                 }
 
 
-                //switch (genes.GetObjectType(objectIDs[i]))
-                //{
-                //    case ObjectType.Slime:
-                //    {
-
-                //        if (objType == ObjectType.Slime)
-                //        {
-
-                //            float optimalDist = genes.GetOptimalDistance(objectIDs[index], OptimalDistance.Slime);
-                //            if (sqDist < (optimalDist * optimalDist))
-                //            {
-                //                //slimes are too close, so get further away
-                //                moveTowards.SlimesForce -= one * (genes.GetAttraction(objectIDs[index], Attraction.Slime) * 4);
-
-                //                local.x = one.x;
-                //                local.z = one.y;
-                //                local.y = 0;
-                //                local *= -1;
-
-                //                Debug.DrawRay(pos, local, Color.red);
-
-                //            }
-                //            else
-                //            {
-
-                //                //slimes are too far, so get closer
-                //                moveTowards.SlimesForce += one * (genes.GetAttraction(objectIDs[index], Attraction.Slime));
-
-                //                local.x = one.x;
-                //                local.z = one.y;
-                //                local.y = 0;
-
-                //                Debug.DrawRay(pos, local, Color.green);
-                //            }
-                //        }
-                //        else
-                //        {
-                //            moveTowards.SlimesForce -= one * genes.GetAttraction(objectIDs[index], Attraction.Slime);
-
-
-                //            local.x = one.x;
-                //            local.z = one.y;
-                //            local.y = 0;
-                //            local *= -1;
-
-                //            Debug.DrawRay(pos, local, Color.red);
-
-                //        }
-                //        break;
-                //    }
-                //    case ObjectType.Wall:
-                //    {
-                //        //everything wants to avoid walls
-                //        moveTowards.WallsForce -= (one
-                //            * genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i])));
-                //        break;
-                //    }
-                //    case ObjectType.Tower:
-                //    {
-
-                //        //sheep want to move closer to towers, slimes want to move away
-
-                //        moveTowards.TowersForce += (one
-                //            * genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i])));
-                //        break;
-                //    }
-                //    case ObjectType.Sheep:
-                //    {
-                //        //everything that can move wants to get closer to sheep
-                //        moveTowards.SheepForce += (one
-                //            * genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i])));
-                //        break;
-                //    }
-
-                //}
-
-
             }
 
 
 
             return moveTowards;
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="objectID">ID of the object that is calling this function.</param>
-        /// <param name="objectType">Type of the object that needs to be found.</param>
-        /// <param name="minDist">minimum distance away the object can be.</param>
-        /// <param name="maxDist">maximum distance away the object can be.</param>
-        /// <returns>Transform of object if one is found within range, or null if no object is found within range.</returns>
-        public float GetClosestObjectDistance(int objectID, ObjectType objectType, QuadKey key, float maxDist = 10)
-        {
-
-
-
-
-            //QuadKey topKey = new QuadKey();
-            //if (positionCount > bucketSize)
-            //    topKey.SetDivided(true);
-
-            //Quad topQuad = quads[topKey];
-
-            //int closestObjectID = CheckChildQuadsInRange(topKey, objectID, objectType, minDist, maxDist);
-
-            //if (closestObjectID == -1)
-            //    return null;
-
-            //return transforms[closestObjectID];
-
-
-            return 0;
-
-        }
-
-
 
     }
 
-    public struct MovementJob : IJobParallelFor
+    public struct CalculateHeadingJob : IJobParallelFor
     {
 
 
@@ -608,9 +485,70 @@ namespace ShepProject {
 		 * 
 		 */
 
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<float2> objectForces;
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<float> headings;
+        public GenesArray genes;
+
+        public float deltaTime;
+
 
         public void Execute(int index)
         {
+
+            ObjectType type = genes.GetObjectType(index);
+
+            if ( type == ObjectType.Sheep)
+            {
+                int test = 0;
+            }
+
+            if (type != ObjectType.Sheep && type != ObjectType.Slime)
+                return;
+
+
+            float2 moveTowards = new float2();
+            for (int i = 0; i < (int)ObjectType.Count; i++)
+            {
+                moveTowards += objectForces[(index * (int)ObjectType.Count) + i];
+
+            }
+
+            float headingCalculation = math.atan2(moveTowards.x, moveTowards.y);
+
+
+            if (headingCalculation < 0)
+            {
+
+                headingCalculation += 2 * math.PI;
+            }
+
+            //float headingDegrees = math.degrees(headings[objectIDs[index]]);
+            //float newHeadingDegrees = math.degrees(headingCalculation);
+
+            //float local = newHeadingDegrees - headingDegrees;
+
+            float local = headingCalculation - headings[index];
+
+            if (local < -math.PI)
+            {
+
+                //turn right
+                headings[index] -= 2 * math.PI;
+            }
+            else if (local > math.PI)
+            {
+                //turn left
+                headings[index] += 2 * math.PI;
+            }
+
+            headings[index]
+                //= headingCalculation;
+                = math.lerp(headings[index], headingCalculation, deltaTime * 2);
+
+
+
 
         }
     }

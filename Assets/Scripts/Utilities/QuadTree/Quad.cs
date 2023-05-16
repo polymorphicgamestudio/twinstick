@@ -382,6 +382,17 @@ namespace ShepProject {
 
         }
 
+        public void SetNextLevelPosition(int value)
+        {
+
+            bool2 position = PositionToBools((byte)value);
+
+            //getCount for current level, then match bools
+            Branch(position.x);
+            Branch(position.y);
+
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -502,8 +513,12 @@ namespace ShepProject {
 
 		public float2 position;
 		public float halfLength;
-        private bool3 containsBuffer1;
-        private bool2 containsBuffer2;
+        private ContainsTypes containsTypes;
+        public ContainsTypes ContainsTypes 
+        {
+            get => containsTypes;
+            set => containsTypes = value; 
+        }
 		//bucket
 		public short startIndex;
 		public short endIndex;
@@ -512,29 +527,29 @@ namespace ShepProject {
 
 		public bool ContainsSlimes 
         {
-            get => containsBuffer1[0];
-            set => containsBuffer1[0] = value;    
+            get => containsTypes.ContainsSlimes;
+            set => containsTypes.ContainsSlimes = value;    
         }
 
         public bool ContainsTowers
         {
-            get => containsBuffer1[1];
-            set => containsBuffer1[1] = value;
+            get => containsTypes.ContainsTowers;
+            set => containsTypes.ContainsTowers = value;
         }
         public bool ContainsSheep
         {
-            get => containsBuffer1[2];
-            set => containsBuffer1[2] = value;
+            get => containsTypes.ContainsSheep;
+            set => containsTypes.ContainsSheep = value;
         }
         public bool ContainsPlayer
         {
-            get => containsBuffer2[0];
-            set => containsBuffer1[0] = value;
+            get => containsTypes.ContainsPlayer;
+            set => containsTypes.ContainsPlayer = value;
         }
 
 		public bool ContainsWalls {
-			get => containsBuffer2[1];
-			set => containsBuffer1[1] = value;
+			get => containsTypes.ContainsWalls;
+			set => containsTypes.ContainsWalls = value;
 		}
 
 		public bool Empty => (startIndex == -1) && (endIndex == -1);
@@ -553,8 +568,7 @@ namespace ShepProject {
 			position= new float2(0, 0);
 			halfLength = 0;
             this.key = key;
-            containsBuffer1 = new bool3();
-			containsBuffer2 = new bool2();
+            containsTypes = new ContainsTypes();
 		}
 
 		public float Middle(bool zsort) {

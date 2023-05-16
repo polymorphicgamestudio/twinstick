@@ -44,7 +44,7 @@ namespace ShepProject {
 		private NativeArray<int> lengths;
 
         int xQuadsLength { get => lengths[0]; set => lengths[0] = value; }
-		public int QuadsListLength => lengths[1];
+		//public int QuadsListLength => lengths[1];
 
 		public short bucketSize;
 
@@ -199,7 +199,7 @@ namespace ShepProject {
 
 			//update positions from transforms
 			ReadTransformData();
-
+			int assignTypesSize = 0;
 			Quad first = new Quad();
 			first.startIndex = 0;
 			first.endIndex = (short)(positionCount);
@@ -219,12 +219,14 @@ namespace ShepProject {
 					//objectQuadIDs[objectIDs[i]] = 0;
 					sortedObjectIDs[objectIDs[i]] = i;
 				}
+				assignTypesSize = 1;
 
 			}
 			else
 			{
 				first.key.SetDivided();
-			}
+                assignTypesSize = 4;
+            }
 
             quads.Add(first.key, first);
 
@@ -268,26 +270,48 @@ namespace ShepProject {
 
 			}
 
-			//NeighborSearchJob nsj = new NeighborSearchJob();
-			////nsj.quadsList = quadsList;
-			//nsj.quads = quads;
-			//nsj.objectIDs = objectIDs;
-			//nsj.objectQuadIDs = objectQuadIDs;
-			//nsj.positions = positions;
-			//nsj.neighborCounts = neighborCounts;
-			//nsj.objectNeighbors = objectNeighbors;
-			//nsj.maxNeighborQuads = maxNeighborQuads;
-			////nsj.Run(positionCount);
-			//JobHandle handle = nsj.Schedule(positionCount, SystemInfo.processorCount);
+            AssignTypesJob asj = new AssignTypesJob();
+            asj.objectIDs = objectIDs;
+            asj.genes = enemyManager.Genes;
+            asj.quads = quads;
+			asj.size = assignTypesSize;
+            asj.Schedule(assignTypesSize, 1).Complete();
+
+			if (assignTypesSize > 1)
+			{
+
+                Quad top = quads[new QuadKey()];
+                QuadKey key = new QuadKey();
+				key.LeftBranch();
+				key.RightBranch();
+
+				top.ContainsTypes = quads[key].ContainsTypes;
+
+                key = new QuadKey();
+                key.LeftBranch();
+                key.LeftBranch();
+
+                top.ContainsTypes |= quads[key].ContainsTypes;
+
+                key = new QuadKey();
+                key.RightBranch();
+                key.RightBranch();
+
+                top.ContainsTypes |= quads[key].ContainsTypes;
+
+                key = new QuadKey();
+                key.RightBranch();
+                key.LeftBranch();
+
+                top.ContainsTypes |= quads[key].ContainsTypes;
+
+				quads[new QuadKey()] = top;
 
 
-			//Profiler.BeginSample("Neighbor Search Job");
+            }
 
-			//handle.Complete();
 
-			//Profiler.EndSample();
-
-		}
+        }
 
 		public void NewFrame() {
 			lengths[1] = 0;

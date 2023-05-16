@@ -68,7 +68,7 @@ namespace ShepProject {
 		//will store the target id of the slime
 		private NativeArray<ushort> targetIDs;
 		private NativeArray<float> sheepDistancesToSlimes;
-		private NativeArray<ObjectForces> objectForces;
+		private NativeArray<float2> objectForces;
 		private NativeArray<QuadKey> divisionOneKeys;
 
 		private NativeArray<float> headings;
@@ -123,17 +123,46 @@ namespace ShepProject {
 		private void Awake() {
 
 
-
 			int targetCount = 100;
 			genes = new GenesArray(maxEnemies * ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
 
 			choosableTargets = new NativeList<ushort>(targetCount, Allocator.Persistent);
 			targetIDs = new NativeArray<ushort>(maxEnemies, Allocator.Persistent);
-			sheepDistancesToSlimes = new NativeArray<float>(targetCount * 4, Allocator.Persistent);
+			sheepDistancesToSlimes = new NativeArray<float>(targetCount * (int)ObjectType.Count, Allocator.Persistent);
 
-			objectForces = new NativeArray<ObjectForces>(targetCount * 4, Allocator.Persistent);
+			objectForces = new NativeArray<float2>(maxEnemies * (int)ObjectType.Count, Allocator.Persistent);
+			divisionOneKeys = new NativeArray<QuadKey>(4, Allocator.Persistent);
 
-			headings = new NativeArray<float>(maxEnemies, Allocator.Persistent);
+			QuadKey key = new QuadKey();
+			key.RightBranch();
+			key.LeftBranch();
+
+			//top left
+			divisionOneKeys[0] = key;
+
+            key = new QuadKey();
+            key.RightBranch();
+            key.RightBranch();
+
+            //top topRight
+            divisionOneKeys[0] = key;
+
+            key = new QuadKey();
+            key.LeftBranch();
+            key.RightBranch();
+
+            //bottom right
+            divisionOneKeys[0] = key;
+
+
+            key = new QuadKey();
+            key.LeftBranch();
+            key.LeftBranch();
+
+            //bottom left
+            divisionOneKeys[0] = key;
+
+            headings = new NativeArray<float>(maxEnemies, Allocator.Persistent);
 
 			burrows = new List<EnemyBurrow>();
 			quadTree = new QuadTree(maxEnemies, 50);
@@ -161,7 +190,7 @@ namespace ShepProject {
 			//uncomment to add player to list of choosableTargets
 			//choosableTargets.Add(0);
 
-			AddSheep();
+			AddSheepToList();
 
 
 
@@ -356,49 +385,49 @@ namespace ShepProject {
 			if (quadTree.positionCount <= 0)
 				return;
 
-			//get targets before updating movement
+            //get targets before updating movement
 
-			ChooseTargetJob ctj = new ChooseTargetJob();
+            ChooseTargetJob ctj = new ChooseTargetJob();
 			ctj.choosableTargets = choosableTargets;
 			ctj.positions = quadTree.positions;
 			ctj.objectIDs = quadTree.objectIDs;
 			ctj.targetIDs = targetIDs;
 			ctj.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
-			
-			//LEFT OFF HERE
-			//
-			// need to instantiate couple variables
-			// then assign them, as well as update them in job
-			//
-			//
-			GatherForcesWithinRangeJob gfj = new GatherForcesWithinRangeJob();
-			gfj.positions = quadTree.positions;
-			gfj.objectIDs = quadTree.objectIDs;
-			gfj.targetIDs = targetIDs;
-			gfj.genes = genes;
-			gfj.objectForces = objectForces;
-			gfj.quads = quadTree.quads;
-			gfj.startingKeys = divisionOneKeys;
-			//gfj.targetType
 
-			//AIMovementJob moveJob = new AIMovementJob();
-			//moveJob.positions = quadTree.positions;
-			//moveJob.buckets = quadTree.quadsList.Slice(0, quadTree.QuadsListLength);
-			//moveJob.headings = headings;
-			//moveJob.objectIDs = quadTree.objectIDs;
-			//moveJob.objectQuadIDs = quadTree.objectQuadIDs;
-			//moveJob.quads = quadTree.quads;
-			//moveJob.genes = genes;
-			//moveJob.targetIDs = targetIDs;
-			//moveJob.deltaTime = Time.deltaTime;
-			//moveJob.neighborCounts = quadTree.neighborCounts;
-			//moveJob.objectNeighbors = quadTree.objectNeighbors;
-			//moveJob.maxNeighborCount = quadTree.maxNeighborQuads;
-			//moveJob.sheepDistancesToSlime = sheepDistancesToSlimes;
-			//moveJob.Run(quadTree.positionCount + 1);
-			////moveJob.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
+			NativeArray<JobHandle> handles = new NativeArray<JobHandle>((int)ObjectType.Count, Allocator.TempJob);
 
+			for (int i = 0; i < handles.Length; i++)
+			{
+                GatherForcesWithinRangeJob gfj = new GatherForcesWithinRangeJob();
+                gfj.positions = quadTree.positions;
+                gfj.objectIDs = quadTree.objectIDs;
+                gfj.targetIDs = targetIDs;
+                gfj.genes = genes;
+                gfj.objectForces = objectForces;
+                gfj.quads = quadTree.quads;
+                //gfj.startingKeys = divisionOneKeys;
+				gfj.targetType = (ObjectType)i;
+				gfj.sheepDistancesToSlime = sheepDistancesToSlimes;
+				gfj.Run((quadTree.positionCount + 1));
+				//handles[i] = gfj.Schedule((quadTree.positionCount + 1), SystemInfo.processorCount);
+
+            }
+
+			//for (int i = 0; i < handles.Length; i++)
+			//{
+			//	handles[i].Complete();
+
+			//}
+
+			//now need to add forces and convert them to a heading
+			//only does one index per object
+			CalculateHeadingJob chj = new CalculateHeadingJob();
+			chj.objectForces = objectForces;
+			chj.genes = genes;
+			chj.headings = headings;
+			chj.deltaTime = Time.deltaTime;
+			chj.Schedule(QuadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
 			//after movement, write the information back to the transforms
 
@@ -414,10 +443,7 @@ namespace ShepProject {
 				if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Sheep) {
 
 					//if being chased, set velocity, otherwise don't
-					int ID = quadTree.objectIDs[i] - 1;
-
-					
-
+					int ID = quadTree.objectIDs[i];
 
                     if (sheepDistancesToSlimes[ID] > 64)
 					{
@@ -439,7 +465,7 @@ namespace ShepProject {
 							.GetComponent<Animator>().SetBool("Running", false);
 
                         quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
-                            = (quadTree.Transforms[quadTree.objectIDs[i]].forward);
+                            = (quadTree.Transforms[quadTree.objectIDs[i]].forward * 3);
                     }
                     else if (sheepDistancesToSlimes[ID] > 4)
                     {
@@ -450,7 +476,7 @@ namespace ShepProject {
 							.GetComponent<Animator>().SetBool("Running", true);
 
                         quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
-                            = (quadTree.Transforms[quadTree.objectIDs[i]].forward * 3);
+                            = (quadTree.Transforms[quadTree.objectIDs[i]].forward * 4);
                     }
 					else
 					{
@@ -536,7 +562,7 @@ namespace ShepProject {
 			genes.SetObjectType(id, ObjectType.Slime);
 			genes.SetAttraction(id, Attraction.Sheep, 10);
 			genes.SetAttraction(id, Attraction.Tower, 10);
-			genes.SetAttraction(id, Attraction.Slime, 10);
+			genes.SetAttraction(id, Attraction.Slime, 5);
 			genes.SetAttraction(id, Attraction.Wall, 20);
 			genes.SetOptimalDistance(id, OptimalDistance.Slime, 3);
 
@@ -570,7 +596,32 @@ namespace ShepProject {
 
 		}
 
-		private void AddBurrow() {
+        private void AddSheepToList()
+        {
+
+            for (int i = 0; i < sheepCount; i++)
+            {
+
+                GameObject sheep = Instantiate(sheepPrefab);
+
+                sheep.transform.position = new Vector3(Random.Range(-6, 6), 0, Random.Range(-6, 6));
+
+                ushort id = quadTree.AddTransform(sheep.transform);
+
+                genes.SetObjectType(id, ObjectType.Sheep);
+                genes.SetAttraction(id, Attraction.Slime, 15);
+                genes.SetAttraction(id, Attraction.Wall, 20);
+
+                choosableTargets.Add(id);
+
+                sheep.SetActive(true);
+            }
+
+
+
+        }
+
+        private void AddBurrow() {
 
 			EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
 
@@ -588,28 +639,7 @@ namespace ShepProject {
 			burrow.gameObject.SetActive(true);
 		}
 
-		private void AddSheep() {
 
-			for (int i = 0; i < sheepCount; i++) {
-
-				GameObject sheep = Instantiate(sheepPrefab);
-
-				sheep.transform.position = new Vector3(Random.Range(-6, 6), 0, Random.Range(-6, 6));
-
-				ushort id = quadTree.AddTransform(sheep.transform);
-
-				genes.SetObjectType(id, ObjectType.Sheep);
-				genes.SetAttraction(id, Attraction.Slime, 15);
-				genes.SetAttraction(id, Attraction.Wall, 20);
-
-				choosableTargets.Add(id);
-
-				sheep.SetActive(true);
-			}
-
-
-
-		}
 
 		#endregion
 
@@ -679,6 +709,10 @@ namespace ShepProject {
 
 			choosableTargets.Dispose();
 			targetIDs.Dispose();
+
+			objectForces.Dispose();
+			divisionOneKeys.Dispose();
+
 
 			sheepDistancesToSlimes.Dispose();
 
