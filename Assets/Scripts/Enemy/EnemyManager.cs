@@ -108,6 +108,7 @@ namespace ShepProject {
 			}
 
 
+
 		}
 
 		private void OnDrawGizmos() {
@@ -165,7 +166,8 @@ namespace ShepProject {
             headings = new NativeArray<float>(maxEnemies, Allocator.Persistent);
 
 			burrows = new List<EnemyBurrow>();
-			quadTree = new QuadTree(maxEnemies, 50);
+			quadTree = new QuadTree(maxEnemies, 35);
+
 			quadTree.enemyManager = this;
 
 			currentCountdownToWave = countdownToWave;
@@ -175,7 +177,6 @@ namespace ShepProject {
 			for (int i = 0; i < targetIDs.Length; i++)
 				targetIDs[i] = ushort.MaxValue;
 
-			Inst.gameOver += GameOver;
 
 		}
 
@@ -183,7 +184,8 @@ namespace ShepProject {
 
 
 
-			quadTree.AddTransform(Inst.player.transform);
+            Inst.gameOver += GameOver;
+            quadTree.AddTransform(Inst.player.transform);
 			genes.SetObjectType(0, ObjectType.Player);
 
 
@@ -198,69 +200,11 @@ namespace ShepProject {
 			Inst.GeneratePlayableAreaWall();
 
 
-			AddBurrow();
-			AddBurrow();
+			AddBurrow(2);
 
+			//50 burrows for testing
+			//AddBurrow(50);
 
-			#region Spawn Burrows For Testing
-
-
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-			AddBurrow();
-
-			#endregion
 
 		}
 
@@ -608,17 +552,20 @@ namespace ShepProject {
         private void AddSheepToList()
         {
 
+			int min = -15;
+			int max = 15;
+
             for (int i = 0; i < sheepCount; i++)
             {
 
                 GameObject sheep = Instantiate(sheepPrefab);
 
-                sheep.transform.position = new Vector3(Random.Range(-6, 6), 0, Random.Range(-6, 6));
+                sheep.transform.position = new Vector3(Random.Range(min, max), 0, Random.Range(min, max));
 
                 ushort id = quadTree.AddTransform(sheep.transform);
 
                 genes.SetObjectType(id, ObjectType.Sheep);
-                genes.SetAttraction(id, Attraction.Slime, 15);
+                genes.SetAttraction(id, Attraction.Slime, 10);
                 genes.SetAttraction(id, Attraction.Wall, 20);
 
                 choosableTargets.Add(id);
@@ -630,22 +577,27 @@ namespace ShepProject {
 
         }
 
-        private void AddBurrow() {
+        private void AddBurrow(int count = 1) {
 
-			EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
+			for (int i = 0; i < count; i++)
+			{
+				EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
 
-			int min = -30;
-			int max = 30;
+				int min = -20;
+				int max = 20;
 
-			//if (Random.value > .5f)
-			burrow.gameObject.transform.position = new Vector3(Random.Range(min, max), 0, Random.Range(min, max));
-			//else
-			//burrow.gameObject.transform.position = new Vector3(Random.Range(-min, -max), 0, Random.Range(-min, -max));
+				//if (Random.value > .5f)
+				burrow.gameObject.transform.position = new Vector3(Random.Range(min, max), 0, Random.Range(min, max));
+				//else
+				//burrow.gameObject.transform.position = new Vector3(Random.Range(-min, -max), 0, Random.Range(-min, -max));
 
-			burrow.Initialize(this, .3f);
+				burrow.Initialize(this, .5f);
 
-			burrows.Add(burrow);
-			burrow.gameObject.SetActive(true);
+				burrows.Add(burrow);
+				burrow.gameObject.SetActive(true);
+
+			}
+
 		}
 
 
