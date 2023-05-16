@@ -57,11 +57,57 @@ namespace ShepProject {
 				endIndex = -1;
 
 
-				writeTo[index * 2] = leftQuad;
-				writeTo[index * 2 + 1] = rightQuad;
+				if (!zSort)
+				{
+
+                    leftQuad.position = new float2((readQuad.position.x) - (readQuad.halfLength / 2f), readQuad.position.y);
+                    rightQuad.position = new float2((readQuad.position.x) + (readQuad.halfLength / 2f), readQuad.position.y);
+
+                    leftQuad.halfLength = readQuad.halfLength;
+                    rightQuad.halfLength = readQuad.halfLength;
+
+                    leftQuad.key = readQuad.key;
+                    leftQuad.key.LeftBranch();
+
+                    rightQuad.key = readQuad.key;
+                    rightQuad.key.RightBranch();
+
+                }
 
 
-				return;
+                if (zSort)
+				{
+
+                    leftQuad.position = new float2(readQuad.position.x, (readQuad.position.y) - (readQuad.halfLength / 2f));
+                    rightQuad.position = new float2(readQuad.position.x, (readQuad.position.y) + (readQuad.halfLength / 2f));
+
+                    leftQuad.halfLength = readQuad.halfLength / 2f;
+                    rightQuad.halfLength = readQuad.halfLength / 2f;
+
+                    leftQuad.key = readQuad.key;
+                    leftQuad.key.LeftBranch();
+
+                    rightQuad.key = readQuad.key;
+                    rightQuad.key.RightBranch();
+
+                    leftQuad.key.SetDivided(false);
+                    rightQuad.key.SetDivided(false);
+
+                    quads.Add(leftQuad.key, leftQuad);
+                    quads.Add(rightQuad.key, rightQuad);
+
+
+
+                }
+
+
+
+                writeTo[index * 2] = leftQuad;
+                writeTo[index * 2 + 1] = rightQuad;
+
+
+
+                return;
 
 			}
 
@@ -226,10 +272,6 @@ namespace ShepProject {
 				rightQuad.halfLength = readQuad.halfLength;
 			}
 
-
-
-
-
 			writeTo[index * 2] = leftQuad;
 			writeTo[index * 2 + 1] = rightQuad;
 
@@ -297,38 +339,9 @@ namespace ShepProject {
 
 				}
 
-				if (!(readFrom[startIndex].startIndex < 0) && !(readFrom[startIndex].endIndex < 0)
-					&& readFrom[startIndex].BucketSize <= bucketSize) {
-
-					//quadsList[lengths[1]] = readFrom[startIndex];
-					lengths[1]++;
-
-					//for (int i = readFrom[startIndex].startIndex; i <= readFrom[startIndex].endIndex; i++) {
-
-					//	quadsID[objectIDs[i]] = (ushort)(lengths[1] - 1);
-
-					//}
-
-
-				}
-
 
 				while (((readFrom[endIndex].startIndex < 0) || (readFrom[endIndex].endIndex < 0)
 					|| (readFrom[endIndex].BucketSize <= bucketSize)) && (endIndex >= startIndex && endIndex > 0)) {
-
-					if (!(readFrom[endIndex].startIndex < 0) && !(readFrom[endIndex].endIndex < 0)
-						&& readFrom[endIndex].BucketSize <= bucketSize) {
-						//quadsList[lengths[1]] = readFrom[endIndex];
-						lengths[1]++;
-
-
-						//for (int i = readFrom[endIndex].startIndex; i <= readFrom[endIndex].endIndex; i++) {
-
-						//	quadsID[objectIDs[i]] = (ushort)(lengths[1] - 1);
-
-						//}
-
-					}
 
 
 					endIndex--;
@@ -449,22 +462,22 @@ namespace ShepProject {
             checkKey = parentKey;
             checkKey.LeftBranch();
             checkKey.RightBranch();
-			contains |= TraverseDownTree(checkKey);
+			contains |= TraverseDownTree(quads[checkKey].key);
 
             checkKey = parentKey;
             checkKey.LeftBranch();
             checkKey.LeftBranch();
-            contains |= TraverseDownTree(checkKey);
+            contains |= TraverseDownTree(quads[checkKey].key);
 
             checkKey = parentKey;
             checkKey.RightBranch();
             checkKey.LeftBranch();
-            contains |= TraverseDownTree(checkKey);
+            contains |= TraverseDownTree(quads[checkKey].key);
 
             checkKey = parentKey;
             checkKey.RightBranch();
             checkKey.RightBranch();
-            contains |= TraverseDownTree(checkKey);
+            contains |= TraverseDownTree(quads[checkKey].key);
 
             //then from all those, assign the values here, then return another bool5 or w/e
             Quad current = quads[parentKey];

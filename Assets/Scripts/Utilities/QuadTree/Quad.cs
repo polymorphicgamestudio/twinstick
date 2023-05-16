@@ -647,7 +647,7 @@ namespace ShepProject {
         public override string ToString() {
 
 
-			return "Start: " + startIndex + " End: " + endIndex;
+			return "S: " + startIndex + " E: " + endIndex + " L: " + BucketSize;
 		}
 
 	}

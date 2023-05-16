@@ -189,7 +189,7 @@ namespace ShepProject {
 			checkKey.RightBranch();
 			if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
             {
-				SearchChildrenForForce(checkKey, objectID, objType);
+				SearchChildrenForForce(quads[checkKey].key, objectID, objType);
             }
 
 			checkKey = parentKey;
@@ -197,7 +197,7 @@ namespace ShepProject {
             checkKey.LeftBranch();
             if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
             {
-				SearchChildrenForForce(checkKey, objectID, objType);
+				SearchChildrenForForce(quads[checkKey].key, objectID, objType);
 			}
 
 			checkKey = parentKey;
@@ -205,7 +205,7 @@ namespace ShepProject {
             checkKey.LeftBranch();
             if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
             {
-				SearchChildrenForForce(checkKey, objectID, objType);
+				SearchChildrenForForce(quads[checkKey].key, objectID, objType);
 			}
 
 			checkKey = parentKey;
@@ -213,7 +213,7 @@ namespace ShepProject {
             checkKey.RightBranch();
             if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
             {
-				SearchChildrenForForce(checkKey, objectID, objType);
+				SearchChildrenForForce(quads[checkKey].key, objectID, objType);
 			}
 
 		}
@@ -238,7 +238,7 @@ namespace ShepProject {
 			checkKey.RightBranch();
 			if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
             {
-                minDistance = SearchChildrenForClosestObjectDistance(checkKey, objectID, objType, maxDistance);
+                minDistance = SearchChildrenForClosestObjectDistance(quads[checkKey].key, objectID, objType, maxDistance);
 			}
 
 			checkKey = parentKey;
@@ -246,7 +246,7 @@ namespace ShepProject {
 			checkKey.LeftBranch();
 			if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
             {
-                tempMin = SearchChildrenForClosestObjectDistance(checkKey, objectID, objType, maxDistance);
+                tempMin = SearchChildrenForClosestObjectDistance(quads[checkKey].key, objectID, objType, maxDistance);
 
                 if (tempMin < minDistance)
                     minDistance = tempMin;
@@ -258,7 +258,7 @@ namespace ShepProject {
 			checkKey.LeftBranch();
 			if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
             {
-				tempMin = SearchChildrenForClosestObjectDistance(checkKey, objectID, objType, maxDistance);
+				tempMin = SearchChildrenForClosestObjectDistance(quads[checkKey].key, objectID, objType, maxDistance);
 
 				if (tempMin < minDistance)
 					minDistance = tempMin;
@@ -269,7 +269,7 @@ namespace ShepProject {
 			checkKey.RightBranch();
 			if (quads[checkKey].IsWithinDistance(positions[objectID], maxDistance)) 
             {
-				tempMin = SearchChildrenForClosestObjectDistance(checkKey, objectID, objType, maxDistance);
+				tempMin = SearchChildrenForClosestObjectDistance(quads[checkKey].key, objectID, objType, maxDistance);
 
 				if (tempMin < minDistance)
 					minDistance = tempMin;
