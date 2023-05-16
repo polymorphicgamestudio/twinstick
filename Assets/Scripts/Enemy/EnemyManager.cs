@@ -205,60 +205,60 @@ namespace ShepProject {
 			#region Spawn Burrows For Testing
 
 
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
 
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
 
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
-			//         AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
 
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
 
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
-			//AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
+			AddBurrow();
 
 			#endregion
 
@@ -417,16 +417,16 @@ namespace ShepProject {
                 //gfj.startingKeys = divisionOneKeys;
 				gfj.targetType = (ObjectType)i;
 				gfj.sheepDistancesToSlime = sheepDistancesToSlimes;
-				gfj.Run((quadTree.positionCount + 1));
-				//handles[i] = gfj.Schedule((quadTree.positionCount + 1), SystemInfo.processorCount);
+				//gfj.Run((quadTree.positionCount + 1));
+				handles[i] = gfj.Schedule((quadTree.positionCount + 1), SystemInfo.processorCount);
 
             }
 
-			//for (int i = 0; i < handles.Length; i++)
-			//{
-			//	handles[i].Complete();
+			for (int i = 0; i < handles.Length; i++)
+			{
+				handles[i].Complete();
 
-			//}
+			}
 
 			//now need to add forces and convert them to a heading
 			//only does one index per object
@@ -435,8 +435,8 @@ namespace ShepProject {
 			chj.genes = genes;
 			chj.headings = headings;
 			chj.deltaTime = Time.deltaTime;
-			chj.Run(QuadTree.positionCount + 1);
-			//chj.Schedule(QuadTree.positionCount + 1, SystemInfo.processorCount).Complete();
+			//chj.Run(QuadTree.positionCount + 1);
+			chj.Schedule(QuadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
 			//after movement, write the information back to the transforms
 
@@ -476,7 +476,7 @@ namespace ShepProject {
                         quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
                             = (quadTree.Transforms[quadTree.objectIDs[i]].forward * 2);
                     }
-                    else if (sheepDistancesToSlimes[ID] > 4)
+                    else if (sheepDistancesToSlimes[ID] >= 0)
                     {
                         //run animation
                         quadTree.Transforms[quadTree.objectIDs[i]].gameObject
@@ -634,15 +634,15 @@ namespace ShepProject {
 
 			EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
 
-			int min = -15;
-			int max = 15;
+			int min = -30;
+			int max = 30;
 
 			//if (Random.value > .5f)
-			burrow.gameObject.transform.position = new Vector3(Random.Range(-15, 15), 0, Random.Range(min, max));
+			burrow.gameObject.transform.position = new Vector3(Random.Range(min, max), 0, Random.Range(min, max));
 			//else
 			//burrow.gameObject.transform.position = new Vector3(Random.Range(-min, -max), 0, Random.Range(-min, -max));
 
-			burrow.Initialize(this, .5f);
+			burrow.Initialize(this, .3f);
 
 			burrows.Add(burrow);
 			burrow.gameObject.SetActive(true);

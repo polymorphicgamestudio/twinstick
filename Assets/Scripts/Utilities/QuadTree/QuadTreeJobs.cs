@@ -436,6 +436,8 @@ namespace ShepProject {
 
 			if (!quads[parentKey].key.IsDivided)
 			{
+				if (quads[parentKey].startIndex < 0)
+					return new ContainsTypes();
 				
 				return SearchQuadForTypes(parentKey);
             }

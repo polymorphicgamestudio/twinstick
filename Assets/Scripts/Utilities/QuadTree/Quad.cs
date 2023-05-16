@@ -511,6 +511,11 @@ namespace ShepProject {
 
 		public QuadKey key;
 
+        public QuadKey topLeft;
+        public QuadKey topRight;
+        public QuadKey bottomLeft;
+        public QuadKey bottomRight;
+
 		public float2 position;
 		public float halfLength;
         private ContainsTypes containsTypes;
@@ -569,6 +574,13 @@ namespace ShepProject {
 			halfLength = 0;
             this.key = key;
             containsTypes = new ContainsTypes();
+
+
+            topLeft = new QuadKey();
+            topRight = new QuadKey();
+            bottomLeft = new QuadKey();
+            bottomRight = new QuadKey();
+
 		}
 
 		public float Middle(bool zsort) {

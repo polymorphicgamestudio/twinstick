@@ -102,15 +102,15 @@ namespace ShepProject {
    //         }
 
 
-			Vector3 position = new Vector3();
-			for (int i = 0; i <= positionCount; i++) {
+			//Vector3 position = new Vector3();
+			//for (int i = 0; i <= positionCount; i++) {
 
-				position.x = positions[i].x;
-				position.z = positions[i].y;
+			//	position.x = positions[i].x;
+			//	position.z = positions[i].y;
 
-				Handles.Label(position, i.ToString());
+			//	Handles.Label(position, i.ToString());
 
-			}
+			//}
 
 
 

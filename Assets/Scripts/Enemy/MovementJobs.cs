@@ -78,6 +78,7 @@ namespace ShepProject {
 
     public struct GatherForcesWithinRangeJob : IJobParallelFor
     {
+        
 
         /* 
 		 * for each agent, search within its given range for a type of object
@@ -376,12 +377,12 @@ namespace ShepProject {
                                 //slimes are too close, so get further away
                                 moveTowards -= one * (genes.GetAttraction(objectID, Attraction.Slime) * 4);
 
-                                local.x = one.x;
-                                local.z = one.y;
-                                local.y = 0;
-                                local *= -1;
+                                //local.x = one.x;
+                                //local.z = one.y;
+                                //local.y = 0;
+                                //local *= -1;
 
-                                Debug.DrawRay(pos, local, Color.red);
+                                //Debug.DrawRay(pos, local, Color.red);
 
                             }
                             else
@@ -394,7 +395,7 @@ namespace ShepProject {
                                 local.z = one.y;
                                 local.y = 0;
 
-                                Debug.DrawRay(pos, local, Color.green);
+                                //Debug.DrawRay(pos, local, Color.green);
                             }
 
 
@@ -409,7 +410,7 @@ namespace ShepProject {
                             local.y = 0;
                             local *= -1;
 
-                            Debug.DrawRay(pos, local, Color.red);
+                            //Debug.DrawRay(pos, local, Color.red);
 
                         }
                         break;
