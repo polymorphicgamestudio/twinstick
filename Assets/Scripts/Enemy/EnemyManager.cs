@@ -326,7 +326,6 @@ namespace ShepProject {
             if (choosableTargets.Length == 0)
              return;
 
-
             if (updateInitialize) {
 				updateInitialize = false;
 
@@ -363,7 +362,13 @@ namespace ShepProject {
 
 			}
 
-			quadTree.NewFrame();
+            ResetNativeArrayJob<float2> resetJob = new ResetNativeArrayJob<float2>();
+            resetJob.array = objectForces;
+            JobHandle resetJobHandle
+                = resetJob.Schedule(headings.Length, SystemInfo.processorCount);
+
+
+            quadTree.NewFrame();
 
 			//spawn enemies
 
@@ -382,7 +387,10 @@ namespace ShepProject {
 			//spawningEnemies = false;
 			quadTree.Update();
 
-			if (quadTree.positionCount <= 0)
+
+            resetJobHandle.Complete();
+
+            if (quadTree.positionCount <= 0)
 				return;
 
             //get targets before updating movement
@@ -427,7 +435,8 @@ namespace ShepProject {
 			chj.genes = genes;
 			chj.headings = headings;
 			chj.deltaTime = Time.deltaTime;
-			chj.Schedule(QuadTree.positionCount + 1, SystemInfo.processorCount).Complete();
+			chj.Run(QuadTree.positionCount + 1);
+			//chj.Schedule(QuadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
 			//after movement, write the information back to the transforms
 
@@ -465,7 +474,7 @@ namespace ShepProject {
 							.GetComponent<Animator>().SetBool("Running", false);
 
                         quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
-                            = (quadTree.Transforms[quadTree.objectIDs[i]].forward * 3);
+                            = (quadTree.Transforms[quadTree.objectIDs[i]].forward * 2);
                     }
                     else if (sheepDistancesToSlimes[ID] > 4)
                     {
@@ -476,7 +485,7 @@ namespace ShepProject {
 							.GetComponent<Animator>().SetBool("Running", true);
 
                         quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
-                            = (quadTree.Transforms[quadTree.objectIDs[i]].forward * 4);
+                            = (quadTree.Transforms[quadTree.objectIDs[i]].forward * 3);
                     }
 					else
 					{
@@ -562,7 +571,7 @@ namespace ShepProject {
 			genes.SetObjectType(id, ObjectType.Slime);
 			genes.SetAttraction(id, Attraction.Sheep, 10);
 			genes.SetAttraction(id, Attraction.Tower, 10);
-			genes.SetAttraction(id, Attraction.Slime, 5);
+			genes.SetAttraction(id, Attraction.Slime, 3);
 			genes.SetAttraction(id, Attraction.Wall, 20);
 			genes.SetOptimalDistance(id, OptimalDistance.Slime, 3);
 

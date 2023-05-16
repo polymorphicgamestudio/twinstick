@@ -75,16 +75,6 @@ namespace ShepProject {
 	 * 
 	 */
 
-    public struct DetermineSheepAnimationStateJob : IJobParallelFor
-    {
-
-        public void Execute(int index)
-        {
-            throw new NotImplementedException();
-        }
-
-    }
-
 
     public struct GatherForcesWithinRangeJob : IJobParallelFor
     {
@@ -165,7 +155,7 @@ namespace ShepProject {
             //this will search through all child quads for bottom level quads and then check if those quads 
             //have the required objects inside of them and a search of the bucket will be required
 
-            if (!quads[parentKey].ContainsObjectType(objType))
+            if (!quads[parentKey].ContainsObjectType(targetType))
                 return;
 
             QuadKey checkKey = parentKey;
@@ -294,13 +284,13 @@ namespace ShepProject {
 
 			float minDist = 10000;
 
-			if (!quads[key].ContainsObjectType(objType))
+			if (!quads[key].ContainsObjectType(targetType))
                 return minDist;
 
             float tempMin = 0;
             for (int i = quads[key].startIndex; i <= quads[key].endIndex; i++) 
             {
-                if (genes.GetObjectType(objectIDs[i]) != objType) 
+                if (genes.GetObjectType(objectIDs[i]) != targetType) 
                     continue;
                 tempMin = math.distancesq(positions[objectIDs[i]], positions[objectID]);
 
@@ -325,6 +315,7 @@ namespace ShepProject {
 
             Quad current = new Quad();
             current = quads[key];
+
 
             if (current.startIndex < 0)
                 return moveTowards;
@@ -499,11 +490,6 @@ namespace ShepProject {
 
             ObjectType type = genes.GetObjectType(index);
 
-            if ( type == ObjectType.Sheep)
-            {
-                int test = 0;
-            }
-
             if (type != ObjectType.Sheep && type != ObjectType.Slime)
                 return;
 
@@ -523,11 +509,6 @@ namespace ShepProject {
 
                 headingCalculation += 2 * math.PI;
             }
-
-            //float headingDegrees = math.degrees(headings[objectIDs[index]]);
-            //float newHeadingDegrees = math.degrees(headingCalculation);
-
-            //float local = newHeadingDegrees - headingDegrees;
 
             float local = headingCalculation - headings[index];
 
@@ -552,337 +533,6 @@ namespace ShepProject {
 
         }
     }
-
-
-    public struct AIMovementJob : IJobParallelFor {
-
-		[NativeDisableContainerSafetyRestriction]
-		public NativeArray<ushort> objectIDs;
-		[NativeDisableContainerSafetyRestriction]
-		public NativeArray<ushort> objectQuadIDs;
-
-		[NativeDisableContainerSafetyRestriction]
-		public NativeArray<ushort> targetIDs;
-
-
-		[NativeDisableContainerSafetyRestriction]
-		public NativeArray<float2> positions;
-		[NativeDisableContainerSafetyRestriction]
-		public NativeSlice<Quad> buckets;
-
-        [NativeDisableContainerSafetyRestriction]
-        public NativeParallelHashMap<QuadKey, Quad> quads;
-
-        [NativeDisableContainerSafetyRestriction]
-        public NativeArray<byte> neighborCounts;
-        [NativeDisableContainerSafetyRestriction]
-        public NativeArray<QuadKey> objectNeighbors;
-
-		public int maxNeighborCount;
-
-		public NativeArray<float> sheepDistancesToSlime;
-
-        //initial headings
-        [NativeDisableContainerSafetyRestriction]
-		public NativeSlice<float> headings;
-
-		[NativeDisableContainerSafetyRestriction]
-		public GenesArray genes;
-
-
-		public float deltaTime;
-
-		public void Execute(int index) {
-
-
-			//checking for player ID, since player is always the first thing spawned
-			if (objectIDs[index] == 0)
-				return;
-
-			int objectID = objectIDs[index];
-
-			ObjectType objType = genes.GetObjectType(objectIDs[index]);
-
-			if (objType == ObjectType.Wall)
-				return;
-
-			float2 moveTowards = new float2();
-
-			if (objType != ObjectType.Sheep) {
-
-				moveTowards = math.normalize(positions[targetIDs[objectIDs[index]]] - positions[objectIDs[index]]) 
-					* genes.GetAttraction(objectID, Attraction.Sheep);
-
-
-			}
-			else
-			{
-
-				sheepDistancesToSlime[objectIDs[index] - 1] = 10000;
-			
-			}
-
-			ObjectForces forces = SearchBucket(index, objType, buckets[objectQuadIDs[objectIDs[index]]].key);
-
-			for (int i = 0; i < neighborCounts[objectIDs[index]]; i++)
-			{
-                forces += SearchBucket(index, objType, objectNeighbors[objectIDs[index] * maxNeighborCount + i]);
-
-			}
-			
-			float sqDist = (math.pow(forces.SlimesForce.x, 2) + math.pow(forces.SlimesForce.y, 2));
-            if (sqDist > math.pow(genes.GetAttraction(objectID, Attraction.Slime), 2))
-			{
-                //normalization
-                forces.SlimesForce /= (math.sqrt(sqDist));
-                forces.SlimesForce *= genes.GetAttraction(objectID, Attraction.Slime);
-
-            }
-
-            sqDist = (math.pow(forces.WallsForce.x, 2) + math.pow(forces.WallsForce.y, 2));
-            if (sqDist > math.pow(genes.GetAttraction(objectID, Attraction.Wall), 2))
-            {
-                //normalization
-                forces.WallsForce /= (math.sqrt(sqDist));
-                forces.WallsForce *= genes.GetAttraction(objectID, Attraction.Wall);
-
-            }
-
-            sqDist = (math.pow(forces.TowersForce.x, 2) + math.pow(forces.TowersForce.y, 2));
-            if (sqDist > math.pow(genes.GetAttraction(objectID, Attraction.Tower), 2))
-            {
-                //normalization
-                forces.TowersForce /= (math.sqrt(sqDist));
-                forces.TowersForce *= genes.GetAttraction(objectID, Attraction.Tower);
-
-            }
-
-            //sqDist = (math.pow(forces.WallsForce.x, 2) + math.pow(forces.WallsForce.y, 2));
-            //if (sqDist > math.pow(genes.GetAttraction(objectID, Attraction.Wall), 2))
-            //{
-            //    //normalization
-            //    forces.WallsForce /= (math.sqrt(sqDist));
-            //    forces.WallsForce *= genes.GetAttraction(objectID, Attraction.Wall);
-
-            //}
-
-
-            moveTowards += forces.SlimesForce;
-			moveTowards += forces.WallsForce;
-
-            //float3 position = new float3();
-            //position.x = positions[objectID].x;
-            //position.z = positions[objectID].y;
-
-            //float3 dir = new float3();
-            //dir.x = moveTowards.x;
-            //dir.z = moveTowards.y;
-
-            //Debug.DrawRay(position, dir, Color.yellow);
-
-            //
-            /*
-             * 
-             * TO DO NEXT
-             * 
-			 * towers working with avoidance
-			 *		job will only run when divided at least once
-			 *		
-			 *		each quad will be checked recursively for towers
-			 *		each quad will also have the types of objects in it
-			 *		ex. bool containsTowers
-			 *			bool containsSheep
-			 *			bool containsSlime
-			 *			bool containsWalls
-			 * 
-			 *		will have to assign these bools in a separate job
-			 * 
-			 * as well as sheep being attracted
-			 * then start working on between rounds for gene evolution
-			 * 
-			 */
-
-            float headingCalculation = math.atan2(moveTowards.x, moveTowards.y);
-
-
-			if (headingCalculation < 0) {
-
-				headingCalculation += 2 * math.PI;
-			}
-
-            //float headingDegrees = math.degrees(headings[objectIDs[index]]);
-            //float newHeadingDegrees = math.degrees(headingCalculation);
-
-            //float local = newHeadingDegrees - headingDegrees;
-
-            float local = headingCalculation - headings[objectIDs[index]];
-
-            if (local < -math.PI) {
-
-				//turn right
-				headings[objectIDs[index]] -= 2 * math.PI;
-			}
-			else if (local > math.PI) {
-				//turn left
-				headings[objectIDs[index]] += 2 * math.PI;
-			}
-
-			headings[objectIDs[index]] 
-				//= headingCalculation;
-				= math.lerp(headings[objectIDs[index]], headingCalculation, deltaTime * 2);
-
-
-		}
-
-
-		private ObjectForces SearchBucket(int index, ObjectType objType, QuadKey key) {
-
-
-
-			float maxDist = 8;
-			float maxDistSq = maxDist * maxDist;
-			float2 localPosition = new float2();
-			//float2 moveTowards = new float2();
-
-			ObjectForces moveTowards = new ObjectForces();
-
-			Quad current = new Quad();
-			current = quads[key];
-
-			if (current.startIndex < 0)
-				return moveTowards;
-
-			for (int i = current.startIndex; i <= current.endIndex; i++) {
-
-				//to ignore itself in all calculations
-				if (objectIDs[i] == objectIDs[index])
-					continue;
-
-				localPosition = (positions[objectIDs[i]] - positions[objectIDs[index]]);
-
-
-				//for debugging rays only
-				Vector3 pos = new Vector3();
-				pos.x = positions[objectIDs[index]].x;
-				pos.y = 1;
-				pos.z = positions[objectIDs[index]].y;
-
-				Vector3 local = new Vector3();
-
-
-				float sqDist = (math.pow(localPosition.x, 2) + math.pow(localPosition.y, 2));
-
-				if (objType == ObjectType.Sheep && genes.GetObjectType(objectIDs[i]) == ObjectType.Slime)
-				{
-                    int ID = objectIDs[index] - 1;
-
-                    if (sheepDistancesToSlime[objectIDs[index] - 1] > sqDist)
-					{
-						sheepDistancesToSlime[objectIDs[index] - 1] = sqDist;
-					}
-				}
-
-				//if greater than this distance, ignore and continue on
-				if (sqDist > maxDistSq) {
-
-					continue;
-				}
-
-				//that divided by maxDist to get the scaledVector
-				float angle = math.atan2(localPosition.y, localPosition.x);
-
-				float2 one = new float2(math.cos(angle), math.sin(angle));
-
-				localPosition /= maxDist;
-				one -= localPosition;
-
-                switch (genes.GetObjectType(objectIDs[i]))
-				{
-					case ObjectType.Slime:
-					{
-
-						if (objType == ObjectType.Slime)
-						{
-                            
-                            float optimalDist = genes.GetOptimalDistance(objectIDs[index], OptimalDistance.Slime);
-                            if (sqDist < (optimalDist * optimalDist))
-                            {
-                                //slimes are too close, so get further away
-                                moveTowards.SlimesForce -= one * (genes.GetAttraction(objectIDs[index], Attraction.Slime) * 4);
-
-                                local.x = one.x;
-                                local.z = one.y;
-                                local.y = 0;
-                                local *= -1;
-
-                                Debug.DrawRay(pos, local, Color.red);
-
-                            }
-                            else
-                            {
-
-								//slimes are too far, so get closer
-								moveTowards.SlimesForce += one * (genes.GetAttraction(objectIDs[index], Attraction.Slime));
-
-								local.x = one.x;
-								local.z = one.y;
-								local.y = 0;
-
-								Debug.DrawRay(pos, local, Color.green);
-							}
-						}
-						else
-						{
-                            moveTowards.SlimesForce -= one * genes.GetAttraction(objectIDs[index], Attraction.Slime);
-
-
-                            local.x = one.x;
-                            local.z = one.y;
-                            local.y = 0;
-                            local *= -1;
-
-                            Debug.DrawRay(pos, local, Color.red);
-
-                        }
-						break;
-					}
-					case ObjectType.Wall:
-					{
-						//everything wants to avoid walls
-                        moveTowards.WallsForce -= (one
-							* genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i])));
-                        break;
-                    }
-					case ObjectType.Tower:
-					{
-
-						//sheep want to move closer to towers, slimes want to move away
-
-                        moveTowards.TowersForce += (one
-                            * genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i])));
-                        break;
-					}
-                    case ObjectType.Sheep:
-                    {
-						//everything that can move wants to get closer to sheep
-                        moveTowards.SheepForce += (one
-                            * genes.GetAttraction(objectIDs[index], (int)genes.GetObjectType(objectIDs[i])));
-                        break;
-                    }
-
-                }
-
-
-			}
-
-
-
-			return moveTowards;
-		}
-
-
-	}
-
 
 }
 
