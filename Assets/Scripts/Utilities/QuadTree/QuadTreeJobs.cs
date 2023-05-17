@@ -24,7 +24,7 @@ namespace ShepProject {
 
 		[NativeDisableContainerSafetyRestriction]
 		public NativeArray<float2> objectPositions;
-		//public NativeArray<bool> isSorted;
+
 		[NativeDisableContainerSafetyRestriction]
 		public NativeParallelHashMap<QuadKey, Quad> quads;
 

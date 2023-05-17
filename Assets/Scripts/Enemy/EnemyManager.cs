@@ -601,7 +601,7 @@ namespace ShepProject {
 
         }
 		
-		private void AddTowerToList(BaseTower tower)
+		public void AddTowerToList(BaseTower tower)
 		{
 			tower.objectID = QuadTree.AddTransform(tower.transform);
 			genes.SetObjectType(tower.objectID, ObjectType.Tower);
