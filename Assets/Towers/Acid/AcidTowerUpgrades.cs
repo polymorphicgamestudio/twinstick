@@ -42,7 +42,6 @@ public class AcidTowerUpgrades : MonoBehaviour
         if (funds >= 600 && upgradeselected && longersightrange)
         {
             temp = true;
-            AcidTowerController.timeBetweenShots = 1.0f;
         }
 
         if (funds >= 1000 && upgradeselected && fasterprojectile)

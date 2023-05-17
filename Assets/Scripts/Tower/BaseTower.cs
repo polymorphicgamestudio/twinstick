@@ -15,15 +15,15 @@ public class BaseTower : MonoBehaviour
     public static float minDist;
     public static float maxDist;
 
-    public Transform slimeTarget;
+    public static Transform slimeTarget;
     public Transform tower;
 
-    private Animator anim;
+    public static float timeBetweenShots;
 
     // Start is called before the first frame update
     void Start()
     {
-        //anim = GetComponent<Animator>();
+        InvokeRepeating("ShootTurret", timeBetweenShots, timeBetweenShots);
     }
 
     // Update is called once per frame

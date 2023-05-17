@@ -18,7 +18,8 @@ public class LaserTowerController : MonoBehaviour
     public ParticleSystem endOfBeam;
 
     public LineRenderer beam;
-    public float timeBetweenShots;
+    public static float timeBetweenShots;
+    public static float beamDuration;
 
     private Vector3 origin;
     private Vector3 endPoint;
@@ -82,8 +83,8 @@ public class LaserTowerController : MonoBehaviour
                 ParticleSystem end = Instantiate(endOfBeam, endPoint, barrel.rotation);
 
                 StartCoroutine(WaitForHalfASecond());
-                Destroy(exp.gameObject, 0.5f);
-                Destroy(end.gameObject, 0.5f);
+                Destroy(exp.gameObject, beamDuration);
+                Destroy(end.gameObject, beamDuration);
             }
         }
 
@@ -91,7 +92,7 @@ public class LaserTowerController : MonoBehaviour
 
     IEnumerator WaitForHalfASecond()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(beamDuration);
         beam.enabled = false;
         playing = false;
         beam.gameObject.SetActive(false);

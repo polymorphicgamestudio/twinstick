@@ -10,7 +10,7 @@ public class BlasterTowerController : MonoBehaviour
 {
 
     List<Transform> slimes;
-    Transform nearestslime;
+    //public static Transform slimeTarget;
 
     public Transform positions;
     public Transform barrel;
@@ -25,7 +25,7 @@ public class BlasterTowerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        InvokeRepeating("ShootTurret", timeBetweenShots, timeBetweenShots);
+        BaseTower.timeBetweenShots = 2.0f;
     }
 
     // Update is called once per frame
@@ -36,14 +36,14 @@ public class BlasterTowerController : MonoBehaviour
 
     void ShootTurret()
     {
-            origin = barrel.position;
-            endPoint = nearestslime.position;
+        origin = barrel.position;
+        endPoint = BaseTower.slimeTarget.position;
 
             Vector3 dir = endPoint - origin;
             dir.Normalize();
             RaycastHit hit;
 
-        if (Vector3.Distance(nearestslime.position, this.transform.position) < 50.0f)
+        if (Vector3.Distance(BaseTower.slimeTarget.position, this.transform.position) < 50.0f)
         {
             if (Physics.Raycast(origin, dir, out hit))
             {
