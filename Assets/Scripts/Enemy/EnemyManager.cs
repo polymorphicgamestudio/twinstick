@@ -208,11 +208,14 @@ namespace ShepProject {
 
 		}
 
-		void Update() {
-			if (!duringWave) {
+		void Update() 
+		{
+			if (!duringWave) 
+			{
 				NonWaveUpdate();
 			}
-			else {
+			else 
+			{
 
 				DuringWaveUpdate();
 
@@ -220,17 +223,20 @@ namespace ShepProject {
 
 		}
 
-		private void NonWaveUpdate() {
+		private void NonWaveUpdate() 
+		{
 
 
             if (choosableTargets.Length == 0)
                 return;
 
-            if (updateInitialize) {
+            if (updateInitialize) 
+			{
 				updateInitialize = false;
 				currentCountdownToWave = countdownToWave;
 
-				if (waveNumber > 0) {
+				if (waveNumber > 0) 
+				{
 					endOfWaveCanvasParent.SetActive(true);
 				}
 
@@ -243,7 +249,8 @@ namespace ShepProject {
 			currentCountdownToWave -= Time.deltaTime;
 
 
-			if (currentCountdownToWave <= 0) {
+			if (currentCountdownToWave <= 0) 
+			{
 				duringWave = true;
 				updateInitialize = true;
 
@@ -253,7 +260,8 @@ namespace ShepProject {
 
 		}
 
-		private void DuringWaveUpdate() {
+		private void DuringWaveUpdate() 
+		{
             /*
              * each frame, spawn any new required enemies
              * 
@@ -279,14 +287,16 @@ namespace ShepProject {
 				enemiesLeftToSpawn = enemiesCountToSpawn;
 				int avg = enemiesCountToSpawn / burrows.Count;
 
-				for (int i = 0; i < burrows.Count; i++) {
+				for (int i = 0; i < burrows.Count; i++) 
+				{
 
 					burrows[i].AddEnemyCountToSpawn(avg);
 					enemiesLeftToSpawn -= avg;
 
 				}
 
-				while (enemiesLeftToSpawn > 0) {
+				while (enemiesLeftToSpawn > 0) 
+				{
 
 					burrows[Random.Range(0, burrows.Count)].AddEnemyCountToSpawn(1);
 
@@ -316,9 +326,11 @@ namespace ShepProject {
 
 			//spawn enemies
 
-			if (enemiesLeftToSpawn > 0) {
+			if (enemiesLeftToSpawn > 0) 
+			{
 
-				for (int i = 0; i < burrows.Count; i++) {
+				for (int i = 0; i < burrows.Count; i++) 
+				{
 					burrows[i].ManualUpdate();
 
 				}
@@ -391,9 +403,11 @@ namespace ShepProject {
 
 			Profiler.BeginSample("Writing Velocities");
 
-			for (int i = 0; i <= quadTree.positionCount; i++) {
+			for (int i = 0; i <= quadTree.positionCount; i++) 
+			{
 
-				if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Sheep) {
+				if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Sheep) 
+				{
 
 					//if being chased, set velocity, otherwise don't
 					int ID = quadTree.objectIDs[i];
@@ -472,7 +486,8 @@ namespace ShepProject {
 
 					}
 				}
-				else if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Slime) {
+				else if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Slime) 
+				{
 
 					quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
 						= (quadTree.Transforms[quadTree.objectIDs[i]].forward * 3.05f);
@@ -494,7 +509,8 @@ namespace ShepProject {
 		/// </summary>
 		/// <param name="objectID"></param>
 		/// <param name="replacementOldID"></param>
-		private void RemoveObjectFromTree(ushort objectID) {
+		private void RemoveObjectFromTree(ushort objectID) 
+		{
 
 			quadTree.RemoveTransform(objectID);
 
@@ -503,7 +519,8 @@ namespace ShepProject {
 
 		#region Adding Object Types To Quad Tree
 
-		public void AddEnemyToList(Transform enemy) {
+		public void AddEnemyToList(Transform enemy) 
+		{
 
 
 			//this needs to have object pooling attached to it
@@ -527,7 +544,8 @@ namespace ShepProject {
 
 			EnemyPhysicsMethods methods = enemy.GetComponent<EnemyPhysicsMethods>();
 
-			if (!methods.Initialized()) {
+			if (!methods.Initialized()) 
+			{
 				methods.SetInitialInfo(id, genes, this);
 			}
 
@@ -537,11 +555,13 @@ namespace ShepProject {
 
 		}
 
-		public void AddWallToList(Transform wall) {
+		public void AddWallToList(Transform wall) 
+		{
 
 
 			//for adding all the child points to make sure enemies can avoid them correctly
-			for (int i = 0; i < wall.childCount;) {
+			for (int i = 0; i < wall.childCount;) 
+			{
 
 
 				ushort id = quadTree.AddTransform(wall.transform.GetChild(i));
@@ -590,7 +610,8 @@ namespace ShepProject {
 		}
 
 
-        private void AddBurrow(int count = 1) {
+        private void AddBurrow(int count = 1) 
+		{
 
 			for (int i = 0; i < count; i++)
 			{
@@ -617,7 +638,8 @@ namespace ShepProject {
 
 		#endregion
 
-		public void OnEnemyDeath(ushort id) {
+		public void OnEnemyDeath(ushort id) 
+		{
 
 			RemoveObjectFromTree(id);
 
@@ -626,7 +648,8 @@ namespace ShepProject {
 
 			enemiesLeftToKill--;
 
-			if (enemiesLeftToKill <= 0) {
+			if (enemiesLeftToKill <= 0) 
+			{
 				duringWave = false;
 				updateInitialize = true;
 			}
@@ -650,7 +673,7 @@ namespace ShepProject {
 
 
 
-			Debug.Log("Enemy Dead!");
+			//Debug.Log("Enemy Dead!");
 
 
 		}
@@ -665,6 +688,7 @@ namespace ShepProject {
 
 				if (genes.GetObjectType(quadTree.objectIDs[i]) != ObjectType.Slime)
 					continue;
+
 				Rigidbody rb = quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>();
 
 				rb.velocity = Vector3.zero;
@@ -675,7 +699,8 @@ namespace ShepProject {
 
 		}
 
-		private void OnDisable() {
+		private void OnDisable() 
+		{
 			quadTree.Dispose();
 
 			genes.Dispose();

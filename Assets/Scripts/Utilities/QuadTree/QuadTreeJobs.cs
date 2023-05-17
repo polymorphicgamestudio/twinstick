@@ -13,7 +13,8 @@ using UnityEngine.Jobs;
 
 namespace ShepProject {
 
-	public struct SortIterationJob : IJobParallelFor {
+	public struct SortIterationJob : IJobParallelFor 
+	{
 
 		[NativeDisableContainerSafetyRestriction]
 		public NativeArray<ushort> objectIDs;
@@ -38,7 +39,8 @@ namespace ShepProject {
 		public bool zSort;
 		public int bucketSize;
 
-		public void Execute(int index) {
+		public void Execute(int index) 
+		{
 
 			//should only be at this point if the number of positions needed to be sorted
 			//is greater than the maximum value allowed in a quad
@@ -51,7 +53,8 @@ namespace ShepProject {
 			short startIndex = readQuad.startIndex;
 			short endIndex = readQuad.endIndex;
 
-			if (startIndex < 0 || endIndex < 0) {
+			if (startIndex < 0 || endIndex < 0) 
+			{
 
 				startIndex = -1;
 				endIndex = -1;
