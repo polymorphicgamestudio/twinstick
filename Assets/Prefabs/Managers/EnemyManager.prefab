@@ -51,7 +51,7 @@ MonoBehaviour:
   maxEnemies: 2000
   TreeObjectCount: 0
   waveNumber: 0
-  countdownToWave: 2
+  countdownToWave: 0
   currentCountdownToWave: 0
   enemiesCountToSpawn: 20
   spawningEnemies: 1

@@ -44,6 +44,8 @@ namespace ShepProject {
 		
 		private void Awake() {
 
+			
+
 			actions = new PlayerInputActions();
 			actions.Player.Enable();
 
@@ -70,6 +72,12 @@ namespace ShepProject {
 			if (playableArea == null) {
 
 				Debug.LogError("Playable Area not set for level.");
+				return;
+			}
+
+			if (wallCollider == null)
+			{
+				Debug.LogError("Wall Collider is not assigned from wall prefab.");
 				return;
 			}
 
