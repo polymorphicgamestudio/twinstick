@@ -11,103 +11,71 @@ namespace ShepProject {
 	public enum GeneGroups {
 
 		Type,
-		//Attractions,
-		//ViewRanges,
-		//Resistances,
 		StatStartIndex = 1 // object type
-			+ (int)Attraction.Count //for all the possible attractions an object can have
+			+ (int)ObjectType.Count //for all the possible attractions an object can have
 			+ (int)ViewRange.Count
 			+ (int)DamageType.Count
 			+ (int)OptimalDistance.Count,
 		Speed,
 		TurnRate,
 		Health,
-		//SlimeOptimalDistance,
-		//TowerOptimalDistance,
-		TotalGeneCount //=
-			//1 // object type
-			//+ (int)Attraction.Count //for all the possible attractions an object can have
-			//+ (int)ViewRange.Count 
-			//+ (int)DamageType.Count
-			//+ 1 // for the speed
-			//+ 1 // for the turn rate
-			//+ 1 // for health
-			//+ 1 // slime optimal distance
+		TotalGeneCount
 
 	}
 
-	public enum Attraction {
-		Slime = 0,
-		Sheep,
-		Wall,
-		Tower,
-		//BlasterTower,
-		//FireTower,
-		//AcidTower,
-		//LightningTower,
-		//IceTower,
-		//LaserTower,
-        Player,
-        Count
-	}
-
-	public enum OptimalDistance
-	{
-		Slime,
-		Tower,
-		Player,
-		Count
-	}
+    #region Same ordering needed for these enums
 
 	public enum ViewRange {
-
 		Slime,
 		Tower,
 		Player,
 		Count
-	}
-
-	public enum DamageType {
-
-		Player,
-		Blaster,
-		Fire,
-		Acid,
-		Lightning,
-		Ice,
-		Laser,
-		Count
-
 	}
 
 	public enum ObjectType {
 
 		Slime,
-		Sheep,
-        Wall,
 		Tower,
-		//BlasterTower,
-		//FireTower,
-		//AcidTower,
-		//LightningTower,
-		//IceTower,
-		//LaserTower,
         Player,
+        Sheep,
+        Wall,
 		Count
 
     }
 
-	public struct GenesArray {
+    #endregion
+
+    public enum OptimalDistance
+    {
+        Slime,
+        Count
+    }
+
+
+    public enum DamageType
+    {
+
+        Player,
+        Blaster,
+        Fire,
+        Acid,
+        Lightning,
+        Ice,
+        Laser,
+        Count
+
+    }
+
+    public struct GenesArray {
 
 		[NativeDisableContainerSafetyRestriction]
 		private NativeArray<float> genes;
 
-
 		public GenesArray(int genesCount, Allocator type) {
 
 			genes = new NativeArray<float>(genesCount, type);
-
-		}
+            genes = new NativeArray<float>(genesCount, type);
+        }
 
         #region Get Specific Gene Methods
         private int IDTypeIndex(int id) {
@@ -130,11 +98,11 @@ namespace ShepProject {
             return genes[IDTypeIndex(id) + 1 + attraction];
         }
 
-		public float GetAttraction(int id, Attraction attraction) {
+		public float GetAttraction(int id, ObjectType attraction) {
 
 			return GetAttraction(id, (int)attraction);
 		}
-		public void SetAttraction(int id, Attraction attraction, float value) {
+		public void SetAttraction(int id, ObjectType attraction, float value) {
 
 			genes[IDTypeIndex(id) + 1 + (int)attraction] = value;
 
@@ -142,12 +110,12 @@ namespace ShepProject {
 
 		public float GetViewRange(int id, ViewRange range) {
 
-			return genes[IDTypeIndex(id) + 1 + (int)Attraction.Count + (int)range];
+			return genes[IDTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range];
 		}
 
 		public void SetViewRange(int id, ViewRange range, float value) {
 
-			genes[IDTypeIndex(id) + 1 + (int)Attraction.Count + (int)range] = value;
+			genes[IDTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range] = value;
 		}
 
 		public float GetResistance(int id, DamageType damageType) {
@@ -163,14 +131,14 @@ namespace ShepProject {
         public float GetOptimalDistance(int id, OptimalDistance optimalDistance)
         {
             return genes[IDTypeIndex(id)
-                + (int)Attraction.Count + (int)ViewRange.Count
+                + (int)ObjectType.Count + (int)ViewRange.Count
                 + (int)DamageType.Count + (int)optimalDistance];
         }
 
         public void SetOptimalDistance(int id, OptimalDistance optimalDistance, float value)
         {
             genes[IDTypeIndex(id)
-                + (int)Attraction.Count + (int)ViewRange.Count
+                + (int)ObjectType.Count + (int)ViewRange.Count
                 + (int)DamageType.Count + (int)optimalDistance] = value;
         }
 

@@ -5472,6 +5472,7 @@ GameObject:
   - component: {fileID: 169464622}
   - component: {fileID: 169464621}
   - component: {fileID: 169464620}
+  - component: {fileID: 169464624}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -5558,13 +5559,28 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 169464619}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -6.8, y: 0, z: -4.41}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &169464624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 169464619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09093152f4f92484abb0310dd90135fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectID: 0
+  tower: {fileID: 0}
+  manager: {fileID: 293907464}
 --- !u!1 &178096024
 GameObject:
   m_ObjectHideFlags: 0
@@ -83459,7 +83475,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2746231355933929674, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: sheepCount
-      value: 15
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2746231355933929674, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: spawningEnemies
@@ -83467,7 +83483,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2746231355933929674, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: enemiesCountToSpawn
-      value: 500
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 5453079091326956306, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: m_RootOrder

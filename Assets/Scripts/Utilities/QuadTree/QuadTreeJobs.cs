@@ -63,8 +63,10 @@ namespace ShepProject {
 				if (!zSort)
 				{
 
-                    leftQuad.position = new float2((readQuad.position.x) - (readQuad.halfLength / 2f), readQuad.position.y);
-                    rightQuad.position = new float2((readQuad.position.x) + (readQuad.halfLength / 2f), readQuad.position.y);
+                    leftQuad.position = new float2((readQuad.position.x) - (readQuad.halfLength / 2f),
+						readQuad.position.y);
+                    rightQuad.position = new float2((readQuad.position.x) + (readQuad.halfLength / 2f),
+						readQuad.position.y);
 
                     leftQuad.halfLength = readQuad.halfLength;
                     rightQuad.halfLength = readQuad.halfLength;
@@ -81,8 +83,10 @@ namespace ShepProject {
                 if (zSort)
 				{
 
-                    leftQuad.position = new float2(readQuad.position.x, (readQuad.position.y) - (readQuad.halfLength / 2f));
-                    rightQuad.position = new float2(readQuad.position.x, (readQuad.position.y) + (readQuad.halfLength / 2f));
+                    leftQuad.position = new float2(readQuad.position.x,
+						(readQuad.position.y) - (readQuad.halfLength / 2f));
+                    rightQuad.position = new float2(readQuad.position.x,
+						(readQuad.position.y) + (readQuad.halfLength / 2f));
 
                     leftQuad.halfLength = readQuad.halfLength / 2f;
                     rightQuad.halfLength = readQuad.halfLength / 2f;

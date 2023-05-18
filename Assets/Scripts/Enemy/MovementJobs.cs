@@ -78,12 +78,13 @@ namespace ShepProject {
 
     public struct GatherForcesWithinRangeJob : IJobParallelFor
     {
-        
+
 
         /* 
 		 * for each agent, search within its given range for a type of object
 		 * 
 		 */
+        #region Variables
 
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<ushort> objectIDs;
@@ -108,6 +109,7 @@ namespace ShepProject {
 
 		public ObjectType targetType;
 
+        #endregion
 
         public void Execute(int index)
         {
@@ -130,7 +132,7 @@ namespace ShepProject {
 
                 objectForces[(objectID * (int)ObjectType.Count) + (int)targetType]
                     = math.normalize(positions[targetIDs[objectID]] - positions[objectID])
-                    * genes.GetAttraction(objectID, Attraction.Sheep);
+                    * genes.GetAttraction(objectID, ObjectType.Sheep);
 
 
             }
@@ -308,7 +310,7 @@ namespace ShepProject {
 		private float2 GatherBucketForces(int objectID, ObjectType objType, QuadKey key)
         {
 
-            float maxDist = 8;
+            float maxDist = genes.GetViewRange(objectID, (ViewRange)targetType);
             float maxDistSq = maxDist * maxDist;
             float2 localPosition = new float2();
 
@@ -335,13 +337,13 @@ namespace ShepProject {
                 localPosition = (positions[objectIDs[i]] - positions[objectID]);
 
 
-                //for debugging rays only
-                Vector3 pos = new Vector3();
-                pos.x = positions[objectID].x;
-                pos.y = 1;
-                pos.z = positions[objectID].y;
+                ////for debugging rays only
+                //Vector3 pos = new Vector3();
+                //pos.x = positions[objectID].x;
+                //pos.y = 1;
+                //pos.z = positions[objectID].y;
 
-                Vector3 local = new Vector3();
+                //Vector3 local = new Vector3();
 
                 float sqDist = (math.pow(localPosition.x, 2) + math.pow(localPosition.y, 2));
 
@@ -357,9 +359,16 @@ namespace ShepProject {
 
                 float2 one = new float2(math.cos(angle), math.sin(angle));
 
-                localPosition /= maxDist;
-                one -= localPosition;
+                //float2 oneDegrees = new float2(math.degrees(one.x), math.degrees(one.y));
 
+                //if (objType != ObjectType.Slime)
+                //{
+                    //eventually will be
+                    //localPosition /= traitValue of the viewDistance for this specific object type
+                    localPosition /= maxDist;
+                    one -= localPosition;
+
+                //}
 
 
                 //now it is same type, so add to the force based on the attraction
@@ -371,29 +380,60 @@ namespace ShepProject {
                         if (objType == ObjectType.Slime)
                         {
 
+                            //geneValue for optimalDistance will be from 0-1
+                            //and then it will be ran through the sigmoid in order
+                            //to get the actual value
+                            //
+                            //y = ((2 * (magnitude of localPosition)) / ViewDistance) + (traitValue - 1)
+                            //
+
+                            /*
+                             * 
+                             * gene value is ran through sigmoid between (-infinity, infinity)
+                             * 
+                             * then gives trait value between (minVal, maxVal) after being ran through the sigmoid
+                             * 
+                             * 
+                             * 
+                             */
+
                             float optimalDist = genes.GetOptimalDistance(objectID, OptimalDistance.Slime);
                             if (sqDist < (optimalDist * optimalDist))
                             {
+
+
+
+                                /*
+                                 *                                 
+                                 * maxDist is optimalDist
+                                 * then, if sufficiently large enough, need
+                                 * to shift max values over
+                                 * ex. if optimal distance is 6
+                                 * want to shift max repulsion value to start at 3 or 4
+                                 * 
+                                 * 
+                                 */
+
+                                //was trying this for getting force going away from
+                                //don't think it will end up using this
+                                //localPosition /= optimalDist;
+                                //one -= localPosition;
+
+
                                 //slimes are too close, so get further away
-                                moveTowards -= one * (genes.GetAttraction(objectID, Attraction.Slime) * 4);
-
-                                //local.x = one.x;
-                                //local.z = one.y;
-                                //local.y = 0;
-                                //local *= -1;
-
-                                //Debug.DrawRay(pos, local, Color.red);
+                                moveTowards -= one * (genes.GetAttraction(objectID, ObjectType.Slime) * 2);
 
                             }
                             else
                             {
 
-                                //slimes are too far, so get closer
-                                moveTowards += one * (genes.GetAttraction(objectID, Attraction.Slime));
 
-                                local.x = one.x;
-                                local.z = one.y;
-                                local.y = 0;
+                                //slimes are too far, so get closer
+                                moveTowards += one * (genes.GetAttraction(objectID, ObjectType.Slime));
+
+                                //local.x = one.x;
+                                //local.z = one.y;
+                                //local.y = 0;
 
                                 //Debug.DrawRay(pos, local, Color.green);
                             }
@@ -402,13 +442,13 @@ namespace ShepProject {
                         }
                         else
                         {
-                            moveTowards -= one * genes.GetAttraction(objectID, Attraction.Slime);
+                            moveTowards -= one * genes.GetAttraction(objectID, ObjectType.Slime);
 
 
-                            local.x = one.x;
-                            local.z = one.y;
-                            local.y = 0;
-                            local *= -1;
+                            //local.x = one.x;
+                            //local.z = one.y;
+                            //local.y = 0;
+                            //local *= -1;
 
                             //Debug.DrawRay(pos, local, Color.red);
 
@@ -496,11 +536,28 @@ namespace ShepProject {
 
 
             float2 moveTowards = new float2();
+
             for (int i = 0; i < (int)ObjectType.Count; i++)
             {
-                moveTowards += objectForces[(index * (int)ObjectType.Count) + i];
+                //if ((ObjectType)i == ObjectType.Tower 
+                //    && !objectForces[(index * (int)ObjectType.Count) + i].Equals(float2.zero))
+                //{
+                //    int test = 0;
+
+                //    float2 mag = objectForces[(index * (int)ObjectType.Count) + i];
+
+
+                //}
+
+                moveTowards +=
+                    MathUtil.ClampMagnitude(objectForces[(index * (int)ObjectType.Count) + i], 
+                    genes.GetAttraction(index, (ObjectType)i));
+
+                //moveTowards += objectForces[(index * (int)ObjectType.Count) + i];
 
             }
+            
+
 
             float headingCalculation = math.atan2(moveTowards.x, moveTowards.y);
 

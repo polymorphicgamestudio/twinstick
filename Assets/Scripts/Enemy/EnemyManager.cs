@@ -26,6 +26,7 @@ namespace ShepProject {
 		public GameObject sheepPrefab;
 		public GameObject endOfWaveCanvasParent;
 
+		public int burrowCount;
 		public int sheepCount;
 		public int maxEnemies;
 
@@ -200,7 +201,7 @@ namespace ShepProject {
 			Inst.GeneratePlayableAreaWall();
 
 
-			AddBurrow(2);
+			AddBurrow(burrowCount);
 
 			//50 burrows for testing
 			//AddBurrow(50);
@@ -373,8 +374,8 @@ namespace ShepProject {
                 //gfj.startingKeys = divisionOneKeys;
 				gfj.targetType = (ObjectType)i;
 				gfj.sheepDistancesToSlime = sheepDistancesToSlimes;
-				//gfj.Run((quadTree.positionCount + 1));
-				handles[i] = gfj.Schedule((quadTree.positionCount + 1), SystemInfo.processorCount);
+				gfj.Run((quadTree.positionCount + 1));
+				//handles[i] = gfj.Schedule((quadTree.positionCount + 1), SystemInfo.processorCount);
 
             }
 
@@ -391,8 +392,8 @@ namespace ShepProject {
 			chj.genes = genes;
 			chj.headings = headings;
 			chj.deltaTime = Time.deltaTime;
-			//chj.Run(QuadTree.positionCount + 1);
-			chj.Schedule(QuadTree.positionCount + 1, SystemInfo.processorCount).Complete();
+			chj.Run(QuadTree.positionCount + 1);
+			//chj.Schedule(QuadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
 			//after movement, write the information back to the transforms
 
@@ -534,10 +535,16 @@ namespace ShepProject {
 
 			//offset 1 for type, then attractions count
 			genes.SetObjectType(id, ObjectType.Slime);
-			genes.SetAttraction(id, Attraction.Sheep, 10);
-			genes.SetAttraction(id, Attraction.Tower, 10);
-			genes.SetAttraction(id, Attraction.Slime, 3);
-			genes.SetAttraction(id, Attraction.Wall, 20);
+			genes.SetAttraction(id, ObjectType.Sheep, 10f); // 1
+			genes.SetAttraction(id, ObjectType.Tower, 10f); // 1
+			genes.SetAttraction(id, ObjectType.Slime, 3f); // .5
+			genes.SetAttraction(id, ObjectType.Wall, 20); // 1
+
+            //setting trait values, not gene values
+            genes.SetViewRange(id, ViewRange.Tower, 20);
+			genes.SetViewRange(id, ViewRange.Slime, 8);
+			genes.SetViewRange(id, ViewRange.Player, 8);
+
 			genes.SetOptimalDistance(id, OptimalDistance.Slime, 3);
 
 			genes.SetHealth(id, 50);
@@ -589,8 +596,10 @@ namespace ShepProject {
                 ushort id = quadTree.AddTransform(sheep.transform);
 
                 genes.SetObjectType(id, ObjectType.Sheep);
-                genes.SetAttraction(id, Attraction.Slime, 10);
-                genes.SetAttraction(id, Attraction.Wall, 20);
+                genes.SetAttraction(id, ObjectType.Slime, 1);
+                genes.SetAttraction(id, ObjectType.Wall, 1);
+
+                genes.SetViewRange(id, ViewRange.Slime, 8);
 
                 choosableTargets.Add(id);
 
