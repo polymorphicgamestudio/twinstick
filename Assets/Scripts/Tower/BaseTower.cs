@@ -7,24 +7,16 @@ public class BaseTower : MonoBehaviour
 {
 
     public ushort objectID;
-    bool slimebool = false;
+    public static bool slimebool = false;
 
     float timer;
     float currentTimer;
 
-    public static float minDist;
-    public static float maxDist;
+    public static float minDist = 0f;
+    public static float maxDist = 20f;
 
     public static Transform slimeTarget;
     public Transform tower;
-
-    public static float timeBetweenShots;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        InvokeRepeating("ShootTurret", timeBetweenShots, timeBetweenShots);
-    }
 
     // Update is called once per frame
     void Update()
@@ -38,7 +30,6 @@ public class BaseTower : MonoBehaviour
                 slimebool = true;
             }
         }
-        //if there's not a target search for a target
 
         currentTimer -= Time.deltaTime;
 
@@ -51,23 +42,16 @@ public class BaseTower : MonoBehaviour
         {
             Vector3 newDirection = Vector3.RotateTowards(tower.forward, slimeTarget.position - this.transform.position, Time.deltaTime * 15, 0.0f);
             tower.rotation = Quaternion.LookRotation(newDirection);
+
+            if (Vector3.Distance(this.transform.position, slimeTarget.position) > maxDist)
+            {
+                slimebool = false;
+            }
         }
     }
 
-    public void LateUpdate()
-    {
-        if (slimebool == true) {
-            ShootTurret();
-        }
-    }
 
-
-    public virtual void ShootTurret()
-    {
-
-    }
-
-    private void SearchForSlime()
+    public void SearchForSlime()
     {
         //slimeTarget = ShepProject.ShepGM.inst.EnemyManager.QuadTree.GetClosestVisibleObject(objectID, ShepProject.ObjectType.Slime, minDist, maxDist);
         slimeTarget = ShepProject.ShepGM.inst.EnemyManager.QuadTree.GetClosestObject(objectID, ShepProject.ObjectType.Slime, minDist, maxDist);

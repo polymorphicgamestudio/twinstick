@@ -6,45 +6,35 @@ using Unity.VisualScripting;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
-public class BlasterTowerController : MonoBehaviour
+public class BlasterTowerController : BaseTower
 {
-
-    List<Transform> slimes;
-    //public static Transform slimeTarget;
-
     public Transform positions;
     public Transform barrel;
     public ParticleSystem shoot;
 
     public LineRenderer beam;
-    public static float timeBetweenShots;
 
     private Vector3 origin;
     private Vector3 endPoint;
 
-    // Start is called before the first frame update
-    void Start()
+    public static float timeBetweenShots = 2.0f;
+
+    private void Start()
     {
-        BaseTower.timeBetweenShots = 2.0f;
+        InvokeRepeating("Shooting", timeBetweenShots, timeBetweenShots);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ShootTurret()
     {
-
-    }
-
-    void ShootTurret()
-    {
-        origin = barrel.position;
-        endPoint = BaseTower.slimeTarget.position;
+        if (BaseTower.slimebool == true)
+        {
+            origin = barrel.position;
+            endPoint = BaseTower.slimeTarget.position;
 
             Vector3 dir = endPoint - origin;
             dir.Normalize();
             RaycastHit hit;
 
-        if (Vector3.Distance(BaseTower.slimeTarget.position, this.transform.position) < 50.0f)
-        {
             if (Physics.Raycast(origin, dir, out hit))
             {
                 endPoint = hit.point;
@@ -61,13 +51,20 @@ public class BlasterTowerController : MonoBehaviour
             beam.enabled = true;
             beam.gameObject.SetActive(true);
 
-            StartCoroutine(WaitForHalfASecond());
+            StartCoroutine(WaitForATenthSecond());
             Destroy(exp.gameObject, 0.1f);
         }
 
     }
 
-    IEnumerator WaitForHalfASecond()
+    public void Shooting()
+    {
+        if (BaseTower.slimebool == true) {
+            ShootTurret();
+        }
+    }
+
+    IEnumerator WaitForATenthSecond()
     {
         yield return new WaitForSeconds(0.1f);
         beam.enabled = false;

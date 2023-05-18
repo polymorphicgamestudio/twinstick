@@ -13,6 +13,7 @@ public class Laser : MonoBehaviour {
     void Start () {
         beam = GetComponent<LineRenderer>();
     }
+
     void Update() {
         Vector3 dir = laserEnd.position - transform.position;
         if (particles) {

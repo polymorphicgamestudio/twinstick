@@ -10,6 +10,7 @@ public class bombController : MonoBehaviour
 
     Rigidbody projectile;
     public ParticleSystem explosion;
+
     // Start is called before the first frame update
     void Start()
     {
