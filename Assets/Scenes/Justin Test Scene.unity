@@ -83475,11 +83475,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2746231355933929674, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: sheepCount
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2746231355933929674, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: burrowCount
-      value: 20
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2746231355933929674, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: spawningEnemies
@@ -83487,7 +83487,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2746231355933929674, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: enemiesCountToSpawn
-      value: 400
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5453079091326956306, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: m_RootOrder

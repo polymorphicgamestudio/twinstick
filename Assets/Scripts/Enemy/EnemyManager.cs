@@ -73,7 +73,7 @@ namespace ShepProject {
 		private NativeArray<ushort> targetIDs;
 		private NativeArray<float> sheepDistancesToSlimes;
 		private NativeArray<float2> objectForces;
-		private NativeArray<QuadKey> divisionOneKeys;
+		private NativeArray<float> magnitudes;
 
 		private NativeArray<float> headings;
 
@@ -136,36 +136,36 @@ namespace ShepProject {
 			sheepDistancesToSlimes = new NativeArray<float>(targetCount * (int)ObjectType.Count, Allocator.Persistent);
 
 			objectForces = new NativeArray<float2>(maxEnemies * (int)ObjectType.Count, Allocator.Persistent);
-			divisionOneKeys = new NativeArray<QuadKey>(4, Allocator.Persistent);
+			//divisionOneKeys = new NativeArray<QuadKey>(4, Allocator.Persistent);
 
-			QuadKey key = new QuadKey();
-			key.RightBranch();
-			key.LeftBranch();
+			//QuadKey key = new QuadKey();
+			//key.RightBranch();
+			//key.LeftBranch();
 
-			//top left
-			divisionOneKeys[0] = key;
+			////top left
+			//divisionOneKeys[0] = key;
 
-            key = new QuadKey();
-            key.RightBranch();
-            key.RightBranch();
+   //         key = new QuadKey();
+   //         key.RightBranch();
+   //         key.RightBranch();
 
-            //top topRight
-            divisionOneKeys[0] = key;
+   //         //top topRight
+   //         divisionOneKeys[0] = key;
 
-            key = new QuadKey();
-            key.LeftBranch();
-            key.RightBranch();
+   //         key = new QuadKey();
+   //         key.LeftBranch();
+   //         key.RightBranch();
 
-            //bottom right
-            divisionOneKeys[0] = key;
+   //         //bottom right
+   //         divisionOneKeys[0] = key;
 
 
-            key = new QuadKey();
-            key.LeftBranch();
-            key.LeftBranch();
+   //         key = new QuadKey();
+   //         key.LeftBranch();
+   //         key.LeftBranch();
 
-            //bottom left
-            divisionOneKeys[0] = key;
+   //         //bottom left
+   //         divisionOneKeys[0] = key;
 
             headings = new NativeArray<float>(maxEnemies, Allocator.Persistent);
 
@@ -366,12 +366,26 @@ namespace ShepProject {
 			ctj.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
 
+			//calculate which force has biggest magnitude job
+			//only for slime, then add that magnitude to sheep heading
+			//and then continue with clamping afterwards
+
+			//FindGreatestMagnitudeBetweenForces findMagnitude = new FindGreatestMagnitudeBetweenForces();
+   //         findMagnitude.objectForces = objectForces;
+   //         findMagnitude.genes = genes;
+			//findMagnitude.Schedule(QuadTree.positionCount, SystemInfo.processorCount).Complete();
+
+
+
 			NativeArray<JobHandle> handles = new NativeArray<JobHandle>((int)ObjectType.Count, Allocator.TempJob);
 			NativeArray<GatherForcesWithinRangeJob> gfjs 
 				= new NativeArray<GatherForcesWithinRangeJob>(handles.Length, Allocator.Temp);
 
 			for (int i = 0; i < handles.Length; i++)
 			{
+
+				//tower distance falloff check to make sure
+				//they don't end up weaving in and out of tower range
                 GatherForcesWithinRangeJob gfj = new GatherForcesWithinRangeJob();
                 gfj.positions = quadTree.positions;
                 gfj.objectIDs = quadTree.objectIDs;
@@ -379,7 +393,6 @@ namespace ShepProject {
                 gfj.genes = genes;
                 gfj.objectForces = objectForces;
                 gfj.quads = quadTree.quads;
-                //gfj.startingKeys = divisionOneKeys;
 				gfj.targetType = (ObjectType)i;
 				gfj.idsToCheck = new NativeArray<int>(idChecks, Allocator.TempJob);
 				gfj.sheepDistancesToSlime = sheepDistancesToSlimes;
@@ -562,7 +575,7 @@ namespace ShepProject {
 			genes.SetObjectType(id, ObjectType.Slime);
 			genes.SetAttraction(id, ObjectType.Sheep, 1); // 1
 			genes.SetAttraction(id, ObjectType.Tower, -1); // 1
-			genes.SetAttraction(id, ObjectType.Slime, 1f); // .5
+			genes.SetAttraction(id, ObjectType.Slime, 1); // .5
 			genes.SetAttraction(id, ObjectType.Wall, 1); // 1
 
             //setting trait values, not gene values
@@ -574,7 +587,8 @@ namespace ShepProject {
 			genes.SetOptimalDistance(id, OptimalDistance.Slime,
 				-8 / genes.GetViewRange(id, ViewRange.Slime));
 
-
+			//value within something like 1-20
+			genes.SetSpeed(id, 3.05f);
             genes.SetTurnRate(id, .8f);
             genes.SetHealth(id, 50);
 
@@ -749,7 +763,7 @@ namespace ShepProject {
 			targetIDs.Dispose();
 
 			objectForces.Dispose();
-			divisionOneKeys.Dispose();
+			//divisionOneKeys.Dispose();
 
 
 			sheepDistancesToSlimes.Dispose();

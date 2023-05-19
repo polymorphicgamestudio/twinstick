@@ -76,6 +76,38 @@ namespace ShepProject {
 	 * 
 	 */
 
+    public struct FindGreatestMagnitudeBetweenForces : IJobParallelFor
+    {
+
+        public NativeArray<float2> objectForces;
+        public NativeArray<float> magnitudes;
+        public GenesArray genes;
+
+
+
+
+        public void Execute(int index)
+        {
+
+            if (genes.GetObjectType(index) != ObjectType.Slime)
+                return;
+
+            magnitudes[index] = 10000000;
+            float tempMagnitude = 0;
+            int startIndex = index * (int)ObjectType.Count;
+            for (int i = 0; i < (int)ObjectType.Count; i++)
+            {
+                tempMagnitude = MathUtil.SqrMagnitude(objectForces[startIndex + i]);
+                if (tempMagnitude < magnitudes[index])
+                    magnitudes[index] = tempMagnitude;
+
+            }
+
+
+
+        }
+    }
+
 
     public struct GatherForcesWithinRangeJob : IJobParallelFor
     {
@@ -509,16 +541,17 @@ namespace ShepProject {
                         //slimes want to avoid towers
                         if (objType == ObjectType.Slime)
                         {
+                            //one = new float2(math.cos(angle), math.sin(angle));
                             moveTowards += (one
                                 * genes.GetAttraction(objectID, targetType));
 
                         }
-                        //sheep want to get closer to towers
-                        //else if (objType == ObjectType.Sheep)
-                        //{
-                        //    moveTowards += (one
-                        //        * genes.GetAttraction(objectID, genes.GetObjectType(objectIDs[i])));
-                        //}
+                        //sheep will go close to towers since 
+                        else if (objType == ObjectType.Sheep)
+                        {
+                            moveTowards += (one
+                                * genes.GetAttraction(objectID, genes.GetObjectType(objectIDs[i])));
+                        }
 
                         break;
                     }
