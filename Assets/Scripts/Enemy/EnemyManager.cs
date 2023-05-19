@@ -189,19 +189,22 @@ namespace ShepProject {
 
 
             Inst.gameOver += GameOver;
-            quadTree.AddTransform(Inst.player.transform);
-			genes.SetObjectType(0, ObjectType.Player);
+			if (Inst.player != null)
+			{
+				quadTree.AddTransform(Inst.player.transform);
+                genes.SetObjectType(0, ObjectType.Player);
+            }
+			else
+			{
+				Debug.LogError("Player is null inside ShepGM! Errors WILL occur!");
+			}
+
 
 
 			//uncomment to add player to list of choosableTargets
 			//choosableTargets.Add(0);
 
 			AddSheepToList();
-
-
-
-			//generate a wall surrounding the area
-			Inst.GeneratePlayableAreaWall();
 
 
 			AddBurrow(burrowCount);

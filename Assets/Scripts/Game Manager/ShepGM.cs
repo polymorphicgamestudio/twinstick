@@ -49,7 +49,11 @@ namespace ShepProject {
 			actions = new PlayerInputActions();
 			actions.Player.Enable();
 
-			if (enemyManager != null) {
+
+
+
+
+            if (enemyManager != null) {
 				enemyManager.Initialize(this);
 
 			}
@@ -65,7 +69,15 @@ namespace ShepProject {
 
 		}
 
-		public void GeneratePlayableAreaWall() {
+
+        private void Start()
+        {
+            //generate a wall surrounding the area
+            GeneratePlayableAreaWall();
+
+        }
+
+        public void GeneratePlayableAreaWall() {
 
 
 
@@ -115,7 +127,8 @@ namespace ShepProject {
 				startPosition.x += wallCollider.size.x;
 
 				enemyManager.AddWallToList(inst.transform);
-			}
+
+            }
 
 		}
 
@@ -124,8 +137,7 @@ namespace ShepProject {
 			for (int i = 0; i < wallCount; i++) {
 
 				GameObject inst = Instantiate(wallCollider.gameObject);
-
-				inst.transform.position = startPosition;
+                inst.transform.position = startPosition;
 				startPosition.z -= wallCollider.size.x;
 
 				Quaternion q = inst.transform.rotation;
@@ -134,7 +146,7 @@ namespace ShepProject {
 
 				enemyManager.AddWallToList(inst.transform);
 
-			}
+            }
 
 
 		}
