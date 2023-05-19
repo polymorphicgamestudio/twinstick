@@ -1,3 +1,4 @@
+using Drawing;
 using System;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -109,6 +110,12 @@ namespace ShepProject {
 
 		public ObjectType targetType;
 
+        [ReadOnly]
+        public NativeArray<int> idsToCheck;
+
+
+        public CommandBuilder builder;
+
         #endregion
 
         public void Execute(int index)
@@ -134,6 +141,16 @@ namespace ShepProject {
                     = math.normalize(positions[targetIDs[objectID]] - positions[objectID])
                     * genes.GetAttraction(objectID, ObjectType.Sheep);
 
+                float3 pos = new float3();
+                pos.x = positions[objectID].x;
+                pos.y = 0;
+                pos.z = positions[objectID].y;
+
+                float3 dir = new float3();
+                dir.x = objectForces[(objectID * (int)ObjectType.Count) + (int)targetType].x;
+                dir.z = objectForces[(objectID * (int)ObjectType.Count) + (int)targetType].y;
+                dir.y = 0;
+                builder.Ray(pos,dir, Color.green);
 
             }
             else if (objType == ObjectType.Sheep && targetType == ObjectType.Slime)
@@ -147,6 +164,12 @@ namespace ShepProject {
 
             //now search all the buckets including neighbors
             //will only be the bucket 
+
+
+            if (idsToCheck.Contains(objectID) && targetType == ObjectType.Slime)
+            {
+                int test = 0;
+            }
 
             SearchChildrenForForce(quads[new QuadKey()].key, objectID, objType);
 
@@ -337,13 +360,13 @@ namespace ShepProject {
                 localPosition = (positions[objectIDs[i]] - positions[objectID]);
 
 
-                ////for debugging rays only
-                //Vector3 pos = new Vector3();
-                //pos.x = positions[objectID].x;
-                //pos.y = 1;
-                //pos.z = positions[objectID].y;
+                //for debugging rays only
+                Vector3 pos = new Vector3();
+                pos.x = positions[objectID].x;
+                pos.y = 1;
+                pos.z = positions[objectID].y;
 
-                //Vector3 local = new Vector3();
+                Vector3 local = new Vector3();
 
                 float sqDist = (math.pow(localPosition.x, 2) + math.pow(localPosition.y, 2));
 
@@ -361,12 +384,18 @@ namespace ShepProject {
 
                 //float2 oneDegrees = new float2(math.degrees(one.x), math.degrees(one.y));
 
-                //if (objType != ObjectType.Slime)
-                //{
+                if (objType != ObjectType.Slime)
+                {
                     //eventually will be
                     //localPosition /= traitValue of the viewDistance for this specific object type
                     localPosition /= maxDist;
                     one -= localPosition;
+
+                }
+                //else if (targetType != ObjectType.Slime)
+                //{
+                //    localPosition /= (maxDist / );
+                //    one -= localPosition;
 
                 //}
 
@@ -387,6 +416,7 @@ namespace ShepProject {
                             //y = ((2 * (magnitude of localPosition)) / ViewDistance) + (traitValue - 1)
                             //
 
+
                             /*
                              * 
                              * gene value is ran through sigmoid between (-infinity, infinity)
@@ -397,46 +427,50 @@ namespace ShepProject {
                              * 
                              */
 
-                            float optimalDist = genes.GetOptimalDistance(objectID, OptimalDistance.Slime);
-                            if (sqDist < (optimalDist * optimalDist))
+                            if (idsToCheck.Contains(objectID))
                             {
-
-
-
-                                /*
-                                 *                                 
-                                 * maxDist is optimalDist
-                                 * then, if sufficiently large enough, need
-                                 * to shift max values over
-                                 * ex. if optimal distance is 6
-                                 * want to shift max repulsion value to start at 3 or 4
-                                 * 
-                                 * 
-                                 */
-
-                                //was trying this for getting force going away from
-                                //don't think it will end up using this
-                                //localPosition /= optimalDist;
-                                //one -= localPosition;
-
-
-                                //slimes are too close, so get further away
-                                moveTowards -= one * (genes.GetAttraction(objectID, ObjectType.Slime) * 2);
-
+                                int test = 0;
                             }
+
+                            float magnitude = MathUtil.Magnitude(localPosition);
+                            float2 normalized = localPosition / magnitude;
+
+                            float slimeForce = ((2 * magnitude)
+                                / genes.GetViewRange(objectID, ViewRange.Slime));
+
+                            slimeForce += (genes.GetOptimalDistance(objectID, OptimalDistance.Slime) - 1);
+                            slimeForce *= genes.GetAttraction(objectID, ObjectType.Slime);
+
+                            slimeForce = math.clamp(slimeForce, -1, 1);
+
+                            moveTowards += (normalized * slimeForce);
+
+                            local.x = (normalized * slimeForce).x;
+                            local.z = (normalized * slimeForce).y;
+                            local.y = 0;
+                            //local *= -1;
+                            
+                            if (slimeForce < 0)
+                                builder.Ray(pos, local, Color.red);
                             else
                             {
-
-
-                                //slimes are too far, so get closer
-                                moveTowards += one * (genes.GetAttraction(objectID, ObjectType.Slime));
-
-                                //local.x = one.x;
-                                //local.z = one.y;
-                                //local.y = 0;
-
-                                //Debug.DrawRay(pos, local, Color.green);
+                                builder.Ray(pos, local, Color.green);
                             }
+
+                            //if (sqDist < (optimalDist * optimalDist))
+                            //{
+
+
+                            //    //slimes are too close, so get further away
+                            //    moveTowards -= one * (genes.GetAttraction(objectID, ObjectType.Slime) * 2);
+
+                            //}
+                            //else
+                            //{
+                            //    //slimes are too far, so get closer
+                            //    moveTowards += one * (genes.GetAttraction(objectID, ObjectType.Slime));
+
+                            //}
 
 
                         }
@@ -445,12 +479,12 @@ namespace ShepProject {
                             moveTowards -= one * genes.GetAttraction(objectID, ObjectType.Slime);
 
 
-                            //local.x = one.x;
-                            //local.z = one.y;
-                            //local.y = 0;
-                            //local *= -1;
+                            local.x = one.x;
+                            local.z = one.y;
+                            local.y = 0;
+                            local *= -1;
 
-                            //Debug.DrawRay(pos, local, Color.red);
+                            Debug.DrawRay(pos, local, Color.red);
 
                         }
                         break;
@@ -466,7 +500,7 @@ namespace ShepProject {
 
                         //everything wants to avoid walls
                         moveTowards -= (one
-                            * genes.GetAttraction(objectID, (int)genes.GetObjectType(objectIDs[i])));
+                            * genes.GetAttraction(objectID, targetType));
                         break;
                     }
                     case ObjectType.Tower:
@@ -475,16 +509,16 @@ namespace ShepProject {
                         //slimes want to avoid towers
                         if (objType == ObjectType.Slime)
                         {
-                            moveTowards -= (one
-                                * genes.GetAttraction(objectID, (int)genes.GetObjectType(objectIDs[i])));
+                            moveTowards += (one
+                                * genes.GetAttraction(objectID, targetType));
 
                         }
                         //sheep want to get closer to towers
-                        else if (objType == ObjectType.Sheep)
-                        {
-                            moveTowards += (one
-                                * genes.GetAttraction(objectID, (int)genes.GetObjectType(objectIDs[i])));
-                        }
+                        //else if (objType == ObjectType.Sheep)
+                        //{
+                        //    moveTowards += (one
+                        //        * genes.GetAttraction(objectID, genes.GetObjectType(objectIDs[i])));
+                        //}
 
                         break;
                     }
@@ -509,19 +543,16 @@ namespace ShepProject {
     public struct CalculateHeadingJob : IJobParallelFor
     {
 
-
-        /*
-		 * search for objects in each of the four quadrants
-		 * 
-		 * 
-		 * 
-		 */
-
+        public NativeArray<float2> positions;
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<float2> objectForces;
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<float> headings;
         public GenesArray genes;
+
+        public NativeArray<int> idsToCheck;
+
+        public CommandBuilder builder;
 
         public float deltaTime;
 
@@ -537,38 +568,73 @@ namespace ShepProject {
 
             float2 moveTowards = new float2();
 
+            if (idsToCheck.Contains(index))
+            {
+                int test = 0;
+            }
+
+
+            float3 pos = new float3();
+            pos.x = positions[index].x;
+            pos.y = .7f;
+            pos.z = positions[index].y;
+
+            float3 dir = new float3();
+
+
+
             for (int i = 0; i < (int)ObjectType.Count; i++)
             {
-                //if ((ObjectType)i == ObjectType.Tower 
-                //    && !objectForces[(index * (int)ObjectType.Count) + i].Equals(float2.zero))
-                //{
-                //    int test = 0;
-
-                //    float2 mag = objectForces[(index * (int)ObjectType.Count) + i];
 
 
-                //}
 
-                moveTowards +=
-                    MathUtil.ClampMagnitude(objectForces[(index * (int)ObjectType.Count) + i], 
-                    genes.GetAttraction(index, (ObjectType)i));
+                objectForces[(index * (int)ObjectType.Count) + i]
+                    = MathUtil.ClampMagnitude(objectForces[(index * (int)ObjectType.Count) + i], 1);
 
-                //moveTowards += objectForces[(index * (int)ObjectType.Count) + i];
+
+                moveTowards += objectForces[(index * (int)ObjectType.Count) + i];
+
+
+                dir.x = objectForces[(index * (int)ObjectType.Count) + i].x;
+                dir.y = 0;
+                dir.z = objectForces[(index * (int)ObjectType.Count) + i].y;
+
+
+                builder.Label2D(pos + (math.normalize(dir) / 2), ((ObjectType)i).ToString(), 12);
+
+                builder.Ray(pos, dir, Color.cyan);
+
+
 
             }
-            
 
+            pos.y = .5f;
+
+            
+            dir.x = moveTowards.x;
+            dir.y = 0;
+            dir.z = moveTowards.y;
+
+            //dir.x = objectForces[(index * (int)ObjectType.Count) + i].x;
+            //dir.y = 0;
+            //dir.z = objectForces[(index * (int)ObjectType.Count) + i].y;
+
+            builder.Ray(pos, dir, Color.yellow);
 
             float headingCalculation = math.atan2(moveTowards.x, moveTowards.y);
+            pos.y = .25f;
 
+            builder.Ray(pos, math.forward(quaternion.Euler(new float3(0, headingCalculation, 0))), Color.magenta);
 
             if (headingCalculation < 0)
             {
-
                 headingCalculation += 2 * math.PI;
             }
 
             float local = headingCalculation - headings[index];
+
+            if (local == 0)
+                return;
 
             if (local < -math.PI)
             {
@@ -584,7 +650,9 @@ namespace ShepProject {
 
             headings[index]
                 //= headingCalculation;
-                = math.lerp(headings[index], headingCalculation, deltaTime * 2);
+                = math.lerp(headings[index], headingCalculation,
+                math.clamp((math.PI * 3 * genes.GetTurnRate(index)) * deltaTime
+                / math.abs(local), 0, 1));
 
 
 

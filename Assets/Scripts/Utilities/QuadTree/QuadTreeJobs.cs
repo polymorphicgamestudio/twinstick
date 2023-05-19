@@ -414,8 +414,12 @@ namespace ShepProject {
 			if (!transform.isValid)
 				return;
 			
+			//sometimes gets NaN as a value for the rotation
+
 			transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 			Quaternion q = transform.rotation;
+
+
 			q.eulerAngles = new Vector3(0, math.degrees(rotation[index]), 0);
 			transform.rotation = q;
 

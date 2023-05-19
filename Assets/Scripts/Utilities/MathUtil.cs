@@ -19,6 +19,16 @@ public static class MathUtil
 
     }
 
+    public static float SqrMagnitude(float2 data)
+    {
+        return ((data.x * data.x) + (data.y * data.y));
+    }
+
+    public static float Magnitude(float2 data)
+    {
+        return math.sqrt((data.x * data.x) + (data.y * data.y));
+
+    }
 
 
 }

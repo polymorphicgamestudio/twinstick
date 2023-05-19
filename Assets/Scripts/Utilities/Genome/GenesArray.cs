@@ -29,6 +29,7 @@ namespace ShepProject {
 		Slime,
 		Tower,
 		Player,
+		Wall,
 		Count
 	}
 
@@ -37,8 +38,8 @@ namespace ShepProject {
 		Slime,
 		Tower,
         Player,
-        Sheep,
         Wall,
+        Sheep,
 		Count
 
     }

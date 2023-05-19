@@ -1,3 +1,4 @@
+using Drawing;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -51,6 +52,8 @@ namespace ShepProject {
 
 		[SerializeField]
 		private bool spawningEnemies;
+
+		public int[] idChecks;
 
 
 		private Dictionary<int, EnemyPhysicsMethods> enemyPhysicsMethods;
@@ -320,7 +323,7 @@ namespace ShepProject {
             ResetNativeArrayJob<float2> resetJob = new ResetNativeArrayJob<float2>();
             resetJob.array = objectForces;
             JobHandle resetJobHandle
-                = resetJob.Schedule(headings.Length, SystemInfo.processorCount);
+                = resetJob.Schedule(objectForces.Length, SystemInfo.processorCount);
 
 
             quadTree.NewFrame();
@@ -361,6 +364,8 @@ namespace ShepProject {
 
 
 			NativeArray<JobHandle> handles = new NativeArray<JobHandle>((int)ObjectType.Count, Allocator.TempJob);
+			NativeArray<GatherForcesWithinRangeJob> gfjs 
+				= new NativeArray<GatherForcesWithinRangeJob>(handles.Length, Allocator.Temp);
 
 			for (int i = 0; i < handles.Length; i++)
 			{
@@ -373,27 +378,44 @@ namespace ShepProject {
                 gfj.quads = quadTree.quads;
                 //gfj.startingKeys = divisionOneKeys;
 				gfj.targetType = (ObjectType)i;
+				gfj.idsToCheck = new NativeArray<int>(idChecks, Allocator.TempJob);
 				gfj.sheepDistancesToSlime = sheepDistancesToSlimes;
-				gfj.Run((quadTree.positionCount + 1));
-				//handles[i] = gfj.Schedule((quadTree.positionCount + 1), SystemInfo.processorCount);
+				gfj.builder = Drawing.DrawingManager.GetBuilder();
+
+				gfjs[i] = gfj;
+				//gfj.Run((quadTree.positionCount + 1));
+				handles[i] = gfj.Schedule((quadTree.positionCount + 1), SystemInfo.processorCount);
 
             }
 
 			for (int i = 0; i < handles.Length; i++)
 			{
 				handles[i].Complete();
-
+				gfjs[i].idsToCheck.Dispose();
+				gfjs[i].builder.Dispose();
 			}
+
+			handles.Dispose();
+			gfjs.Dispose();
 
 			//now need to add forces and convert them to a heading
 			//only does one index per object
+
+			NativeArray<int> idsToCheck = new NativeArray<int>(idChecks, Allocator.TempJob);
+
 			CalculateHeadingJob chj = new CalculateHeadingJob();
 			chj.objectForces = objectForces;
 			chj.genes = genes;
 			chj.headings = headings;
 			chj.deltaTime = Time.deltaTime;
-			chj.Run(QuadTree.positionCount + 1);
-			//chj.Schedule(QuadTree.positionCount + 1, SystemInfo.processorCount).Complete();
+			chj.builder = DrawingManager.GetBuilder();
+			chj.positions = quadTree.positions;
+			chj.idsToCheck = idsToCheck;
+			//chj.Run(QuadTree.positionCount + 1);
+			chj.Schedule(QuadTree.positionCount + 1, SystemInfo.processorCount).Complete();
+
+			chj.builder.Dispose();
+			idsToCheck.Dispose();
 
 			//after movement, write the information back to the transforms
 
@@ -514,7 +536,7 @@ namespace ShepProject {
 		{
 
 			quadTree.RemoveTransform(objectID);
-
+			
 
 		}
 
@@ -535,19 +557,23 @@ namespace ShepProject {
 
 			//offset 1 for type, then attractions count
 			genes.SetObjectType(id, ObjectType.Slime);
-			genes.SetAttraction(id, ObjectType.Sheep, 10f); // 1
-			genes.SetAttraction(id, ObjectType.Tower, 10f); // 1
-			genes.SetAttraction(id, ObjectType.Slime, 3f); // .5
-			genes.SetAttraction(id, ObjectType.Wall, 20); // 1
+			genes.SetAttraction(id, ObjectType.Sheep, 1); // 1
+			genes.SetAttraction(id, ObjectType.Tower, -1); // 1
+			genes.SetAttraction(id, ObjectType.Slime, 1f); // .5
+			genes.SetAttraction(id, ObjectType.Wall, 1); // 1
 
             //setting trait values, not gene values
             genes.SetViewRange(id, ViewRange.Tower, 20);
 			genes.SetViewRange(id, ViewRange.Slime, 8);
 			genes.SetViewRange(id, ViewRange.Player, 8);
+			genes.SetViewRange(id, ViewRange.Wall, 4);
 
-			genes.SetOptimalDistance(id, OptimalDistance.Slime, 3);
+			genes.SetOptimalDistance(id, OptimalDistance.Slime,
+				-8 / genes.GetViewRange(id, ViewRange.Slime));
 
-			genes.SetHealth(id, 50);
+
+            genes.SetTurnRate(id, .8f);
+            genes.SetHealth(id, 50);
 
 			EnemyPhysicsMethods methods = enemy.GetComponent<EnemyPhysicsMethods>();
 
@@ -599,6 +625,7 @@ namespace ShepProject {
                 genes.SetAttraction(id, ObjectType.Slime, 1);
                 genes.SetAttraction(id, ObjectType.Wall, 1);
 
+				genes.SetTurnRate(id, .5f);
                 genes.SetViewRange(id, ViewRange.Slime, 8);
 
                 choosableTargets.Add(id);

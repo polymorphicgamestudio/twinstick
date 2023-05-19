@@ -13,6 +13,6 @@ public struct ResetNativeArrayJob<T> : IJobParallelFor
     public NativeArray<T> array;
     public void Execute(int index)
     {
-        array[index] = default;
+        array[index] = new T();
     }
 }
