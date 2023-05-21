@@ -7,6 +7,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace ShepProject
 {
@@ -28,10 +29,10 @@ namespace ShepProject
         private void DrawRowOfSquares(int index)
         {
             float3 position =
-                setupData.origin - new float3(
+                setupData.origin + new float3(
+                    index * setupData.nodeLength,
                     0,
-                    0,
-                    index * setupData.nodeLength);
+                    setupData.nodeLength);
 
             float halfNodeLength = setupData.nodeLength / 2f;
             float3 topLeft = new float3(-halfNodeLength, 0 , halfNodeLength);
@@ -40,7 +41,7 @@ namespace ShepProject
 
             for (int i = 0; i < setupData.columns; i++)
             {
-                if(index == 0)//also have to check if unwalkable
+                if(i == 0)//also have to check if unwalkable
                 //topLeft to topRight
                 builder.Line(position + topLeft, position + topRight, setupData.walkableColor);
 
@@ -54,10 +55,11 @@ namespace ShepProject
                 builder.Line(position - topRight, position + topLeft, setupData.walkableColor);
 
                 if (drawLabels)
-                builder.Label2D(position - new float3(halfNodeLength / 2f, 0 ,0),
-                    "(" + position.x + " , " + position.z + ")");
+                    builder.Label2D(position - new float3(halfNodeLength / 2f, 0 ,0),
+                        ((index * setupData.columns) + i).ToString());
+                    //"(" + position.x + " , " + position.z + ")");
 
-                position.x += setupData.nodeLength;
+                position.z += setupData.nodeLength;
             }
 
         }
@@ -105,55 +107,11 @@ namespace ShepProject
             builder.Line(position - topRight, position + topLeft, setupData.walkableColor);
             if (drawLabels)
                 builder.Label2D(position - new float3(halfNodeLength / 2f, 0, 0),
-                    "(" + position.x + " , " + position.z + ")");
+                    index.ToString());
 
-
-            //index tells which row it is
-            //DrawRowOfSquares(index);
+                    //"(" + position.x + " , " + position.z + ")");
 
         }
-
-        //private void DrawRowOfSquares(int index)
-        //{
-        //    float3 position =
-        //        setupData.origin - new float3(
-        //            0,
-        //            0,
-        //            index * setupData.nodeLength);
-
-        //    float halfNodeLength = setupData.nodeLength / 2f;
-        //    float3 topLeft = new float3(-halfNodeLength, 0, halfNodeLength);
-        //    float3 topRight = new float3(halfNodeLength, 0, halfNodeLength);
-        //    float3 up = new float3(0, 1, 0);
-        //    int startIndex = (index * setupData.columns);
-
-        //    for (int i = 0; i < setupData.columns; i++)
-        //    {
-        //        if (!nodes[startIndex + i].walkable)
-        //            builder.SolidPlane(position, up, setupData.nodeLength, setupData.unwalkableColor);
-
-        //        if (index == 0)//also have to check if unwalkable
-        //            //topLeft to topRight
-        //            builder.Line(position + topLeft, position + topRight, setupData.walkableColor);
-
-        //        //topRight to bottomRight
-        //        builder.Line(position + topRight, position - topLeft, setupData.walkableColor);
-
-        //        //bottomRight to bottomLeft
-        //        builder.Line(position - topLeft, position - topRight, setupData.walkableColor);
-
-        //        //bottomLeft to topLeft
-        //        builder.Line(position - topRight, position + topLeft, setupData.walkableColor);
-        //        if (drawLabels)
-        //            builder.Label2D(position - new float3(halfNodeLength / 2f, 0, 0),
-        //                "(" + position.x + " , " + position.z + ")");
-
-        //        position.x += setupData.nodeLength;
-        //    }
-
-        //}
-
-
 
     }
 
@@ -162,6 +120,7 @@ namespace ShepProject
 
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<SquareNode> nodes;
+        public float nodeLength;
         public int columns;
         public int rows;
 
@@ -172,13 +131,35 @@ namespace ShepProject
 
             for (int i = 0; i < columns; i++)
             {
-                node.position.x = index;
-                node.position.y = -i;
-                nodes[(rows * index) + i] = node;
+                node.position.x = (nodeLength * index) + nodeLength /2f;
+                node.position.y = (nodeLength * i) + nodeLength / 2f;
+                nodes[(columns * index) + i] = node;
 
             }
 
 
+        }
+    }
+
+    public struct UpdateNodeInfoJob : IJobParallelFor
+    {
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<SquareNode> nodes;
+        public float nodeLength;
+        public int columns;
+        public int rows;
+
+        public void Execute(int index)
+        {
+            SquareNode node = new SquareNode();
+
+            for (int i = 0; i < columns; i++)
+            {
+                node.position.x = (nodeLength * index);
+                node.position.y = -(nodeLength * i);
+                nodes[(rows * index) + i] = node;
+
+            }
         }
     }
 
@@ -236,7 +217,14 @@ namespace ShepProject
         }
     }
 
+    public struct FindPathsJob : IJobParallelFor
+    {
+        public void Execute(int index)
+        {
 
+
+        }
+    }
 
 
 }

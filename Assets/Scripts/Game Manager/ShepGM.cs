@@ -28,6 +28,8 @@ namespace ShepProject {
 		[SerializeField]
 		private EnemyManager enemyManager;
 
+		private PathfindingManager pathfindingManager;
+
 		public EnemyManager EnemyManager => enemyManager;
 
 		public event EventTrigger gameOver;
@@ -51,17 +53,25 @@ namespace ShepProject {
 
 
 
+			
 
-
-            if (enemyManager != null) {
+            if (enemyManager != null) 
+			{
 				enemyManager.Initialize(this);
 
 			}
 
-			if (inst == null) {
+			if (pathfindingManager != null)
+			{
+                pathfindingManager.Initialize(this);
+            }
+
+			if (inst == null) 
+			{
 				inst = this;
 			}
-			else {
+			else 
+			{
 				Debug.LogError("ShemGM Instance already exists!");
 			}
 
