@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.UIElements;
 
 namespace ShepProject
@@ -142,8 +143,11 @@ namespace ShepProject
             //whenever something is placed on grid or removed, need to update the walkable nodes
             UpdateWalkableNodes();
 
+            Profiler.BeginSample("Find Path");
+
             FindPath(StartPosition.position, EndPosition.position);
 
+            Profiler.EndSample();
 
             //draw grid every function if gizmos are enabled
             DrawGridJobPlaying drawGrid = new DrawGridJobPlaying();
@@ -287,33 +291,72 @@ namespace ShepProject
              */
 
 
+
+            Profiler.BeginSample("Get Node Index From Position");
+
             int startNodeIndex = GetNodeIndexFromPosition(start);
             int endNodeIndex = GetNodeIndexFromPosition(end);
+
+            Profiler.EndSample();
 
             PathNode currentNode = new PathNode();
             currentNode.index = startNodeIndex;
             currentNode.hcost = math.distance(nodes[startNodeIndex].position,
                 nodes[endNodeIndex].position);
 
-            NativeList<PathNode> openNodes = new NativeList<PathNode>(2048, Allocator.Temp);
+
+
+            Profiler.BeginSample("Allocation");
+
+
+            /*
+             * 
+             * Performance Increases
+             * 
+             * NativeParallelMultiHashMap for open nodes
+             *      - key will be fCost, values will be PathNodes
+             *      - get the lowest f cost node, faster than searching array
+             *      - will have to store each different fcost in a list to use as keys
+             *      
+             *      1. Open Nodes, if fcost is key, how to easily get index to see if it's contained?
+             *          - have another hashmap with indices as keys
+             *              - not a big fan of this, seems quite expensive
+             *          - 
+             *      
+             *      
+             *      
+             *  NativeParallelHashMap for closed nodes
+             *      - to check if it contains any neighbor nodes that can be skipped
+             *      - to also help trace the path back quicker to start
+             *      use the node indices as the key
+             *       
+             * 
+             * Make hCost use squared distance instead of regular distance
+             * 
+             * 
+             * Use less memory inside of GetNodeIndexFromPosition
+             * 
+             * discuss whether we can switch from ints to ushorts for indices to conserver
+             *      more memory and have higher amounts of cache hits
+             * 
+             * 
+             */
+
+            NativeList<PathNode> openNodes = new NativeList<PathNode>(10000, Allocator.Temp);
             openNodes.Add(currentNode);
 
-            NativeList<PathNode> closedNodes = new NativeList<PathNode>(2048, Allocator.Temp);
+            NativeList<PathNode> closedNodes = new NativeList<PathNode>(10000, Allocator.Temp);
 
-            int loopCount = 0;
-            int maxLoops = 10000;
+            NativeArray<int> indices = new NativeArray<int>(5000, Allocator.Temp);
+
+            Profiler.EndSample();
+
+            int searched = 0;
 
             while (currentNode.index != endNodeIndex)
             {
 
-                if (loopCount >= maxLoops)
-                {
-                    Debug.LogError("Infinite Loop :(");
-
-                    break;
-                }
-
-                loopCount++;
+                #region Debugging Search Nodes
 
                 //float3 up = new float3(0, 1, 0);
                 //float2 size = new float2(currentNodeLength);
@@ -338,14 +381,38 @@ namespace ShepProject
                 //    Drawing.Draw.SolidPlane(pos, up, size, closed);
                 //}
 
+                #endregion
+
                 /*
                  * get node with lowest f value
                  *      sort open nodes each time by fcost and then get first one in the list
                  * 
                  */
 
-                openNodes.Sort();
-                currentNode = openNodes[0];
+                ////sorting method
+                //Profiler.BeginSample("Sort first");
+
+                //Profiler.EndSample();
+
+                Profiler.BeginSample("Check For Smallest FCost");
+
+                float min = float.MaxValue;
+                int index = 0;
+                for (int i = 0; i < openNodes.Length; i++)
+                {
+                    if (openNodes[i].FCost < min)
+                    {
+                        index = i;
+                        min = openNodes[i].FCost;
+
+                    }
+
+
+                }
+
+                currentNode = openNodes[index];
+
+                Profiler.EndSample();
 
                 if (currentNode.index == endNodeIndex)
                 {
@@ -359,28 +426,32 @@ namespace ShepProject
                 //check all the adjacent nodes
                 //left, right, up, down
 
-                if (currentNode.index - currentRows > 0)
-                //check left node
-                CheckNeighborNode(currentNode.index - currentRows);
 
-                if (currentNode.index + currentRows < nodes.Length)
+
+                Profiler.BeginSample("Check Neighbors");
+
+                if (currentNode.index % currentColumns > 0)
+                    //check left node
+                    CheckNeighborNode(currentNode.index - 1);
+
+                if (currentNode.index % (currentColumns) != currentColumns - 1)
                     //check right node
-                    CheckNeighborNode(currentNode.index + currentRows);
-
-                if ((currentNode.index + 1) % currentColumns != 0)
-                {
-                    //check node above  
                     CheckNeighborNode(currentNode.index + 1);
+
+                if ((currentNode.index + currentColumns) < (currentRows * (currentColumns - 1)))
+                {
+                    //check node above
+                    CheckNeighborNode(currentNode.index + currentColumns);
                 }
 
-                if ((currentNode.index + 1) % currentColumns != 0)
+                if ((currentNode.index - currentColumns) > 0)
                 {
                     //check node below
-                    CheckNeighborNode(currentNode.index - 1);
+                    CheckNeighborNode(currentNode.index - currentColumns);
                 }
 
 
-
+                Profiler.EndSample();
 
 
 
@@ -389,6 +460,8 @@ namespace ShepProject
 
             void CheckNeighborNode(int index)
             {
+
+                searched++;
                 if (index < 0 || index > nodes.Length)
                 {
                     Debug.LogError("Index out of range");
@@ -405,7 +478,6 @@ namespace ShepProject
                 {
                     return;
                 }
-
 
                 PathNode neighborNode = new PathNode();
                 neighborNode.parentIndex = currentNode.index;
@@ -440,15 +512,10 @@ namespace ShepProject
                     openNodes.AddNoResize(neighborNode);
                 }
 
-
-
-
-
             }
 
-            //Debug.Log("Path Found, now need to trace back to start");
 
-            NativeArray<int> indices = new NativeArray<int>(500, Allocator.Temp);
+            Profiler.BeginSample("Trace path");
 
             int j = 0;
             while (currentNode.index != startNodeIndex)
@@ -468,17 +535,22 @@ namespace ShepProject
 
             }
 
+            Profiler.EndSample();
 
-            float3 pos = new float3();
-            for (int k = 0; k < j; k++)
-            {
-                pos.x = nodes[indices[k]].position.x;
-                pos.z = nodes[indices[k]].position.y;
+            #region Draw Final Path
 
-                Drawing.Draw.SolidPlane(pos, new float3(0, 1, 0), new float2(currentNodeLength), Color.cyan);
+            //float3 pos = new float3();
+            //for (int k = 0; k < j; k++)
+            //{
+            //    pos.x = nodes[indices[k]].position.x;
+            //    pos.z = nodes[indices[k]].position.y;
+            //    pos += setupData.origin;
 
-            }
+            //    Drawing.Draw.SolidPlane(pos, new float3(0, 1, 0), new float2(currentNodeLength), Color.cyan);
 
+            //}
+
+            #endregion
 
             indices.Dispose();
             openNodes.Dispose();
@@ -486,19 +558,16 @@ namespace ShepProject
 
         }
 
-
-
-
         private bool ContainsInGrid (float3 position)
         {
-            if (position.x > (setupData.origin.x + (setupData.nodeLength * setupData.rows)) ||
+            if (position.x > (setupData.origin.x + (setupData.nodeLength * setupData.columns)) ||
                 position.x < setupData.origin.x)
             {
                 return false;
 
             }
 
-            if (position.z > (setupData.origin.z + ((setupData.nodeLength) * setupData.columns)) ||
+            if (position.z > (setupData.origin.z + ((setupData.nodeLength) * setupData.rows)) ||
                 position.z < setupData.origin.z)
             {
                 return false;
@@ -525,16 +594,16 @@ namespace ShepProject
 
             float3 localPosition = (float3)(position - setupData.origin);
 
-            int rowStart = (int)(localPosition.x / setupData.nodeLength) * currentColumns;
-            int column = (int)(localPosition.z / setupData.nodeLength);
+            int rowStart = (int)(localPosition.x / setupData.nodeLength);
+            int column = (int)(localPosition.z / setupData.nodeLength) * currentColumns;
 
             int index = rowStart + column;
 
             //debugging purposes only
-            float3 pos = setupData.origin + new float3(nodes[index].position.x, 0, nodes[index].position.y);
-            Drawing.Draw.Label2D(position, "I: " + index, Color.black);
-            //"L: " + localPosition);
-            Drawing.Draw.SolidPlane(pos, new float3(0, 1, 0), new float2(setupData.nodeLength), Color.blue);
+            //float3 pos = setupData.origin + new float3(nodes[index].position.x, 0, nodes[index].position.y);
+            //Drawing.Draw.Label2D(position, "I: " + index, Color.black);
+            ////"L: " + localPosition);
+            //Drawing.Draw.SolidPlane(pos, new float3(0, 1, 0), new float2(setupData.nodeLength), Color.blue);
 
             return index;
 

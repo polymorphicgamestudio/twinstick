@@ -30,9 +30,9 @@ namespace ShepProject
         {
             float3 position =
                 setupData.origin + new float3(
-                    index * setupData.nodeLength,
+                    setupData.nodeLength,
                     0,
-                    setupData.nodeLength);
+                    index * setupData.nodeLength);
 
             float halfNodeLength = setupData.nodeLength / 2f;
             float3 topLeft = new float3(-halfNodeLength, 0 , halfNodeLength);
@@ -41,7 +41,7 @@ namespace ShepProject
 
             for (int i = 0; i < setupData.columns; i++)
             {
-                if(i == 0)//also have to check if unwalkable
+                if(index == setupData.rows - 1)//also have to check if unwalkable
                 //topLeft to topRight
                 builder.Line(position + topLeft, position + topRight, setupData.walkableColor);
 
@@ -59,7 +59,7 @@ namespace ShepProject
                         ((index * setupData.columns) + i).ToString());
                     //"(" + position.x + " , " + position.z + ")");
 
-                position.z += setupData.nodeLength;
+                position.x += setupData.nodeLength;
             }
 
         }
@@ -94,7 +94,7 @@ namespace ShepProject
             float3 topLeft = new float3(-halfNodeLength, 0, halfNodeLength);
             float3 topRight = new float3(halfNodeLength, 0, halfNodeLength);
 
-            if (index % setupData.columns == 0)
+            if (index > setupData.rows * (setupData.columns - 2))
                 builder.Line(position + topLeft, position + topRight, setupData.walkableColor);
 
             //topRight to bottomRight
@@ -131,8 +131,8 @@ namespace ShepProject
 
             for (int i = 0; i < columns; i++)
             {
-                node.position.x = (nodeLength * index) + nodeLength /2f;
-                node.position.y = (nodeLength * i) + nodeLength / 2f;
+                node.position.x = (nodeLength * i) + nodeLength / 2f;
+                node.position.y = (nodeLength * index) + nodeLength / 2f; 
                 nodes[(columns * index) + i] = node;
 
             }
@@ -155,13 +155,14 @@ namespace ShepProject
 
             for (int i = 0; i < columns; i++)
             {
-                node.position.x = (nodeLength * index);
-                node.position.y = -(nodeLength * i);
-                nodes[(rows * index) + i] = node;
+                node.position.x = (nodeLength * i) + nodeLength / 2f;
+                node.position.y = (nodeLength * index) + nodeLength / 2f;
+                nodes[(columns * index) + i] = node;
 
             }
         }
     }
+
 
     public struct CreateOverlapCommandsJob : IJobParallelFor
     {
@@ -219,12 +220,53 @@ namespace ShepProject
 
     public struct FindPathsJob : IJobParallelFor
     {
+
+        /*
+         *  
+         *  for each path that is queued need
+         *      - the path start and end node
+         *      - arraySlice to store open nodes
+         *      - arraySlice to store closed nodes
+         *      
+         *      - int to store the allocated number of nodes
+         *          need to be able to allocate more nodes if needed
+         * 
+         * 
+         */
+
+        public NativeArray<SquareNode> nodes;
+
+        public NativeArray<PathNode> openNodes;
+        public NativeArray<PathNode> closedNodes;
+
+
+        public int pathNodeCount;
+
         public void Execute(int index)
         {
 
+            //add start node to open list
+
+            PathNode currentNode = new PathNode();
+
+            NativeSlice<PathNode> openNodesSlice = openNodes.Slice(index * pathNodeCount, pathNodeCount);
+
+            while (openNodes.Length > 0)
+            {
+
+
+            }
+
+
+
 
         }
-    }
+
+
+
+
+
+        }
 
 
 }

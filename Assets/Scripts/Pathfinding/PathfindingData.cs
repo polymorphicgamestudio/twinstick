@@ -68,7 +68,17 @@ namespace ShepProject
 
     }
 
-    
+	//will be used for queueing a job
+	//then this info will be used inside the job, not the float3s
+    public struct PathStartInfo
+    {
+        public int startNodeIndex;
+        public int endNodeIndex;
+
+
+    }
+
+
     public struct PathData
     {
 
