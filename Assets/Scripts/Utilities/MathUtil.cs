@@ -26,7 +26,11 @@ public static class MathUtil
 
     public static float Magnitude(float2 data)
     {
-        return math.sqrt((data.x * data.x) + (data.y * data.y));
+        float sqrMagnitude = SqrMagnitude(data);
+        if (sqrMagnitude == 0)
+            return 0;
+
+        return math.sqrt(sqrMagnitude);
 
     }
 

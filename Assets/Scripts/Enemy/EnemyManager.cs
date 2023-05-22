@@ -73,7 +73,6 @@ namespace ShepProject {
 		private NativeArray<ushort> targetIDs;
 		private NativeArray<float> sheepDistancesToSlimes;
 		private NativeArray<float2> objectForces;
-		private NativeArray<float> magnitudes;
 
 		private NativeArray<float> headings;
 
@@ -136,36 +135,6 @@ namespace ShepProject {
 			sheepDistancesToSlimes = new NativeArray<float>(targetCount * (int)ObjectType.Count, Allocator.Persistent);
 
 			objectForces = new NativeArray<float2>(maxEnemies * (int)ObjectType.Count, Allocator.Persistent);
-			//divisionOneKeys = new NativeArray<QuadKey>(4, Allocator.Persistent);
-
-			//QuadKey key = new QuadKey();
-			//key.RightBranch();
-			//key.LeftBranch();
-
-			////top left
-			//divisionOneKeys[0] = key;
-
-   //         key = new QuadKey();
-   //         key.RightBranch();
-   //         key.RightBranch();
-
-   //         //top topRight
-   //         divisionOneKeys[0] = key;
-
-   //         key = new QuadKey();
-   //         key.LeftBranch();
-   //         key.RightBranch();
-
-   //         //bottom right
-   //         divisionOneKeys[0] = key;
-
-
-   //         key = new QuadKey();
-   //         key.LeftBranch();
-   //         key.LeftBranch();
-
-   //         //bottom left
-   //         divisionOneKeys[0] = key;
 
             headings = new NativeArray<float>(maxEnemies, Allocator.Persistent);
 
@@ -366,17 +335,6 @@ namespace ShepProject {
 			ctj.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
 
-			//calculate which force has biggest magnitude job
-			//only for slime, then add that magnitude to sheep heading
-			//and then continue with clamping afterwards
-
-			//FindGreatestMagnitudeBetweenForces findMagnitude = new FindGreatestMagnitudeBetweenForces();
-   //         findMagnitude.objectForces = objectForces;
-   //         findMagnitude.genes = genes;
-			//findMagnitude.Schedule(QuadTree.positionCount, SystemInfo.processorCount).Complete();
-
-
-
 			NativeArray<JobHandle> handles = new NativeArray<JobHandle>((int)ObjectType.Count, Allocator.TempJob);
 			NativeArray<GatherForcesWithinRangeJob> gfjs 
 				= new NativeArray<GatherForcesWithinRangeJob>(handles.Length, Allocator.Temp);
@@ -573,9 +531,9 @@ namespace ShepProject {
 
 			//offset 1 for type, then attractions count
 			genes.SetObjectType(id, ObjectType.Slime);
-			genes.SetAttraction(id, ObjectType.Sheep, 1); // 1
+			genes.SetAttraction(id, ObjectType.Sheep, 1f); // 1
 			genes.SetAttraction(id, ObjectType.Tower, -1); // 1
-			genes.SetAttraction(id, ObjectType.Slime, 1); // .5
+			genes.SetAttraction(id, ObjectType.Slime, .1f); // .5
 			genes.SetAttraction(id, ObjectType.Wall, 1); // 1
 
             //setting trait values, not gene values
@@ -589,7 +547,7 @@ namespace ShepProject {
 
 			//value within something like 1-20
 			genes.SetSpeed(id, 3.05f);
-            genes.SetTurnRate(id, .8f);
+            genes.SetTurnRate(id, .3f);
             genes.SetHealth(id, 50);
 
 			EnemyPhysicsMethods methods = enemy.GetComponent<EnemyPhysicsMethods>();
@@ -626,8 +584,8 @@ namespace ShepProject {
         private void AddSheepToList()
         {
 
-			int min = -15;
-			int max = 15;
+			int min = -40;
+			int max = -30;
 
             for (int i = 0; i < sheepCount; i++)
             {
@@ -666,12 +624,14 @@ namespace ShepProject {
         private void AddBurrow(int count = 1) 
 		{
 
-			for (int i = 0; i < count; i++)
+            int min = 30;
+            int max = 40;
+
+            for (int i = 0; i < count; i++)
 			{
 				EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
 
-				int min = -20;
-				int max = 20;
+
 
 				//if (Random.value > .5f)
 				burrow.gameObject.transform.position = new Vector3(Random.Range(min, max), 0, Random.Range(min, max));
@@ -763,8 +723,6 @@ namespace ShepProject {
 			targetIDs.Dispose();
 
 			objectForces.Dispose();
-			//divisionOneKeys.Dispose();
-
 
 			sheepDistancesToSlimes.Dispose();
 

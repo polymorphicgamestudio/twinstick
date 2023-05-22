@@ -63,52 +63,6 @@ namespace ShepProject {
 	}
 
 
-    /*
-	 * 
-	 * want to have an optimal distance for slimes and towers
-	 *	both will be different, will have them as genes
-	 *	
-	 * when less than an optimal distance, will move away
-	 * 
-	 * when greater than an optimal distance, will move towards
-	 * 
-	 * 
-	 * 
-	 */
-
-    public struct FindGreatestMagnitudeBetweenForces : IJobParallelFor
-    {
-
-        public NativeArray<float2> objectForces;
-        public NativeArray<float> magnitudes;
-        public GenesArray genes;
-
-
-
-
-        public void Execute(int index)
-        {
-
-            if (genes.GetObjectType(index) != ObjectType.Slime)
-                return;
-
-            magnitudes[index] = 10000000;
-            float tempMagnitude = 0;
-            int startIndex = index * (int)ObjectType.Count;
-            for (int i = 0; i < (int)ObjectType.Count; i++)
-            {
-                tempMagnitude = MathUtil.SqrMagnitude(objectForces[startIndex + i]);
-                if (tempMagnitude < magnitudes[index])
-                    magnitudes[index] = tempMagnitude;
-
-            }
-
-
-
-        }
-    }
-
-
     public struct GatherForcesWithinRangeJob : IJobParallelFor
     {
 
@@ -530,9 +484,23 @@ namespace ShepProject {
                     case ObjectType.Wall:
                     {
 
-                        //everything wants to avoid walls
-                        moveTowards -= (one
+
+                        moveTowards += (one *
+
+                            //distance falloff which makes scales force between 
+                            //slimes not caring at all and caring at max value they can
+                            //viewDistance / 2 is where it start to 
+                            math.clamp(((-2 * MathUtil.Magnitude(localPosition))
+                            / genes.GetViewRange(objectID, ViewRange.Wall)) + 2, 0, 1)
+
                             * genes.GetAttraction(objectID, targetType));
+
+
+
+
+                        ////everything wants to avoid walls
+                        //moveTowards -= (one
+                        //    * genes.GetAttraction(objectID, targetType));
                         break;
                     }
                     case ObjectType.Tower:
@@ -541,17 +509,27 @@ namespace ShepProject {
                         //slimes want to avoid towers
                         if (objType == ObjectType.Slime)
                         {
-                            //one = new float2(math.cos(angle), math.sin(angle));
-                            moveTowards += (one
+
+
+                            moveTowards += (one *
+
+                                //distance falloff which makes scales force between 
+                                //slimes not caring at all and caring at max value they can
+                                //viewDistance / 2 is where it start to 
+                                math.clamp(((-2 * MathUtil.Magnitude(localPosition))
+                                / genes.GetViewRange(objectID, ViewRange.Tower)) + 2, 0, 1)
+
                                 * genes.GetAttraction(objectID, targetType));
 
+
+
                         }
-                        //sheep will go close to towers since 
-                        else if (objType == ObjectType.Sheep)
-                        {
-                            moveTowards += (one
-                                * genes.GetAttraction(objectID, genes.GetObjectType(objectIDs[i])));
-                        }
+                        ////sheep will go close to towers since 
+                        //else if (objType == ObjectType.Sheep)
+                        //{
+                        //    moveTowards += (one
+                        //        * genes.GetAttraction(objectID, genes.GetObjectType(objectIDs[i])));
+                        //}
 
                         break;
                     }
@@ -575,7 +553,10 @@ namespace ShepProject {
 
     public struct CalculateHeadingJob : IJobParallelFor
     {
+        //[NativeDisableContainerSafetyRestriction]
+        //public NativeArray<ushort> objectIDs;
 
+        [NativeDisableContainerSafetyRestriction]
         public NativeArray<float2> positions;
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<float2> objectForces;
@@ -614,15 +595,29 @@ namespace ShepProject {
 
             float3 dir = new float3();
 
-
-
-            for (int i = 0; i < (int)ObjectType.Count; i++)
+            float maxMagnitude = 0;
+            float tempMagnitude = 0;
+            for (int i = 0; i < (int)ObjectType.Sheep; i++)
             {
 
+                tempMagnitude = MathUtil.SqrMagnitude(objectForces[(index * (int)ObjectType.Count) + i]);
+
+                if (tempMagnitude == 0)
+                    continue;
+
+                tempMagnitude = math.sqrt(tempMagnitude);
+
+                if (tempMagnitude > maxMagnitude)
+                    maxMagnitude = tempMagnitude;
 
 
                 objectForces[(index * (int)ObjectType.Count) + i]
-                    = MathUtil.ClampMagnitude(objectForces[(index * (int)ObjectType.Count) + i], 1);
+                    = objectForces[(index * (int)ObjectType.Count) + i];// / tempMagnitude;
+
+                if (tempMagnitude > 1)
+                {
+                    objectForces[(index * (int)ObjectType.Count) + i] /= tempMagnitude;
+                }
 
 
                 moveTowards += objectForces[(index * (int)ObjectType.Count) + i];
@@ -641,16 +636,38 @@ namespace ShepProject {
 
             }
 
+            if (maxMagnitude > 1)
+            {
+                maxMagnitude = 1;
+            }
+            else if (maxMagnitude == 0)
+            {
+
+                int test = 0;
+                maxMagnitude = genes.GetAttraction(index, ObjectType.Sheep);
+            }
+            else
+            {
+                int test = 0;
+            }
+
+            moveTowards += MathUtil.ClampMagnitude(objectForces[(index * (int)ObjectType.Count) + (int)(ObjectType.Sheep)], maxMagnitude);
             pos.y = .5f;
 
-            
+
+
+            dir.x = objectForces[(index * (int)ObjectType.Count) + (int)ObjectType.Sheep].x;
+            dir.y = 0;
+            dir.z = objectForces[(index * (int)ObjectType.Count) + (int)ObjectType.Sheep].y;
+
+            builder.Label2D(pos + (math.normalize(dir) / 2), ObjectType.Sheep.ToString(), 12);
+
+            builder.Ray(pos, dir, Color.cyan);
+
+
             dir.x = moveTowards.x;
             dir.y = 0;
             dir.z = moveTowards.y;
-
-            //dir.x = objectForces[(index * (int)ObjectType.Count) + i].x;
-            //dir.y = 0;
-            //dir.z = objectForces[(index * (int)ObjectType.Count) + i].y;
 
             builder.Ray(pos, dir, Color.yellow);
 
@@ -687,6 +704,10 @@ namespace ShepProject {
                 math.clamp((math.PI * 3 * genes.GetTurnRate(index)) * deltaTime
                 / math.abs(local), 0, 1));
 
+            if (headings[index] == float.NaN)
+            {
+                int test = 0;
+            }
 
 
 
