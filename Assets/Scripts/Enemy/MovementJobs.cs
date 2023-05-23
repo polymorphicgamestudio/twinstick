@@ -443,22 +443,6 @@ namespace ShepProject {
                                 builder.Ray(pos, local, Color.green);
                             }
 
-                            //if (sqDist < (optimalDist * optimalDist))
-                            //{
-
-
-                            //    //slimes are too close, so get further away
-                            //    moveTowards -= one * (genes.GetAttraction(objectID, ObjectType.Slime) * 2);
-
-                            //}
-                            //else
-                            //{
-                            //    //slimes are too far, so get closer
-                            //    moveTowards += one * (genes.GetAttraction(objectID, ObjectType.Slime));
-
-                            //}
-
-
                         }
                         else
                         {
@@ -495,12 +479,6 @@ namespace ShepProject {
 
                             * genes.GetAttraction(objectID, targetType));
 
-
-
-
-                        ////everything wants to avoid walls
-                        //moveTowards -= (one
-                        //    * genes.GetAttraction(objectID, targetType));
                         break;
                     }
                     case ObjectType.Tower:

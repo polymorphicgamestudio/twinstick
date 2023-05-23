@@ -51,10 +51,6 @@ namespace ShepProject {
 			actions = new PlayerInputActions();
 			actions.Player.Enable();
 
-
-
-			
-
             if (enemyManager != null) 
 			{
 				enemyManager.Initialize(this);
@@ -80,12 +76,29 @@ namespace ShepProject {
 		}
 
 
+
+        public void GameOverEventTrigger()
+        {
+            gameOver.Invoke();
+        }
+
+        static ShepGM()
+        {
+            for (int q = 0; q < things.Length; q++)
+            {
+                things[q] = new List<Transform>();
+            }
+        }
+
+
         private void Start()
         {
             //generate a wall surrounding the area
             GeneratePlayableAreaWall();
 
         }
+
+        #region Wall Generation
 
         public void GeneratePlayableAreaWall() {
 
@@ -161,46 +174,9 @@ namespace ShepProject {
 
 		}
 
-		public void GameOverEventTrigger()
-		{
-			gameOver.Invoke();
-		}
+        #endregion
 
-		static ShepGM() {
-			for (int q = 0; q < things.Length; q++) {
-				things[q] = new List<Transform>();
-			}
-		}
 
-		public static List<Transform> GetList(Thing thing) {
-			return things[(int)thing];
-		}
-
-		public static int GetCount(Thing thing) {
-			return GetList(thing).Count;
-		}
-
-		public static Transform GetRandom(Thing thing) {
-			return GetList(thing)[Random.Range(0, GetCount(thing))];
-		}
-
-		public static Transform GetNearest(Thing thing, Vector3 point) {
-			if (GetCount(thing) > 0) return GetNearestFromList(GetList(thing), point);
-			return null;
-		}
-
-		public static Transform GetNearestFromList(List<Transform> list, Vector3 point) {
-			float nearestDistance = float.MaxValue;
-			Transform nearestObject = null;
-			for (int i = 0; i < list.Count; i++) {
-				float distance = Vector3.Distance(list[i].transform.position, point);
-				if (distance < nearestDistance) {
-					nearestDistance = distance;
-					nearestObject = list[i];
-				}
-			}
-			return nearestObject;
-		}
 	}
 
 }

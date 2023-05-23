@@ -43,6 +43,9 @@ namespace ShepProject
          *      
          */
 
+
+        #region Variables
+
         public Transform gridOrigin;
         public Transform testPosition;
 
@@ -56,9 +59,15 @@ namespace ShepProject
         public NativeArray<ColliderHit> overlapResults;
         public NativeArray<SquareNode> nodes;
 
+        public NativeParallelMultiHashMap<int, PathNode> openNodeDifficulties;
+        public NativeParallelHashMap<int, PathNode> closedNodes;
+        public NativeParallelHashMap<int, int> openNodeKeys;
+        public NativeList<int> fCostKeys;
+
+        public NativeList<int> finalPathIndices;
+
         [Space(20)]
         public SquareGridSetupData setupData;
-
 
         private int currentRows;
         private int currentColumns;
@@ -66,6 +75,9 @@ namespace ShepProject
 
         public bool drawLabels;
 
+        #endregion
+
+        #region Gizmos
 
         private void OnDrawGizmos()
         {
@@ -104,19 +116,21 @@ namespace ShepProject
 
         }
 
+        #endregion
+
         private void Awake()
         {
             setupData.origin = gridOrigin.position;
+
+            openNodeDifficulties = new NativeParallelMultiHashMap<int, PathNode>(5000, Allocator.Persistent);
+            closedNodes = new NativeParallelHashMap<int, PathNode>(5000, Allocator.Persistent);
+            openNodeKeys = new NativeParallelHashMap<int, int>(5000, Allocator.Persistent);
+            fCostKeys = new NativeList<int>(5000, Allocator.Persistent);
+            finalPathIndices = new NativeList<int>(5000, Allocator.Persistent);
+
+
             CreateNodes();
 
-
-        }
-
-        // Start is called before the first frame update
-        void Start()
-        {
-
-            
 
         }
 
@@ -150,6 +164,12 @@ namespace ShepProject
 
             Profiler.EndSample();
 
+            //Profiler.BeginSample("Setup Vector Field");
+
+            //SetupVectorField();
+
+            //Profiler.EndSample();
+
             //draw grid every function if gizmos are enabled
             DrawGridJobPlaying drawGrid = new DrawGridJobPlaying();
             drawGrid.setupData = setupData;
@@ -175,6 +195,8 @@ namespace ShepProject
                 overlapResults.Dispose();
             }
         }
+
+        #region Setting Up Grid
 
         private void CreateNodes()
         {
@@ -253,44 +275,46 @@ namespace ShepProject
 
         }
 
+        #endregion
 
-        private void QueuePath(Vector3 start, Vector3 end)
+        #region Path Related
+
+
+        private void SetupVectorField()
         {
 
+            Profiler.BeginSample("Clear Variables");
+
+            openNodeDifficulties.Clear();
+            closedNodes.Clear();
+            openNodeKeys.Clear();
+            fCostKeys.Clear();
+            finalPathIndices.Clear();
+
+            Profiler.EndSample();
+
+            GenerateVectorFieldJob job = new GenerateVectorFieldJob();
+            job.nodes = nodes;
+            job.openNodeDifficulties = openNodeDifficulties;
+            job.closedNodes = closedNodes;
+            job.openNodeKeys = openNodeKeys;
+            job.fCostKeys = fCostKeys;
+            job.finalPathIndices = finalPathIndices;
+            job.builder = DrawingManager.GetBuilder();
+            job.origin = setupData.origin;
+            job.columns = currentColumns;
+            job.rows = currentRows;
+            job.nodeLength = currentNodeLength;
+            job.Schedule().Complete();
+
+            job.builder.Dispose();
 
         }
 
-        private void FindPath(Vector3 start, Vector3 end)
+
+
+        private void FindPath(float3 start, float3 end)
         {
-
-
-            /*
-             * start by converting the starting position into a nodeIndex
-             * same with the end position
-             * 
-             * 
-             * 
-             * 
-             */
-
-
-
-            /*
-             * from starting node, check all adjacent nodes next closest
-             * 
-             * g = distance from starting node
-             * h = distance from end node
-             * f = cost of g + h
-             * 
-             * 
-             * storing open and closed nodes
-             * 
-             * only way would be to store indices of nodes in a list/chunked array
-             * nice to save some memory and only use ushorts for each open/closed index
-             * 
-             * 
-             */
-
 
 
             Profiler.BeginSample("Get Node Index From Position");
@@ -300,51 +324,23 @@ namespace ShepProject
 
             Profiler.EndSample();
 
+            int scalar = 1000;
             PathNode currentNode = new PathNode();
             currentNode.index = startNodeIndex;
             currentNode.hCost = math.distance(nodes[startNodeIndex].position,
                 nodes[endNodeIndex].position);
 
-
-            /*
-             * 
-             * Performance Increases
-             * 
-             * NativeParallelMultiHashMap for open nodes
-             *      - key will be fCost, values will be PathNodes
-             *      - get the lowest f cost node, faster than searching array
-             *      - will have to store each different fcost in a list to use as keys
-             *      
-             *      1. Open Nodes, if fcost is key, how to easily get index to see if it's contained?
-             *          - have another hashmap with indices as keys
-             *              - not a big fan of this, seems quite expensive
-             *          - 
-             *      
-             *      
-             *      
-             *  NativeParallelHashMap for closed nodes
-             *      - to check if it contains any neighbor nodes that can be skipped
-             *      - to also help trace the path back quicker to start
-             *      use the node indices as the key
-             *       
-             * 
-             * 
-             * Use less memory inside of GetNodeIndexFromPosition
-             * 
-             * discuss whether we can switch from ints to ushorts for indices to conserver
-             *      more memory and have higher amounts of cache hits
-             * 
-             * 
-             */
-
-
             #region A* Version 2
 
             Profiler.BeginSample("Allocation");
 
-            NativeParallelMultiHashMap<int, PathNode> openNodeDifficulties = new NativeParallelMultiHashMap<int, PathNode>(500, Allocator.Temp);
+            NativeParallelMultiHashMap<int, PathNode> openNodeDifficulties 
+                = new NativeParallelMultiHashMap<int, PathNode>(500, Allocator.Temp);
+
             NativeParallelMultiHashMapIterator<int> it;
-            NativeParallelHashMap<int, int> openNodeKeys = new NativeParallelHashMap<int, int>(500, Allocator.Temp);
+
+            NativeParallelHashMap<int, int> openNodeKeys 
+                = new NativeParallelHashMap<int, int>(500, Allocator.Temp);
 
             NativeList<int> fCostKeys = new NativeList<int>(500, Allocator.Temp);
 
@@ -352,15 +348,17 @@ namespace ShepProject
 
             Profiler.EndSample();
 
-            openNodeDifficulties.Add((int)(currentNode.FCost * 100), currentNode);
+            openNodeDifficulties.Add((int)(currentNode.FCost * scalar), currentNode);
             openNodeKeys.Add(currentNode.index, 0);
 
-            fCostKeys.Add((int)(currentNode.FCost * 100));
+            fCostKeys.Add((int)(currentNode.FCost * scalar));
+
 
             int outDifficultyKey;
             PathNode checkNode = new PathNode();
             int minKeyCost = int.MaxValue;
             int minKeyCostIndex = 0;
+            int searched = 0;
 
             Profiler.BeginSample("Checking Nodes");
 
@@ -387,16 +385,10 @@ namespace ShepProject
 
                 if (!openNodeDifficulties.TryGetFirstValue(minKeyCost, out currentNode, out it))
                 {
-                    try
-                    {
 
-                        fCostKeys.RemoveAt(minKeyCostIndex);
-                    }
-                    catch (Exception e)
-                    {
 
-                        int test = 0;
-                    }
+                    fCostKeys.RemoveAt(minKeyCostIndex);
+                    
 
                     continue;
                 }
@@ -406,19 +398,22 @@ namespace ShepProject
 
                 closedNodes.Add(currentNode.index, currentNode);
                 openNodeKeys.Remove(currentNode.index);
-                openNodeDifficulties.Remove((int)(currentNode.FCost * 100), currentNode);
+                openNodeDifficulties.Remove((int)(currentNode.FCost * scalar), currentNode);
 
                 Profiler.BeginSample("Check Neighbors");
 
                 if (currentNode.index % currentColumns > 0)
+                {
                     //check left node
                     CheckNeighborNode(currentNode.index - 1);
+                }
 
                 if (currentNode.index % (currentColumns) != currentColumns - 1 && currentNode.index != endNodeIndex)
-                    //check right node
+                {    //check right node
                     CheckNeighborNode(currentNode.index + 1);
-
-                if ((currentNode.index + currentColumns) < (currentRows * (currentColumns - 1)) && currentNode.index != endNodeIndex)
+                }
+                if ((currentNode.index + currentColumns) < (currentRows * (currentColumns)) 
+                    && currentNode.index != endNodeIndex)
                 {
                     //check node above
                     CheckNeighborNode(currentNode.index + currentColumns);
@@ -453,11 +448,10 @@ namespace ShepProject
                     {
 
                         closedNodes.Add(index, new PathNode() { index = index });
-                        //closedNodes.Add(new PathNode() { index = index });
                         return;
                     }
 
-
+                    searched++;
                     Profiler.BeginSample("Set up neighbor node");
 
                     PathNode neighborNode = new PathNode();
@@ -467,6 +461,24 @@ namespace ShepProject
                     neighborNode.hCost = math.distance(nodes[index].position, nodes[endNodeIndex].position);
 
                     Profiler.EndSample();
+
+
+                    #region Draw Neighbor Node Info
+
+                    Profiler.BeginSample("Neighbor Node Info");
+
+                    float3 poss = new float3(nodes[index].position.x, 0, nodes[index].position.y);
+
+                    //Draw.Label2D(setupData.origin + poss - new float3(currentNodeLength / 4f, 0, 0),
+                    //    "Searched: " + searched + "\nHCost: " + neighborNode.hCost + "\nGCost: " + neighborNode.gCost + "\nFCost: " + neighborNode.FCost,
+                    //    10, Color.black);
+
+
+                    Profiler.EndSample();
+
+                    #endregion
+
+
 
                     if (neighborNode.index == endNodeIndex)
                     {
@@ -487,7 +499,7 @@ namespace ShepProject
                             {
 
                                 openNodeDifficulties.SetValue(checkNode, it);
-                                openNodeKeys[checkNode.index] = (int)(checkNode.FCost * 100);
+                                openNodeKeys[checkNode.index] = (int)(checkNode.FCost * scalar);
                             }
 
                         }
@@ -496,11 +508,11 @@ namespace ShepProject
                     else
                     {
 
-                        openNodeDifficulties.Add((int)(neighborNode.FCost * 100), neighborNode);
-                        openNodeKeys.Add(neighborNode.index, (int)(neighborNode.FCost * 100));
-                        if (!fCostKeys.Contains((int)(neighborNode.FCost * 100)))
+                        openNodeDifficulties.Add((int)(neighborNode.FCost * scalar), neighborNode);
+                        openNodeKeys.Add(neighborNode.index, (int)(neighborNode.FCost * scalar));
+                        if (!fCostKeys.Contains((int)(neighborNode.FCost * scalar)))
                         {
-                            fCostKeys.Add((int)(neighborNode.FCost * 100));
+                            fCostKeys.Add((int)(neighborNode.FCost * scalar));
                         }
 
                     }
@@ -517,7 +529,7 @@ namespace ShepProject
 
             Profiler.BeginSample("Trace Path");
 
-            NativeArray<int> indices = new NativeArray<int>(200, Allocator.Temp);
+            NativeArray<int> indices = new NativeArray<int>(1000, Allocator.Temp);
 
             int j = 0;
             while (currentNode.index != startNodeIndex)
@@ -535,34 +547,86 @@ namespace ShepProject
 
             //draw final path
 
+            #region Draw Searched Nodes
+
+            Profiler.BeginSample("Draw Closed Nodes");
+
+            NativeArray<PathNode> searchedNodes = closedNodes.GetValueArray(Allocator.Temp);
+
+            float3 position = new float3();
+            for (int k = 0; k < searchedNodes.Length; k++)
+            {
+
+                if (finalPathIndices.Contains(searchedNodes[k].index))
+                    continue;
+
+                position.x = nodes[searchedNodes[k].index].position.x;
+                position.z = nodes[searchedNodes[k].index].position.y;
+                position += setupData.origin;
+
+                Draw.SolidPlane(position, new float3(0, 1, 0),
+                    new float2(currentNodeLength), Color.red);
+
+            }
+
+
+
+
+            searchedNodes.Dispose();
+
+            Profiler.EndSample();
+
+            Profiler.BeginSample("Draw Closed Nodes");
+
+            NativeArray<PathNode> openSearched = openNodeDifficulties.GetValueArray(Allocator.Temp);
+
+            position = new float3();
+            for (int k = 0; k < openSearched.Length; k++)
+            {
+
+                //if (finalPathIndices.Contains(openSearched[k].index))
+                //    continue;
+
+                position.x = nodes[openSearched[k].index].position.x;
+                position.z = nodes[openSearched[k].index].position.y;
+                position += setupData.origin;
+
+                Draw.SolidPlane(position, new float3(0, 1, 0),
+                    new float2(currentNodeLength), Color.green);
+
+            }
+
+
+
+
+            openSearched.Dispose();
+
+            Profiler.EndSample();
+
+            #endregion
+
             #region Draw Final Path
 
-            //Profiler.BeginSample("Draw Final Path");
+            Profiler.BeginSample("Draw Final Path");
 
-            //float3 pos = new float3();
-            //for (int k = 0; k < j; k++)
-            //{
-            //    pos.x = nodes[indices[k]].position.x;
-            //    pos.z = nodes[indices[k]].position.y;
-            //    pos += setupData.origin;
+            float3 pos = new float3();
+            for (int k = 0; k < j; k++)
+            {
+                pos.x = nodes[indices[k]].position.x;
+                pos.z = nodes[indices[k]].position.y;
+                pos += setupData.origin;
 
-            //    Drawing.Draw.SolidPlane(pos, new float3(0, 1, 0), new float2(currentNodeLength), Color.cyan);
+                Drawing.Draw.SolidPlane(pos, new float3(0, 1, 0), new float2(currentNodeLength), Color.cyan);
 
-            //}
+            }
 
-            //Profiler.EndSample();
+            Profiler.EndSample();
 
             #endregion
 
 
 
             indices.Dispose();
-
-
-
-
-
-
 
             openNodeDifficulties.Dispose();
             openNodeKeys.Dispose();
@@ -611,10 +675,10 @@ namespace ShepProject
 
             float3 localPosition = (float3)(position - setupData.origin);
 
-            int rowStart = (int)(localPosition.x / setupData.nodeLength);
-            int column = (int)(localPosition.z / setupData.nodeLength) * currentColumns;
+            //int rowStart = (int)(localPosition.x / setupData.nodeLength);
+            //int column = (int)(localPosition.z / setupData.nodeLength) * currentColumns;
 
-            int index = rowStart + column;
+            //int index = rowStart + column;
 
             //debugging purposes only
             //float3 pos = setupData.origin + new float3(nodes[index].position.x, 0, nodes[index].position.y);
@@ -622,18 +686,13 @@ namespace ShepProject
             ////"L: " + localPosition);
             //Drawing.Draw.SolidPlane(pos, new float3(0, 1, 0), new float2(setupData.nodeLength), Color.blue);
 
-            return index;
-
-            //return 0;
-        
-        }
-
-
-        private void SetupVectorField()
-        {
-
+            return (int)(localPosition.x / setupData.nodeLength)
+                + (int)(localPosition.z / setupData.nodeLength) * currentColumns;
 
         }
+
+
+        #endregion
 
 
 
