@@ -28,9 +28,10 @@ namespace ShepProject
     {
         public int parentIndex;
         public int index;
-        public float gcost;
-        public float hcost;
-        public float FCost => gcost + hcost;
+
+        public float gCost;
+        public float hCost;
+        public float FCost => gCost + hCost;
 
         public int CompareTo(PathNode other)
         {
@@ -51,6 +52,13 @@ namespace ShepProject
         {
             return index == other.index;
         }
+
+
+        public override string ToString()
+        {
+            return "I: " + index + "G: " + gCost + " H: " + hCost + "F: " + FCost;
+        }
+
     }
 
 

@@ -1,4 +1,5 @@
 using Drawing;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -301,12 +302,8 @@ namespace ShepProject
 
             PathNode currentNode = new PathNode();
             currentNode.index = startNodeIndex;
-            currentNode.hcost = math.distance(nodes[startNodeIndex].position,
+            currentNode.hCost = math.distance(nodes[startNodeIndex].position,
                 nodes[endNodeIndex].position);
-
-
-
-            Profiler.BeginSample("Allocation");
 
 
             /*
@@ -331,8 +328,6 @@ namespace ShepProject
              *      use the node indices as the key
              *       
              * 
-             * Make hCost use squared distance instead of regular distance
-             * 
              * 
              * Use less memory inside of GetNodeIndexFromPosition
              * 
@@ -342,91 +337,76 @@ namespace ShepProject
              * 
              */
 
-            NativeList<PathNode> openNodes = new NativeList<PathNode>(10000, Allocator.Temp);
-            openNodes.Add(currentNode);
 
-            NativeList<PathNode> closedNodes = new NativeList<PathNode>(10000, Allocator.Temp);
+            #region A* Version 2
 
-            NativeArray<int> indices = new NativeArray<int>(5000, Allocator.Temp);
+            Profiler.BeginSample("Allocation");
+
+            NativeParallelMultiHashMap<int, PathNode> openNodeDifficulties = new NativeParallelMultiHashMap<int, PathNode>(500, Allocator.Temp);
+            NativeParallelMultiHashMapIterator<int> it;
+            NativeParallelHashMap<int, int> openNodeKeys = new NativeParallelHashMap<int, int>(500, Allocator.Temp);
+
+            NativeList<int> fCostKeys = new NativeList<int>(500, Allocator.Temp);
+
+            NativeParallelHashMap<int, PathNode> closedNodes = new NativeParallelHashMap<int, PathNode>(500, Allocator.Temp);
 
             Profiler.EndSample();
 
-            int searched = 0;
+            openNodeDifficulties.Add((int)(currentNode.FCost * 100), currentNode);
+            openNodeKeys.Add(currentNode.index, 0);
+
+            fCostKeys.Add((int)(currentNode.FCost * 100));
+
+            int outDifficultyKey;
+            PathNode checkNode = new PathNode();
+            int minKeyCost = int.MaxValue;
+            int minKeyCostIndex = 0;
+
+            Profiler.BeginSample("Checking Nodes");
 
             while (currentNode.index != endNodeIndex)
             {
 
-                #region Debugging Search Nodes
+                minKeyCostIndex = 0;
+                minKeyCost = int.MaxValue;
 
-                //float3 up = new float3(0, 1, 0);
-                //float2 size = new float2(currentNodeLength);
-                //float3 pos = new float3();
 
-                //Color open = new Color(0, 1, 0, .4f);
-                //Color closed = new Color(1, 0, 0, .4f);
+                Profiler.BeginSample("Check FCosts");
 
-                //for (int i = 0; i < openNodes.Length; i++)
-                //{
-                //    pos.x = nodes[openNodes[i].index].position.x;
-                //    pos.z = nodes[openNodes[i].index].position.y;
-
-                //    Drawing.Draw.SolidPlane(pos, up, size, open);
-                //}
-
-                //for (int i = 0; i < closedNodes.Length; i++)
-                //{
-                //    pos.x = nodes[closedNodes[i].index].position.x;
-                //    pos.z = nodes[closedNodes[i].index].position.y;
-
-                //    Drawing.Draw.SolidPlane(pos, up, size, closed);
-                //}
-
-                #endregion
-
-                /*
-                 * get node with lowest f value
-                 *      sort open nodes each time by fcost and then get first one in the list
-                 * 
-                 */
-
-                ////sorting method
-                //Profiler.BeginSample("Sort first");
-
-                //Profiler.EndSample();
-
-                Profiler.BeginSample("Check For Smallest FCost");
-
-                float min = float.MaxValue;
-                int index = 0;
-                for (int i = 0; i < openNodes.Length; i++)
+                for (int i = 0; i < fCostKeys.Length; i++)
                 {
-                    if (openNodes[i].FCost < min)
+                    if (fCostKeys[i] < minKeyCost)
                     {
-                        index = i;
-                        min = openNodes[i].FCost;
-
+                        minKeyCost = fCostKeys[i];
+                        minKeyCostIndex = i;
                     }
 
-
                 }
-
-                currentNode = openNodes[index];
 
                 Profiler.EndSample();
 
-                if (currentNode.index == endNodeIndex)
+                if (!openNodeDifficulties.TryGetFirstValue(minKeyCost, out currentNode, out it))
                 {
-                    //Debug.Log("Path found");
-                    break;
+                    try
+                    {
+
+                        fCostKeys.RemoveAt(minKeyCostIndex);
+                    }
+                    catch (Exception e)
+                    {
+
+                        int test = 0;
+                    }
+
+                    continue;
                 }
 
-                openNodes.RemoveAt(0);
-                closedNodes.Add(currentNode);
 
-                //check all the adjacent nodes
-                //left, right, up, down
+                //has a new currentNode, remove it from open nodes, add it to closed nodes, then check neighbors
 
-
+                closedNodes.Add(currentNode.index, currentNode);
+                openNodeKeys.Remove(currentNode.index);
+                openNodeDifficulties.Remove((int)(currentNode.FCost * 100), currentNode);
 
                 Profiler.BeginSample("Check Neighbors");
 
@@ -434,17 +414,17 @@ namespace ShepProject
                     //check left node
                     CheckNeighborNode(currentNode.index - 1);
 
-                if (currentNode.index % (currentColumns) != currentColumns - 1)
+                if (currentNode.index % (currentColumns) != currentColumns - 1 && currentNode.index != endNodeIndex)
                     //check right node
                     CheckNeighborNode(currentNode.index + 1);
 
-                if ((currentNode.index + currentColumns) < (currentRows * (currentColumns - 1)))
+                if ((currentNode.index + currentColumns) < (currentRows * (currentColumns - 1)) && currentNode.index != endNodeIndex)
                 {
                     //check node above
                     CheckNeighborNode(currentNode.index + currentColumns);
                 }
 
-                if ((currentNode.index - currentColumns) > 0)
+                if ((currentNode.index - currentColumns) > 0 && currentNode.index != endNodeIndex)
                 {
                     //check node below
                     CheckNeighborNode(currentNode.index - currentColumns);
@@ -455,89 +435,109 @@ namespace ShepProject
 
 
 
-
-            }
-
-            void CheckNeighborNode(int index)
-            {
-
-                searched++;
-                if (index < 0 || index > nodes.Length)
+                void CheckNeighborNode(int index)
                 {
-                    Debug.LogError("Index out of range");
-                    return;
-                }
 
-                if (!nodes[index].walkable)
-                {
-                    closedNodes.Add(new PathNode() { index = index});
-                    return;
-                }
-
-                if (closedNodes.Contains(new PathNode() { index = index }))
-                {
-                    return;
-                }
-
-                PathNode neighborNode = new PathNode();
-                neighborNode.parentIndex = currentNode.index;
-                neighborNode.index = index;
-                neighborNode.hcost = math.distance(nodes[index].position, nodes[endNodeIndex].position);
-
-                if (neighborNode.hcost < currentNode.hcost)
-                {
-                    openNodes.AddNoResize(neighborNode);
-
-                    return;
-                }
-
-                bool contains = false;
-                for (int i = 0; i < openNodes.Length; i++)
-                {
-                    if (openNodes[i].Equals(neighborNode))
+                    if (index < 0 || index >= nodes.Length)
                     {
-                        contains = true;
-                        if (neighborNode.hcost < openNodes[i].hcost)
+                        Debug.LogError("Index out of range");
+                        return;
+                    }
+
+                    if (closedNodes.ContainsKey(index))
+                    {
+                        return;
+                    }
+
+                    if (!nodes[index].walkable)
+                    {
+
+                        closedNodes.Add(index, new PathNode() { index = index });
+                        //closedNodes.Add(new PathNode() { index = index });
+                        return;
+                    }
+
+
+                    Profiler.BeginSample("Set up neighbor node");
+
+                    PathNode neighborNode = new PathNode();
+                    neighborNode.parentIndex = currentNode.index;
+                    neighborNode.index = index;
+                    neighborNode.gCost = math.distance(nodes[index].position, nodes[startNodeIndex].position);
+                    neighborNode.hCost = math.distance(nodes[index].position, nodes[endNodeIndex].position);
+
+                    Profiler.EndSample();
+
+                    if (neighborNode.index == endNodeIndex)
+                    {
+                        currentNode = neighborNode;
+                    }
+
+                    if (openNodeKeys.TryGetValue(index, out outDifficultyKey))
+                    {
+                        if (openNodeDifficulties.TryGetFirstValue(outDifficultyKey, out checkNode, out it))
                         {
-                            openNodes[i] = neighborNode;
+                            while (!checkNode.Equals(neighborNode))
+                            {
+                                openNodeDifficulties.TryGetNextValue(out checkNode, ref it);
+
+                            }
+
+                            if (checkNode.hCost < neighborNode.hCost)
+                            {
+
+                                openNodeDifficulties.SetValue(checkNode, it);
+                                openNodeKeys[checkNode.index] = (int)(checkNode.FCost * 100);
+                            }
+
                         }
 
-                        break;
                     }
-
-                }
-
-                if(!contains) 
-                { 
-                    openNodes.AddNoResize(neighborNode);
-                }
-
-            }
-
-
-            Profiler.BeginSample("Trace path");
-
-            int j = 0;
-            while (currentNode.index != startNodeIndex)
-            {
-                indices[j] = currentNode.index;
-                j++;
-
-                for (int i = 0; i < closedNodes.Length; i++)
-                {
-                    if (closedNodes[i].index == currentNode.parentIndex)
+                    else
                     {
-                        currentNode = closedNodes[i];
-                        break;
+
+                        openNodeDifficulties.Add((int)(neighborNode.FCost * 100), neighborNode);
+                        openNodeKeys.Add(neighborNode.index, (int)(neighborNode.FCost * 100));
+                        if (!fCostKeys.Contains((int)(neighborNode.FCost * 100)))
+                        {
+                            fCostKeys.Add((int)(neighborNode.FCost * 100));
+                        }
+
                     }
 
+
+
                 }
+
 
             }
 
             Profiler.EndSample();
 
+
+            Profiler.BeginSample("Trace Path");
+
+            NativeArray<int> indices = new NativeArray<int>(200, Allocator.Temp);
+
+            int j = 0;
+            while (currentNode.index != startNodeIndex)
+            {
+                indices[j] = currentNode.index;
+
+                closedNodes.TryGetValue(currentNode.parentIndex, out currentNode);
+                j++;
+
+            }
+            indices[j] = currentNode.index;
+            j++;
+
+            Profiler.EndSample();
+
+            //draw final path
+
             #region Draw Final Path
+
+            //Profiler.BeginSample("Draw Final Path");
 
             //float3 pos = new float3();
             //for (int k = 0; k < j; k++)
@@ -550,11 +550,28 @@ namespace ShepProject
 
             //}
 
+            //Profiler.EndSample();
+
             #endregion
 
+
+
             indices.Dispose();
-            openNodes.Dispose();
+
+
+
+
+
+
+
+            openNodeDifficulties.Dispose();
+            openNodeKeys.Dispose();
+            fCostKeys.Dispose();
+
             closedNodes.Dispose();
+
+
+            #endregion
 
         }
 
