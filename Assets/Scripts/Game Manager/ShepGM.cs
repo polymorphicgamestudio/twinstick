@@ -45,54 +45,41 @@ namespace ShepProject {
 
 		
 		private void Awake() {
-
-			
-
 			actions = new PlayerInputActions();
 			actions.Player.Enable();
+			actions.UI.Enable();
 
-            if (enemyManager != null) 
-			{
+            if (enemyManager != null) {
 				enemyManager.Initialize(this);
 
 			}
 
-			if (pathfindingManager != null)
-			{
+			if (pathfindingManager != null) {
                 pathfindingManager.Initialize(this);
             }
 
-			if (inst == null) 
-			{
+			if (inst == null) {
 				inst = this;
 			}
-			else 
-			{
+			else {
 				Debug.LogError("ShemGM Instance already exists!");
 			}
-
-
-
 		}
 
 
 
-        public void GameOverEventTrigger()
-        {
+        public void GameOverEventTrigger() {
             gameOver.Invoke();
         }
 
-        static ShepGM()
-        {
-            for (int q = 0; q < things.Length; q++)
-            {
+        static ShepGM() {
+            for (int q = 0; q < things.Length; q++) {
                 things[q] = new List<Transform>();
             }
         }
 
 
-        private void Start()
-        {
+        private void Start() {
             //generate a wall surrounding the area
             GeneratePlayableAreaWall();
 
