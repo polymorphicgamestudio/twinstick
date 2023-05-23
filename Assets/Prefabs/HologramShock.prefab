@@ -98,7 +98,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 512
   viewDistance: 15
 --- !u!1 &1594529448062058489
 GameObject:
@@ -230,7 +230,7 @@ Transform:
   - {fileID: 5765208203588435416}
   - {fileID: 5574833686153609286}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4470135564781206205
 MeshFilter:

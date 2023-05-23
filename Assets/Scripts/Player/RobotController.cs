@@ -45,52 +45,33 @@ public class RobotController : MonoBehaviour {
 		Vector2 joystickInput = ShepGM.inst.actions.Player.Look.ReadValue<Vector2>();
 		if (running) joystickInput = new Vector2(player.velocity.x, player.velocity.z);
 		joystickDir = new Vector3(joystickInput.x, 0f, joystickInput.y);
-		}
+	}
 	private void MouseDelta_performed(InputAction.CallbackContext context) {
 		usingController = false;
 		SetMousePos();
 		mouseDir = Vector3.ProjectOnPlane(mousePos - player.position, Vector3.up);
 	}
 
-
+	//animation code put in update so that we can insure IK animation in late update can happen after
 	void Update() {
 		SetMousePos();
-		if (running != player.GetComponent<PlayerMovementController>().running) { 
-			running = player.GetComponent<PlayerMovementController>().running;
-			//if running changes set joystickDir to velocity;
-			joystickDir = player.velocity;
-		}
-
+		UpdateJoystickDirOnRunningChange(player.GetComponent<PlayerMovementController>().running);
 		SetNeckAngle(1f, 20f, -20f, 35f);
 		SetLookDirection();
 
 		centerOfBalance = (footTargets[0].position + footTargets[1].position) / 2f;
 		float breathDisplace = Mathf.Sin(Time.time * 2f) * 0.05f;
-
-		//root.position = Vector3.Lerp(root.position, centerOfBalance + Vector3.up * breathDisplace, 10f * Time.deltaTime);
 		root.position = centerOfBalance + Vector3.up * (yOffset + breathDisplace);
 		player.rotation = Quaternion.RotateTowards(player.rotation, lookDirection, 180f * Time.deltaTime);
 
 		SetHeadRotation();
-		//SetForwardTilePos();
 	}
 
-	// By Putting our animation code in LateUpdate, we allow other systems to update the environment first 
-	// this allows the animation to adapt before the frame is drawn.
-	/*void LateUpdate() {
-		SetNeckAngle(1f, 20f, -20f, 35f);
-		SetLookDirection();
-
-		centerOfBalance = (footTargets[0].position + footTargets[1].position) / 2f;
-		float breathDisplace = Mathf.Sin(Time.time * 2f) * 0.05f;
-
-		//root.position = Vector3.Lerp(root.position, centerOfBalance + Vector3.up * breathDisplace, 10f * Time.deltaTime);
-		root.position = centerOfBalance + Vector3.up * (yOffset + breathDisplace);
-		player.rotation = Quaternion.RotateTowards(player.rotation, lookDirection, 180f * Time.deltaTime);
-
-		SetHeadRotation();
-	}*/
-
+	void UpdateJoystickDirOnRunningChange(bool newRunning) {
+		if (running == newRunning) return; // no change
+		running = newRunning;
+		joystickDir = player.velocity;
+	}
 	Vector3 VectorToNearestTilePos(Vector3 inputVector) {
 		return new Vector3(SnapNumber(inputVector.x), 0, SnapNumber(inputVector.z));
 	}

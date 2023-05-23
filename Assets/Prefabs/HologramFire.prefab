@@ -33,7 +33,7 @@ Transform:
   - {fileID: 637963224123347386}
   - {fileID: 8816990128019395148}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &9064258114942690015
 MeshFilter:
@@ -183,7 +183,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 512
   viewDistance: 15
 --- !u!1 &5207303185038724969
 GameObject:

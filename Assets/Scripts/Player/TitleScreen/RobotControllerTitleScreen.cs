@@ -1,6 +1,8 @@
 using ShepProject;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
+using System.Collections;
 
 public class RobotControllerTitleScreen : MonoBehaviour {
 
@@ -12,9 +14,9 @@ public class RobotControllerTitleScreen : MonoBehaviour {
 	Vector3 centerOfBalance;
 	[SerializeField] float yOffset = 1f;
 
+	[SerializeField] Transform startingLookPosObject;
 
 	Vector3 mouseDirHoz;
-	Vector3 mouseDirVert;
 	Quaternion bodyLookDir;
 	Quaternion headLookDir;
 
@@ -25,10 +27,7 @@ public class RobotControllerTitleScreen : MonoBehaviour {
 
 	public Transform[] footTargets; // L, R
 
-	bool running = false;
-	//Quaternion lookDirection;
-	bool usingController = false;
-	Vector3 joystickDir;
+	bool usingController = true;
 
 	[HideInInspector] public bool buildMode = false;
 	[HideInInspector] public Vector3 forwardTilePos;
@@ -37,51 +36,44 @@ public class RobotControllerTitleScreen : MonoBehaviour {
 
 	private void Start() {
 		player = ShepGM.inst.player.GetComponent<Rigidbody>();
-		ShepGM.inst.actions.Player.Look.performed += Look_performed;
-		ShepGM.inst.actions.Player.MouseDelta.performed += MouseDelta_performed;
 		Transform camTransform = Camera.main.transform;
 		lookPlane = new Plane(camTransform.forward, camTransform.position + camTransform.forward * 8f);
+		StartCoroutine(nameof(_InitializeNextFrame));
 	}
-
-	private void Look_performed(InputAction.CallbackContext context) {
-		usingController = true;
-		Vector2 joystickInput = ShepGM.inst.actions.Player.Look.ReadValue<Vector2>();
-		if (running) joystickInput = new Vector2(player.velocity.x, player.velocity.z);
-		joystickDir = new Vector3(joystickInput.x, 0f, joystickInput.y);
-		}
-	private void MouseDelta_performed(InputAction.CallbackContext context) {
-		usingController = false;
-		SetMousePos();
-		mouseDirHoz = Vector3.ProjectOnPlane(mousePos - player.position, Vector3.up);
-		mouseDirVert = Vector3.ProjectOnPlane(mousePos - head.position, head.right);
-	}
-
-	// By Putting our animation code in LateUpdate, we allow other systems to update the environment first 
-	// this allows the animation to adapt before the frame is drawn.
 	void Update() {
-		Debug.DrawRay(head.position,mouseDirVert, Color.yellow);
-
+		SetMousePos();
 		SetLookDirection();
-
 		centerOfBalance = (footTargets[0].position + footTargets[1].position) / 2f;
 		float breathDisplace = Mathf.Sin(Time.time * 2f) * 0.05f;
-
-		//root.position = Vector3.Lerp(root.position, centerOfBalance + Vector3.up * breathDisplace, 10f * Time.deltaTime);
 		root.position = centerOfBalance + Vector3.up * (yOffset + breathDisplace);
 		SetBodyRotation();
 		SetNeckAngle(9f, 42f, -20f, 50f);
 		SetHeadRotation();
 	}
 
+	private void Navigate_performed(InputAction.CallbackContext context) {
+		usingController = true;
+	}
+	private void MouseDelta_performed(InputAction.CallbackContext context) {
+		usingController = false;
+	}
 	void SetMousePos() {
 		float distance;
-		Ray ray = Camera.main.ScreenPointToRay(ShepGM.inst.actions.Player.MousePosition.ReadValue<Vector2>());
+		Ray ray;
+		if (usingController) {
+			Vector3 camPos = Camera.main.transform.position;
+			Vector3 lookPos = EventSystem.current.currentSelectedGameObject ?
+				EventSystem.current.currentSelectedGameObject.transform.position : startingLookPosObject.position;
+			ray = new Ray(camPos, lookPos - camPos);
+		}
+		else ray = Camera.main.ScreenPointToRay(ShepGM.inst.actions.Player.MousePosition.ReadValue<Vector2>());
+
 		if (lookPlane.Raycast(ray, out distance))
 			mousePos = ray.GetPoint(distance);
+		mouseDirHoz = Vector3.ProjectOnPlane(mousePos - player.position, Vector3.up);
 	}
 	void SetLookDirection() {
-		//Vector3 dir = usingController? joystickDir : mouseDirHoz;
-		Vector3 bodyLook = mousePos - (player.position - mouseDirHoz + Vector3.up);
+		Vector3 bodyLook = mousePos - (player.position - mouseDirHoz + Vector3.up); // starts from behind player
 		Vector3 headLook = mousePos - head.position;
 		if (bodyLook == Vector3.zero || headLook == Vector3.zero) return;
 		bodyLookDir = Quaternion.LookRotation(bodyLook, Vector3.up);
@@ -89,15 +81,9 @@ public class RobotControllerTitleScreen : MonoBehaviour {
 	}
 
 	void SetBodyRotation() {
-		Vector3 bodyLook = mousePos - (player.position - mouseDirHoz + Vector3.up);
-		if (bodyLook == Vector3.zero) return;
-		bodyLookDir = Quaternion.LookRotation(bodyLook, Vector3.up);
 		player.rotation = Quaternion.RotateTowards(player.rotation, bodyLookDir, 90f * Time.deltaTime);
 	}
 	void SetHeadRotation() {
-		Vector3 headLook = mousePos - head.position;
-		if (headLook == Vector3.zero) return;
-		headLookDir = Quaternion.LookRotation(headLook, Vector3.up);
 		head.rotation = Quaternion.Slerp(head.rotation, headLookDir, 5f * Time.deltaTime);
 	}
 	void SetNeckAngle(float minDist, float maxDist, float minAngle, float maxAngle) {
@@ -106,5 +92,10 @@ public class RobotControllerTitleScreen : MonoBehaviour {
 		float newNeckAngle = Mathf.Lerp(minAngle, maxAngle, distPercent);
 		neckAngle = Mathf.Lerp(neckAngle, newNeckAngle, 5f * Time.deltaTime);
 		neck.localEulerAngles = new Vector3(neckAngle, 0f, 0f);
+	}
+	private IEnumerator _InitializeNextFrame() {
+		yield return null;
+		ShepGM.inst.actions.UI.Navigate.performed += Navigate_performed;
+		ShepGM.inst.actions.Player.MouseDelta.performed += MouseDelta_performed;
 	}
 }

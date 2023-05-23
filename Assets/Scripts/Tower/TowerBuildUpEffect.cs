@@ -10,10 +10,6 @@ public class TowerBuildUpEffect : MonoBehaviour {
 	public void Initialize(Vector3 towerPosition ,Quaternion towerRotation, float buildTime, GameObject towerObject) {
 		GetComponent<TowerRotationReference>().RotationBoneHoz.rotation = towerRotation;
 
-
-		Debug.Log("Setting " + GetComponent<TowerRotationReference>().RotationBoneHoz.name + " to " + towerRotation);
-
-
 		GetComponent<Animator>().SetTrigger("Build");
 		towerPos = towerPosition;
 		towerRot = towerRotation;
