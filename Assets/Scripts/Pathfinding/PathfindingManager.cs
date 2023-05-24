@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.UIElements;
@@ -73,7 +74,9 @@ namespace ShepProject
         private int currentColumns;
         private float currentNodeLength;
 
-        public bool drawLabels;
+        public bool drawIndexLabels;
+        public bool jobPath;
+        public bool drawNodeInfo;
 
         #endregion
 
@@ -99,7 +102,7 @@ namespace ShepProject
                 DrawGridJobNotPlaying drawGrid = new DrawGridJobNotPlaying();
                 drawGrid.setupData = setupData;
                 drawGrid.builder = DrawingManager.GetBuilder();
-                drawGrid.drawLabels = drawLabels;
+                drawGrid.drawLabels = drawIndexLabels;
                 drawGrid.Schedule(setupData.rows, SystemInfo.processorCount).Complete();
 
 
@@ -122,11 +125,11 @@ namespace ShepProject
         {
             setupData.origin = gridOrigin.position;
 
-            openNodeDifficulties = new NativeParallelMultiHashMap<int, PathNode>(5000, Allocator.Persistent);
-            closedNodes = new NativeParallelHashMap<int, PathNode>(5000, Allocator.Persistent);
-            openNodeKeys = new NativeParallelHashMap<int, int>(5000, Allocator.Persistent);
-            fCostKeys = new NativeList<int>(5000, Allocator.Persistent);
-            finalPathIndices = new NativeList<int>(5000, Allocator.Persistent);
+            openNodeDifficulties = new NativeParallelMultiHashMap<int, PathNode>(10000, Allocator.Persistent);
+            closedNodes = new NativeParallelHashMap<int, PathNode>(10000, Allocator.Persistent);
+            openNodeKeys = new NativeParallelHashMap<int, int>(10000, Allocator.Persistent);
+            fCostKeys = new NativeList<int>(10000, Allocator.Persistent);
+            finalPathIndices = new NativeList<int>(10000, Allocator.Persistent);
 
 
             CreateNodes();
@@ -158,24 +161,33 @@ namespace ShepProject
             //whenever something is placed on grid or removed, need to update the walkable nodes
             UpdateWalkableNodes();
 
-            Profiler.BeginSample("Find Path");
+            //if (!jobPath)
+            //{
 
-            FindPath(StartPosition.position, EndPosition.position);
+            //    Profiler.BeginSample("Find Path");
 
-            Profiler.EndSample();
+            //    FindPath(StartPosition.position, EndPosition.position);
 
-            //Profiler.BeginSample("Setup Vector Field");
+            //    Profiler.EndSample();
 
-            //SetupVectorField();
+            //}
 
-            //Profiler.EndSample();
+            //else
+            //{
 
+                Profiler.BeginSample("Setup Vector Field");
+
+                SetupVectorField();
+
+                Profiler.EndSample();
+
+            //}
             //draw grid every function if gizmos are enabled
             DrawGridJobPlaying drawGrid = new DrawGridJobPlaying();
             drawGrid.setupData = setupData;
             drawGrid.builder = DrawingManager.GetBuilder();
             drawGrid.nodes = nodes;
-            drawGrid.drawLabels = drawLabels;
+            drawGrid.drawLabels = drawIndexLabels;
             drawGrid.Schedule(setupData.rows * setupData.columns, 1).Complete();
             //drawGrid.Schedule(setupData.rows, SystemInfo.processorCount).Complete();
 
@@ -194,6 +206,13 @@ namespace ShepProject
                 overlapCommands.Dispose();
                 overlapResults.Dispose();
             }
+
+            openNodeDifficulties.Dispose();
+            closedNodes.Dispose();
+            openNodeKeys.Dispose();
+            fCostKeys.Dispose();
+            finalPathIndices.Dispose();
+
         }
 
         #region Setting Up Grid
@@ -305,6 +324,12 @@ namespace ShepProject
             job.columns = currentColumns;
             job.rows = currentRows;
             job.nodeLength = currentNodeLength;
+            job.scalar = 100;
+            job.drawNodeInfo = drawNodeInfo;
+            job.startNodeIndex = GetNodeIndexFromPosition(StartPosition.position);
+            job.endNodeIndex = GetNodeIndexFromPosition(EndPosition.position);
+
+
             job.Schedule().Complete();
 
             job.builder.Dispose();
@@ -313,331 +338,337 @@ namespace ShepProject
 
 
 
-        private void FindPath(float3 start, float3 end)
-        {
+        //private void FindPath(float3 start, float3 end)
+        //{
 
 
-            Profiler.BeginSample("Get Node Index From Position");
+        //    Profiler.BeginSample("Get Node Index From Position");
 
-            int startNodeIndex = GetNodeIndexFromPosition(start);
-            int endNodeIndex = GetNodeIndexFromPosition(end);
+        //    int startNodeIndex = GetNodeIndexFromPosition(start);
+        //    int endNodeIndex = GetNodeIndexFromPosition(end);
 
-            Profiler.EndSample();
+        //    Profiler.EndSample();
 
-            int scalar = 1000;
-            PathNode currentNode = new PathNode();
-            currentNode.index = startNodeIndex;
-            currentNode.hCost = math.distance(nodes[startNodeIndex].position,
-                nodes[endNodeIndex].position);
+        //    int scalar = 1000;
+        //    PathNode currentNode = new PathNode();
+        //    currentNode.index = startNodeIndex;
+        //    currentNode.hCost = math.distance(nodes[startNodeIndex].position,
+        //        nodes[endNodeIndex].position);
 
-            #region A* Version 2
+        //    #region A* Version 2
 
-            Profiler.BeginSample("Allocation");
+        //    Profiler.BeginSample("Allocation");
 
-            NativeParallelMultiHashMap<int, PathNode> openNodeDifficulties 
-                = new NativeParallelMultiHashMap<int, PathNode>(500, Allocator.Temp);
+        //    NativeParallelMultiHashMap<int, PathNode> openNodeDifficulties 
+        //        = new NativeParallelMultiHashMap<int, PathNode>(500, Allocator.Temp);
 
-            NativeParallelMultiHashMapIterator<int> it;
+        //    NativeParallelMultiHashMapIterator<int> it;
 
-            NativeParallelHashMap<int, int> openNodeKeys 
-                = new NativeParallelHashMap<int, int>(500, Allocator.Temp);
+        //    NativeParallelHashMap<int, int> openNodeKeys 
+        //        = new NativeParallelHashMap<int, int>(500, Allocator.Temp);
 
-            NativeList<int> fCostKeys = new NativeList<int>(500, Allocator.Temp);
+        //    NativeList<int> fCostKeys = new NativeList<int>(500, Allocator.Temp);
 
-            NativeParallelHashMap<int, PathNode> closedNodes = new NativeParallelHashMap<int, PathNode>(500, Allocator.Temp);
+        //    NativeParallelHashMap<int, PathNode> closedNodes = new NativeParallelHashMap<int, PathNode>(500, Allocator.Temp);
 
-            Profiler.EndSample();
+        //    Profiler.EndSample();
 
-            openNodeDifficulties.Add((int)(currentNode.FCost * scalar), currentNode);
-            openNodeKeys.Add(currentNode.index, 0);
+        //    openNodeDifficulties.Add((int)(currentNode.FCost * scalar), currentNode);
+        //    openNodeKeys.Add(currentNode.index, 0);
 
-            fCostKeys.Add((int)(currentNode.FCost * scalar));
-
-
-            int outDifficultyKey;
-            PathNode checkNode = new PathNode();
-            int minKeyCost = int.MaxValue;
-            int minKeyCostIndex = 0;
-            int searched = 0;
-
-            Profiler.BeginSample("Checking Nodes");
-
-            while (currentNode.index != endNodeIndex)
-            {
-
-                minKeyCostIndex = 0;
-                minKeyCost = int.MaxValue;
+        //    fCostKeys.Add((int)(currentNode.FCost * scalar));
 
 
-                Profiler.BeginSample("Check FCosts");
+        //    int outDifficultyKey;
+        //    PathNode checkNode = new PathNode();
+        //    int minKeyCost = int.MaxValue;
+        //    int minKeyCostIndex = 0;
+        //    int searched = 0;
 
-                for (int i = 0; i < fCostKeys.Length; i++)
-                {
-                    if (fCostKeys[i] < minKeyCost)
-                    {
-                        minKeyCost = fCostKeys[i];
-                        minKeyCostIndex = i;
-                    }
+        //    Profiler.BeginSample("Checking Nodes");
 
-                }
+        //    while (currentNode.index != endNodeIndex)
+        //    {
 
-                Profiler.EndSample();
-
-                if (!openNodeDifficulties.TryGetFirstValue(minKeyCost, out currentNode, out it))
-                {
+        //        minKeyCostIndex = 0;
+        //        minKeyCost = int.MaxValue;
 
 
-                    fCostKeys.RemoveAt(minKeyCostIndex);
+        //        Profiler.BeginSample("Check FCosts");
+
+        //        for (int i = 0; i < fCostKeys.Length; i++)
+        //        {
+        //            if (fCostKeys[i] < minKeyCost)
+        //            {
+        //                minKeyCost = fCostKeys[i];
+        //                minKeyCostIndex = i;
+        //            }
+
+        //        }
+
+        //        Profiler.EndSample();
+
+        //        if (!openNodeDifficulties.TryGetFirstValue(minKeyCost, out currentNode, out it))
+        //        {
+
+
+        //            fCostKeys.RemoveAt(minKeyCostIndex);
                     
 
-                    continue;
-                }
+        //            continue;
+        //        }
 
 
-                //has a new currentNode, remove it from open nodes, add it to closed nodes, then check neighbors
+        //        //has a new currentNode, remove it from open nodes, add it to closed nodes, then check neighbors
 
-                closedNodes.Add(currentNode.index, currentNode);
-                openNodeKeys.Remove(currentNode.index);
-                openNodeDifficulties.Remove((int)(currentNode.FCost * scalar), currentNode);
+        //        closedNodes.Add(currentNode.index, currentNode);
+        //        openNodeKeys.Remove(currentNode.index);
+        //        openNodeDifficulties.Remove((int)(currentNode.FCost * scalar), currentNode);
 
-                Profiler.BeginSample("Check Neighbors");
+        //        Profiler.BeginSample("Check Neighbors");
 
-                if (currentNode.index % currentColumns > 0)
-                {
-                    //check left node
-                    CheckNeighborNode(currentNode.index - 1);
-                }
+        //        if (currentNode.index % currentColumns > 0)
+        //        {
+        //            //check left node
+        //            CheckNeighborNode(currentNode.index - 1);
+        //        }
 
-                if (currentNode.index % (currentColumns) != currentColumns - 1 && currentNode.index != endNodeIndex)
-                {    //check right node
-                    CheckNeighborNode(currentNode.index + 1);
-                }
-                if ((currentNode.index + currentColumns) < (currentRows * (currentColumns)) 
-                    && currentNode.index != endNodeIndex)
-                {
-                    //check node above
-                    CheckNeighborNode(currentNode.index + currentColumns);
-                }
+        //        if (currentNode.index % (currentColumns) != currentColumns - 1 
+        //            && currentNode.index != endNodeIndex)
+        //        {    //check right node
+        //            CheckNeighborNode(currentNode.index + 1);
+        //        }
+        //        if ((currentNode.index + currentColumns) < (currentRows * (currentColumns)) 
+        //            && currentNode.index != endNodeIndex)
+        //        {
+        //            //check node above
+        //            CheckNeighborNode(currentNode.index + currentColumns);
+        //        }
 
-                if ((currentNode.index - currentColumns) > 0 && currentNode.index != endNodeIndex)
-                {
-                    //check node below
-                    CheckNeighborNode(currentNode.index - currentColumns);
-                }
+        //        if ((currentNode.index - currentColumns) > 0 
+        //            && currentNode.index != endNodeIndex)
+        //        {
+        //            //check node below
+        //            CheckNeighborNode(currentNode.index - currentColumns);
+        //        }
 
 
-                Profiler.EndSample();
+        //        Profiler.EndSample();
 
 
 
-                void CheckNeighborNode(int index)
-                {
+        //        void CheckNeighborNode(int index)
+        //        {
 
-                    if (index < 0 || index >= nodes.Length)
-                    {
-                        Debug.LogError("Index out of range");
-                        return;
-                    }
+        //            if (index < 0 || index >= nodes.Length)
+        //            {
+        //                Debug.LogError("Index out of range");
+        //                return;
+        //            }
 
-                    if (closedNodes.ContainsKey(index))
-                    {
-                        return;
-                    }
+        //            if (closedNodes.ContainsKey(index))
+        //            {
+        //                return;
+        //            }
 
-                    if (!nodes[index].walkable)
-                    {
+        //            if (!nodes[index].walkable)
+        //            {
 
-                        closedNodes.Add(index, new PathNode() { index = index });
-                        return;
-                    }
+        //                closedNodes.Add(index, new PathNode() { index = index });
+        //                return;
+        //            }
 
-                    searched++;
-                    Profiler.BeginSample("Set up neighbor node");
+        //            searched++;
+        //            Profiler.BeginSample("Set up neighbor node");
 
-                    PathNode neighborNode = new PathNode();
-                    neighborNode.parentIndex = currentNode.index;
-                    neighborNode.index = index;
-                    neighborNode.gCost = math.distance(nodes[index].position, nodes[startNodeIndex].position);
-                    neighborNode.hCost = math.distance(nodes[index].position, nodes[endNodeIndex].position);
+        //            PathNode neighborNode = new PathNode();
+        //            neighborNode.parentIndex = currentNode.index;
+        //            neighborNode.index = index;
+        //            neighborNode.gCost = math.distance(nodes[index].position, nodes[startNodeIndex].position);
+        //            neighborNode.hCost = math.distance(nodes[index].position, nodes[endNodeIndex].position);
 
-                    Profiler.EndSample();
+        //            Profiler.EndSample();
 
 
-                    #region Draw Neighbor Node Info
+        //            #region Draw Neighbor Node Info
 
-                    Profiler.BeginSample("Neighbor Node Info");
+        //            if (drawNodeInfo)
+        //            {
 
-                    float3 poss = new float3(nodes[index].position.x, 0, nodes[index].position.y);
+        //                Profiler.BeginSample("Neighbor Node Info");
 
-                    //Draw.Label2D(setupData.origin + poss - new float3(currentNodeLength / 4f, 0, 0),
-                    //    "Searched: " + searched + "\nHCost: " + neighborNode.hCost + "\nGCost: " + neighborNode.gCost + "\nFCost: " + neighborNode.FCost,
-                    //    10, Color.black);
+        //                float3 poss = new float3(nodes[index].position.x, 0, nodes[index].position.y);
 
+        //                Draw.Label2D(setupData.origin + poss - new float3(currentNodeLength / 4f, 0, 0),
+        //                    "Searched: " + searched + "\nHCost: " + neighborNode.hCost + "\nGCost: " + neighborNode.gCost + "\nFCost: " + neighborNode.FCost,
+        //                    12, Color.black);
 
-                    Profiler.EndSample();
 
-                    #endregion
+        //                Profiler.EndSample();
 
+        //            }
+        //            #endregion
 
 
-                    if (neighborNode.index == endNodeIndex)
-                    {
-                        currentNode = neighborNode;
-                    }
 
-                    if (openNodeKeys.TryGetValue(index, out outDifficultyKey))
-                    {
-                        if (openNodeDifficulties.TryGetFirstValue(outDifficultyKey, out checkNode, out it))
-                        {
-                            while (!checkNode.Equals(neighborNode))
-                            {
-                                openNodeDifficulties.TryGetNextValue(out checkNode, ref it);
+        //            if (neighborNode.index == endNodeIndex)
+        //            {
+        //                currentNode = neighborNode;
+        //            }
 
-                            }
+        //            if (openNodeKeys.TryGetValue(index, out outDifficultyKey))
+        //            {
+        //                if (openNodeDifficulties.TryGetFirstValue(outDifficultyKey, out checkNode, out it))
+        //                {
+        //                    while (!checkNode.Equals(neighborNode))
+        //                    {
+        //                        openNodeDifficulties.TryGetNextValue(out checkNode, ref it);
 
-                            if (checkNode.hCost < neighborNode.hCost)
-                            {
+        //                    }
 
-                                openNodeDifficulties.SetValue(checkNode, it);
-                                openNodeKeys[checkNode.index] = (int)(checkNode.FCost * scalar);
-                            }
+        //                    if (checkNode.hCost < neighborNode.hCost)
+        //                    {
 
-                        }
+        //                        openNodeDifficulties.SetValue(checkNode, it);
+        //                        openNodeKeys[checkNode.index] = (int)(checkNode.FCost * scalar);
+        //                    }
 
-                    }
-                    else
-                    {
+        //                }
 
-                        openNodeDifficulties.Add((int)(neighborNode.FCost * scalar), neighborNode);
-                        openNodeKeys.Add(neighborNode.index, (int)(neighborNode.FCost * scalar));
-                        if (!fCostKeys.Contains((int)(neighborNode.FCost * scalar)))
-                        {
-                            fCostKeys.Add((int)(neighborNode.FCost * scalar));
-                        }
+        //            }
+        //            else
+        //            {
 
-                    }
+        //                openNodeDifficulties.Add((int)(neighborNode.FCost * scalar), neighborNode);
+        //                openNodeKeys.Add(neighborNode.index, (int)(neighborNode.FCost * scalar));
+        //                if (!fCostKeys.Contains((int)(neighborNode.FCost * scalar)))
+        //                {
+        //                    fCostKeys.Add((int)(neighborNode.FCost * scalar));
+        //                }
 
+        //            }
 
 
-                }
 
+        //        }
 
-            }
 
-            Profiler.EndSample();
+        //    }
 
+        //    Profiler.EndSample();
 
-            Profiler.BeginSample("Trace Path");
 
-            NativeArray<int> indices = new NativeArray<int>(1000, Allocator.Temp);
+        //    Profiler.BeginSample("Trace Path");
 
-            int j = 0;
-            while (currentNode.index != startNodeIndex)
-            {
-                indices[j] = currentNode.index;
+        //    NativeArray<int> indices = new NativeArray<int>(1000, Allocator.Temp);
 
-                closedNodes.TryGetValue(currentNode.parentIndex, out currentNode);
-                j++;
+        //    int j = 0;
+        //    while (currentNode.index != startNodeIndex)
+        //    {
+        //        indices[j] = currentNode.index;
 
-            }
-            indices[j] = currentNode.index;
-            j++;
+        //        closedNodes.TryGetValue(currentNode.parentIndex, out currentNode);
+        //        j++;
 
-            Profiler.EndSample();
+        //    }
+        //    indices[j] = currentNode.index;
+        //    j++;
 
-            //draw final path
+        //    Profiler.EndSample();
 
-            #region Draw Searched Nodes
+        //    //draw final path
 
-            Profiler.BeginSample("Draw Closed Nodes");
+        //    #region Draw Searched Nodes
 
-            NativeArray<PathNode> searchedNodes = closedNodes.GetValueArray(Allocator.Temp);
+        //    Profiler.BeginSample("Draw Closed Nodes");
 
-            float3 position = new float3();
-            for (int k = 0; k < searchedNodes.Length; k++)
-            {
+        //    NativeArray<PathNode> searchedNodes = closedNodes.GetValueArray(Allocator.Temp);
 
-                if (finalPathIndices.Contains(searchedNodes[k].index))
-                    continue;
+        //    float3 position = new float3();
+        //    for (int k = 0; k < searchedNodes.Length; k++)
+        //    {
 
-                position.x = nodes[searchedNodes[k].index].position.x;
-                position.z = nodes[searchedNodes[k].index].position.y;
-                position += setupData.origin;
+        //        if (finalPathIndices.Contains(searchedNodes[k].index))
+        //            continue;
 
-                Draw.SolidPlane(position, new float3(0, 1, 0),
-                    new float2(currentNodeLength), Color.red);
+        //        position.x = nodes[searchedNodes[k].index].position.x;
+        //        position.z = nodes[searchedNodes[k].index].position.y;
+        //        position += setupData.origin;
 
-            }
+        //        Draw.SolidPlane(position, new float3(0, 1, 0),
+        //            new float2(currentNodeLength), Color.red);
 
+        //    }
 
 
 
-            searchedNodes.Dispose();
 
-            Profiler.EndSample();
+        //    searchedNodes.Dispose();
 
-            Profiler.BeginSample("Draw Closed Nodes");
+        //    Profiler.EndSample();
 
-            NativeArray<PathNode> openSearched = openNodeDifficulties.GetValueArray(Allocator.Temp);
+        //    Profiler.BeginSample("Draw Closed Nodes");
 
-            position = new float3();
-            for (int k = 0; k < openSearched.Length; k++)
-            {
+        //    NativeArray<PathNode> openSearched = openNodeDifficulties.GetValueArray(Allocator.Temp);
 
-                //if (finalPathIndices.Contains(openSearched[k].index))
-                //    continue;
+        //    position = new float3();
+        //    for (int k = 0; k < openSearched.Length; k++)
+        //    {
 
-                position.x = nodes[openSearched[k].index].position.x;
-                position.z = nodes[openSearched[k].index].position.y;
-                position += setupData.origin;
+        //        //if (finalPathIndices.Contains(openSearched[k].index))
+        //        //    continue;
 
-                Draw.SolidPlane(position, new float3(0, 1, 0),
-                    new float2(currentNodeLength), Color.green);
+        //        position.x = nodes[openSearched[k].index].position.x;
+        //        position.z = nodes[openSearched[k].index].position.y;
+        //        position += setupData.origin;
 
-            }
+        //        Draw.SolidPlane(position, new float3(0, 1, 0),
+        //            new float2(currentNodeLength), Color.green);
 
+        //    }
 
 
 
-            openSearched.Dispose();
 
-            Profiler.EndSample();
+        //    openSearched.Dispose();
 
-            #endregion
+        //    Profiler.EndSample();
 
-            #region Draw Final Path
+        //    #endregion
 
-            Profiler.BeginSample("Draw Final Path");
+        //    #region Draw Final Path
 
-            float3 pos = new float3();
-            for (int k = 0; k < j; k++)
-            {
-                pos.x = nodes[indices[k]].position.x;
-                pos.z = nodes[indices[k]].position.y;
-                pos += setupData.origin;
+        //    Profiler.BeginSample("Draw Final Path");
 
-                Drawing.Draw.SolidPlane(pos, new float3(0, 1, 0), new float2(currentNodeLength), Color.cyan);
+        //    float3 pos = new float3();
+        //    for (int k = 0; k < j; k++)
+        //    {
+        //        pos.x = nodes[indices[k]].position.x;
+        //        pos.z = nodes[indices[k]].position.y;
+        //        pos += setupData.origin;
 
-            }
+        //        Drawing.Draw.SolidPlane(pos, new float3(0, 1, 0), new float2(currentNodeLength), Color.cyan);
 
-            Profiler.EndSample();
+        //    }
 
-            #endregion
+        //    Profiler.EndSample();
 
+        //    #endregion
 
 
-            indices.Dispose();
 
-            openNodeDifficulties.Dispose();
-            openNodeKeys.Dispose();
-            fCostKeys.Dispose();
+        //    indices.Dispose();
 
-            closedNodes.Dispose();
+        //    openNodeDifficulties.Dispose();
+        //    openNodeKeys.Dispose();
+        //    fCostKeys.Dispose();
 
+        //    closedNodes.Dispose();
 
-            #endregion
 
-        }
+        //    #endregion
+
+        //}
 
         private bool ContainsInGrid (float3 position)
         {

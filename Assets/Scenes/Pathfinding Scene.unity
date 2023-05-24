@@ -227,7 +227,9 @@ MonoBehaviour:
       z: -50
     walkableColor: {r: 0, g: 1, b: 1, a: 1}
     unwalkableColor: {r: 0.9716981, g: 0, b: 0, a: 1}
-  drawLabels: 0
+  drawIndexLabels: 0
+  jobPath: 1
+  drawNodeInfo: 0
 --- !u!1 &806884132
 GameObject:
   m_ObjectHideFlags: 0
@@ -326,7 +328,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 806884132}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 47.8, y: 0, z: 49}
+  m_LocalPosition: {x: 84.19, y: 0, z: 49.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -789,7 +791,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6650411006120834888, guid: 35e90162d272bb545a7bd77c32fec0af, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8255138682213042530, guid: 35e90162d272bb545a7bd77c32fec0af, type: 3}
       propertyPath: m_RootOrder
@@ -1007,7 +1009,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1952974600}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -70.96, y: 0, z: -46.76}
+  m_LocalPosition: {x: 12, y: 0, z: -49}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
