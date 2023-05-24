@@ -23,6 +23,14 @@ namespace ShepProject
 
     }
 
+    public enum NodeDirection
+    {
+        Left = 1, TopLeft, Top, TopRight, Right, BottomRight, Bottom, BottomLeft, NoMovement
+
+    }
+
+
+
     [System.Serializable]
     public struct PathNode : IComparable<PathNode>, IEquatable<PathNode>
     {
@@ -32,6 +40,8 @@ namespace ShepProject
         public float gCost;
         public float hCost;
         public float FCost => gCost + hCost;
+
+        public byte direction;
 
         public int CompareTo(PathNode other)
         {

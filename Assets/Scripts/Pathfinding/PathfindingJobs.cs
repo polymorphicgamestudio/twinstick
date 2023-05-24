@@ -205,6 +205,9 @@ namespace ShepProject
 
             if (overlapResults[index].instanceID != 0)
             {
+                //if collider is to the right, then set right connection
+                //if collider continue top right, 
+
                 node.walkable = false;
             }
             else
@@ -240,8 +243,9 @@ namespace ShepProject
         public NativeParallelHashMap<int, int> openNodeKeys;
 
         public NativeList<int> fCostKeys;
-
-        public NativeList<int> finalPathIndices;
+        public NativeArray<PathNode> finalPathIndices;
+        public NativeArray<byte> vectorField;
+        public NativeArray<bool> vectorPathsFilled;
 
         NativeParallelMultiHashMapIterator<int> it;
 
@@ -258,6 +262,7 @@ namespace ShepProject
         public int endNodeIndex;
 
         int searched;
+        int pathLength;
 
         public void Execute()
         {
@@ -267,7 +272,125 @@ namespace ShepProject
 
             FindPath(startNodeIndex, endNodeIndex);
 
-            //trace that back
+            //bool allFilledIn = true;
+            //do
+            //{
+            //    pathLength = 0;
+            //    FindPath(startNodeIndex, endNodeIndex);
+
+            //    //read from finalPathIndices and update data
+
+
+            //    for (int i = 0; i < pathLength; i++)
+            //    {
+            //        //starts with end node, so for both directions on the path
+            //        //need to set every node in the chain of that path
+            //        //ex node 5 of path needs to have all nodes, 1,2,3,4,6,7,8,9 all set
+
+            //        //ends up being n^2 operations :(
+            //        for (int j = 0; j < pathLength; j++)
+            //        {
+            //            //if the node that is being set is the same node
+            //            //that we're setting for
+            //            if (i == j)
+            //            {
+
+            //                //set it to a value that signifies that there is no direction
+            //                vectorField[i * (columns * rows) + finalPathIndices[j].index] = (int)NodeDirection.NoMovement;
+            //                continue;
+
+
+            //            }
+
+
+
+            //            //vectorField[i * (columns * rows) + finalPathIndices[j].index] = finalPathIndices[i + 1].direction;
+
+            //            if (j < i)
+            //            {
+
+            //                //if its before it in the path, it needs the direction reversed
+            //                //which just needs to be direction - 4 to get opposite for enum
+
+            //                vectorField[i * (columns * rows) + finalPathIndices[j].index]
+            //                    = (byte)(finalPathIndices[i - 1].direction - 4);
+
+            //            }
+            //            else
+            //            {
+
+            //                //this is for after in the path
+            //                vectorField[i * (columns * rows) + finalPathIndices[j].index] = finalPathIndices[i + 1].direction;
+            //            }
+            //        }
+
+
+
+            //    }
+
+
+
+            //    //after this need to check which ones don't have paths and then queue up a new path
+            //    //try and get furthest ones away first
+
+            //    allFilledIn = true;
+            //    for (int i = 0; i < nodes.Length; i++)
+            //    {
+            //        //first one found that doesn't have everything filled in
+
+            //        // check its "full" variable which is after every single actual field,
+            //        // will be 255 to show that it has no empty spots
+            //        if (AllPathsFilledIn(i))
+            //        {
+
+            //            continue;
+                    
+            //        }
+
+            //        startNodeIndex = i;
+            //        allFilledIn = false;
+
+            //        for (int j = nodes.Length - 1; j >= 0; j--)
+            //        {
+            //            //most closest one to the end that doesn't have this current node filled in
+                        
+            //            //then set start and end node paths and rerun the loop
+
+            //            //then this will continue until all nodes have all paths
+
+            //            //
+            //            if (CurrentNodeFilledIn(i, j))
+            //            {
+            //                continue;
+            //            }
+
+            //            endNodeIndex = j;
+
+            //            if (startNodeIndex == endNodeIndex)
+            //            {
+            //                Debug.LogError("StartNodeIndex and EndNodeIndex are the same.");
+            //            }
+
+
+
+            //            break;
+
+            //        }
+
+            //        break;
+
+
+            //    }
+
+
+            //    openNodeDifficulties.Clear();
+            //    closedNodes.Clear();
+            //    openNodeKeys.Clear();
+            //    fCostKeys.Clear();
+
+            //    //trace that back
+            //} while (!allFilledIn);
+
 
 
         }
@@ -280,6 +403,9 @@ namespace ShepProject
             currentNode.index = startNodeIndex;
             currentNode.gCost = 0;
             currentNode.hCost = math.distance(nodes[startNodeIndex].position, nodes[endNodeIndex].position);
+
+            float orthagonalCost = 1;
+            float diagonalCost = math.SQRT2;
 
             //need to change this to just choose a correct node in a corner
             openNodeDifficulties.Add((int)(currentNode.FCost * scalar), currentNode);
@@ -333,18 +459,21 @@ namespace ShepProject
                 if (currentNode.index % columns > 0)
                 {
                     //check left node
-                    CheckNeighborNode(currentNode.index - 1, ref currentNode, 1);//, startNodeIndex, endNodeIndex);
+                    CheckNeighborNode(currentNode.index - 1, 
+                        ref currentNode, orthagonalCost, (byte)NodeDirection.Left);
 
                     if (currentNode.index + columns - 1 < nodes.Length)
                     {
                         //top left
-                        CheckNeighborNode((currentNode.index + columns - 1), ref currentNode, math.SQRT2);//, startNodeIndex, endNodeIndex);
+                        CheckNeighborNode((currentNode.index + columns - 1),
+                            ref currentNode, diagonalCost, (byte)NodeDirection.TopLeft);
                     }
 
                     if ((currentNode.index - columns) - 1 >= 0)
                     {
                         //bottom left
-                        CheckNeighborNode(((currentNode.index - columns) - 1), ref currentNode, math.SQRT2);//, startNodeIndex, endNodeIndex);
+                        CheckNeighborNode(((currentNode.index - columns) - 1), 
+                            ref currentNode, diagonalCost, (byte)NodeDirection.BottomLeft);
 
                     }
 
@@ -352,19 +481,22 @@ namespace ShepProject
                 if (currentNode.index % (columns) != columns - 1 && currentNode.index != endNodeIndex)
                 {
                     //check right node
-                    CheckNeighborNode(currentNode.index + 1, ref currentNode, 1);//, startNodeIndex, endNodeIndex);
+                    CheckNeighborNode(currentNode.index + 1, 
+                        ref currentNode, orthagonalCost, (byte)NodeDirection.Right);
 
                     if (currentNode.index + columns + 1 < nodes.Length)
                     {
                         //top right
-                        CheckNeighborNode((currentNode.index + columns + 1), ref currentNode, math.SQRT2);//, startNodeIndex, endNodeIndex);
+                        CheckNeighborNode((currentNode.index + columns + 1), 
+                            ref currentNode, diagonalCost, (byte)NodeDirection.TopRight);
 
                     }
 
                     if ((currentNode.index - columns) + 1 >= 0)
                     {
                         //bottom right
-                        CheckNeighborNode(((currentNode.index - columns) + 1), ref currentNode, math.SQRT2);//, startNodeIndex, endNodeIndex);
+                        CheckNeighborNode(((currentNode.index - columns) + 1),
+                            ref currentNode, diagonalCost, (byte)NodeDirection.BottomRight);
 
                     }
 
@@ -374,13 +506,15 @@ namespace ShepProject
                 if ((currentNode.index + columns) < (rows * (columns)) && currentNode.index != endNodeIndex)
                 {
                     //check node above
-                    CheckNeighborNode(currentNode.index + columns, ref currentNode, 1);//, startNodeIndex, endNodeIndex);
+                    CheckNeighborNode(currentNode.index + columns, 
+                        ref currentNode, orthagonalCost, (byte)NodeDirection.Top);
                 }
 
                 if ((currentNode.index - columns) >= 0 && currentNode.index != endNodeIndex)
                 {
                     //check node below
-                    CheckNeighborNode(currentNode.index - columns, ref currentNode, 1);//, startNodeIndex, endNodeIndex);
+                    CheckNeighborNode(currentNode.index - columns, 
+                        ref currentNode, orthagonalCost, (byte)NodeDirection.Bottom);
                 }
 
 
@@ -393,22 +527,22 @@ namespace ShepProject
 
             //Profiler.BeginSample("Trace Path");
 
-            //int j = 0;
+            //int pathLength = 0;
             while (currentNode.index != startNodeIndex)
             {
-                if (finalPathIndices.Length == finalPathIndices.Capacity - 1)
+                if (pathLength == finalPathIndices.Length - 1)
                 {
                     break;
                 }
 
-                finalPathIndices.AddNoResize(currentNode.index);
+                finalPathIndices[pathLength] = currentNode;
 
                 closedNodes.TryGetValue(currentNode.parentIndex, out currentNode);
-                //j++;
+                pathLength++;
 
             }
-            finalPathIndices.AddNoResize(currentNode.index);
-            //j++;
+            finalPathIndices[pathLength] = currentNode;
+            pathLength++;
 
             //Profiler.EndSample();
 
@@ -422,7 +556,7 @@ namespace ShepProject
             for (int k = 0; k < searchedNodes.Length; k++)
             {
 
-                if (finalPathIndices.Contains(searchedNodes[k].index))
+                if (finalPathIndices.Contains(searchedNodes[k]))
                     continue;
 
                 position.x = nodes[searchedNodes[k].index].position.x;
@@ -475,10 +609,10 @@ namespace ShepProject
             Profiler.BeginSample("Draw Final Path");
 
             float3 pos = new float3();
-            for (int k = 0; k < finalPathIndices.Length; k++)
+            for (int k = 0; k < pathLength; k++)
             {
-                pos.x = nodes[finalPathIndices[k]].position.x;
-                pos.z = nodes[finalPathIndices[k]].position.y;
+                pos.x = nodes[finalPathIndices[k].index].position.x;
+                pos.z = nodes[finalPathIndices[k].index].position.y;
                 pos += origin;
 
                 builder.SolidPlane(pos, new float3(0, 1, 0), new float2(nodeLength), Color.cyan);
@@ -498,7 +632,7 @@ namespace ShepProject
         }
 
 
-        void CheckNeighborNode(int index, ref PathNode currentNode, float gCostIncrease)
+        void CheckNeighborNode(int index, ref PathNode currentNode, float gCostIncrease, byte direction)
         {
 
             int outDifficultyKey;
@@ -531,25 +665,11 @@ namespace ShepProject
             neighborNode.index = index;
             neighborNode.gCost = currentNode.gCost + gCostIncrease;// math.distance(nodes[index].position, nodes[startNodeIndex].position);
             neighborNode.hCost = math.distance(nodes[index].position, nodes[endNodeIndex].position);
+            neighborNode.direction = direction;
 
             Profiler.EndSample();
 
             searched++;
-            if (drawNodeInfo)
-            {
-
-                Profiler.BeginSample("Neighbor Node Info");
-
-                float3 poss = new float3(nodes[index].position.x, 0, nodes[index].position.y);
-
-                builder.Label2D(origin + poss - new float3(nodeLength / 4f, 0, 0),
-                    "Searched: " + searched + "\nHCost: " + neighborNode.hCost + "\nGCost: " + neighborNode.gCost + "\nFCost: " + neighborNode.FCost,
-                    12, Color.black);
-
-
-                Profiler.EndSample();
-
-            }
 
 
             if (neighborNode.index == endNodeIndex)
@@ -570,6 +690,22 @@ namespace ShepProject
                     if (checkNode.hCost < neighborNode.hCost)
                     {
 
+                        if (drawNodeInfo)
+                        {
+
+                            Profiler.BeginSample("Neighbor Node Info");
+
+                            float3 poss = new float3(nodes[index].position.x, 0, nodes[index].position.y);
+
+                            builder.Label2D(origin + poss - new float3(nodeLength / 4f, 0, 0),
+                                "Searched: " + searched + "\nHCost: " + neighborNode.hCost + "\nGCost: " + neighborNode.gCost + "\nFCost: " + neighborNode.FCost,
+                                12, Color.black);
+
+
+                            Profiler.EndSample();
+
+                        }
+
                         openNodeDifficulties.SetValue(checkNode, it);
                         openNodeKeys[checkNode.index] = (int)(checkNode.FCost * scalar);
                     }
@@ -579,6 +715,23 @@ namespace ShepProject
             }
             else
             {
+
+                if (drawNodeInfo)
+                {
+
+                    Profiler.BeginSample("Neighbor Node Info");
+
+                    float3 poss = new float3(nodes[index].position.x, 0, nodes[index].position.y);
+
+                    builder.Label2D(origin + poss - new float3(nodeLength / 4f, 0, 0),
+                        "Searched: " + searched + "\nHCost: " + neighborNode.hCost + "\nGCost: " + neighborNode.gCost + "\nFCost: " + neighborNode.FCost,
+                        12, Color.black);
+
+
+                    Profiler.EndSample();
+
+                }
+
 
                 openNodeDifficulties.Add((int)(neighborNode.FCost * scalar), neighborNode);
                 openNodeKeys.Add(neighborNode.index, (int)(neighborNode.FCost * scalar));
@@ -592,6 +745,48 @@ namespace ShepProject
 
 
         }
+
+        bool AllPathsFilledIn(int nodeIndex)
+        {
+
+            if (vectorPathsFilled[nodeIndex])
+            {
+                return true;
+            }
+
+            for (int i = 0; i < (columns * rows); i++)
+            {
+
+                if (vectorField[(nodeIndex * (columns * rows)) + i] == 0)
+                {
+                    return false;
+                }
+
+
+            }
+
+            vectorPathsFilled[nodeIndex] = true;
+
+            return true;
+
+        }
+
+        bool CurrentNodeFilledIn(int nodeIndex, int nodeCheckIndex)
+        {
+            if (vectorPathsFilled[nodeIndex])
+            {
+                return true;
+            }
+
+            if (vectorField[nodeIndex * (columns * rows) + nodeCheckIndex] != 0)
+                return true;
+
+            return false;
+
+
+
+        }
+
 
     }
 

@@ -64,8 +64,10 @@ namespace ShepProject
         public NativeParallelHashMap<int, PathNode> closedNodes;
         public NativeParallelHashMap<int, int> openNodeKeys;
         public NativeList<int> fCostKeys;
+        public NativeArray<byte> vectorField;
+        public NativeArray<bool> vectorPathsFilled;
 
-        public NativeList<int> finalPathIndices;
+        public NativeArray<PathNode> finalPathIndices;
 
         [Space(20)]
         public SquareGridSetupData setupData;
@@ -129,9 +131,7 @@ namespace ShepProject
             closedNodes = new NativeParallelHashMap<int, PathNode>(10000, Allocator.Persistent);
             openNodeKeys = new NativeParallelHashMap<int, int>(10000, Allocator.Persistent);
             fCostKeys = new NativeList<int>(10000, Allocator.Persistent);
-            finalPathIndices = new NativeList<int>(10000, Allocator.Persistent);
-
-
+            finalPathIndices = new NativeArray<PathNode>(1000, Allocator.Persistent);
             CreateNodes();
 
 
@@ -161,25 +161,11 @@ namespace ShepProject
             //whenever something is placed on grid or removed, need to update the walkable nodes
             UpdateWalkableNodes();
 
-            //if (!jobPath)
-            //{
+            Profiler.BeginSample("Setup Vector Field");
 
-            //    Profiler.BeginSample("Find Path");
+            SetupVectorField();
 
-            //    FindPath(StartPosition.position, EndPosition.position);
-
-            //    Profiler.EndSample();
-
-            //}
-
-            //else
-            //{
-
-                Profiler.BeginSample("Setup Vector Field");
-
-                SetupVectorField();
-
-                Profiler.EndSample();
+            Profiler.EndSample();
 
             //}
             //draw grid every function if gizmos are enabled
@@ -212,7 +198,7 @@ namespace ShepProject
             openNodeKeys.Dispose();
             fCostKeys.Dispose();
             finalPathIndices.Dispose();
-
+            vectorField.Dispose();
         }
 
         #region Setting Up Grid
@@ -221,7 +207,11 @@ namespace ShepProject
         {
 
             if (nodes.IsCreated)
+            {
                 nodes.Dispose();
+                vectorField.Dispose();
+                vectorPathsFilled.Dispose();
+            }
 
             if (overlapCommands.IsCreated)
             {
@@ -233,12 +223,18 @@ namespace ShepProject
                 return;
 
 
-            nodes = new NativeArray<SquareNode>(setupData.rows * setupData.columns, Allocator.Persistent);
-            overlapCommands = new NativeArray<OverlapBoxCommand>(setupData.rows * setupData.columns, Allocator.Persistent);
-            overlapResults = new NativeArray<ColliderHit>(setupData.rows * setupData.columns, Allocator.Persistent);
             currentRows = setupData.rows;
             currentColumns = setupData.columns;
             currentNodeLength = setupData.nodeLength;
+
+            nodes = new NativeArray<SquareNode>(setupData.rows * setupData.columns, Allocator.Persistent);
+            vectorField = new NativeArray<byte>((int)(math.pow((currentRows * currentColumns), 2)), Allocator.Persistent);
+            vectorPathsFilled = new NativeArray<bool>(currentColumns * currentRows, Allocator.Persistent);
+
+            overlapCommands = new NativeArray<OverlapBoxCommand>(setupData.rows * setupData.columns, Allocator.Persistent);
+            overlapResults = new NativeArray<ColliderHit>(setupData.rows * setupData.columns, Allocator.Persistent);
+
+
 
             CreateNodesJob cnj = new CreateNodesJob();
             cnj.nodes = nodes;
@@ -304,11 +300,20 @@ namespace ShepProject
 
             Profiler.BeginSample("Clear Variables");
 
+            ResetNativeArrayJob<byte> resetJob = new ResetNativeArrayJob<byte>();
+            resetJob.array = vectorField;
+            JobHandle handle = resetJob.Schedule(vectorField.Length, SystemInfo.processorCount);
+
+            ResetNativeArrayJob<bool> resetFields = new ResetNativeArrayJob<bool>();
+            resetFields.array = vectorPathsFilled;
+            JobHandle fieldBools = resetFields.Schedule(vectorPathsFilled.Length, SystemInfo.processorCount);
+
             openNodeDifficulties.Clear();
             closedNodes.Clear();
             openNodeKeys.Clear();
             fCostKeys.Clear();
-            finalPathIndices.Clear();
+
+
 
             Profiler.EndSample();
 
@@ -317,6 +322,9 @@ namespace ShepProject
             job.openNodeDifficulties = openNodeDifficulties;
             job.closedNodes = closedNodes;
             job.openNodeKeys = openNodeKeys;
+            job.vectorField = vectorField;
+            job.vectorPathsFilled = vectorPathsFilled;
+
             job.fCostKeys = fCostKeys;
             job.finalPathIndices = finalPathIndices;
             job.builder = DrawingManager.GetBuilder();
@@ -329,7 +337,12 @@ namespace ShepProject
             job.startNodeIndex = GetNodeIndexFromPosition(StartPosition.position);
             job.endNodeIndex = GetNodeIndexFromPosition(EndPosition.position);
 
+            //complete the reset job
+            handle.Complete();
+            fieldBools.Complete();
 
+
+            //do the vector field setup now
             job.Schedule().Complete();
 
             job.builder.Dispose();
