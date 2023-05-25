@@ -25,11 +25,25 @@ public class BaseTower : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (slimeTarget == null)
+
+
+        if (slimeTarget != null)
+        {
+            if (!slimeTarget.gameObject.activeInHierarchy)
+            {
+                transform.eulerAngles = new Vector3(0, 0, 0);
+                SearchForSlime();
+            }
+
+
+        }
+        else
         {
             transform.eulerAngles = new Vector3(0, 0, 0);
             SearchForSlime();
         }
+
+
 
         currentTimer -= Time.deltaTime;
 
