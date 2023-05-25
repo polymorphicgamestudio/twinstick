@@ -403,6 +403,8 @@ namespace ShepProject {
 
 	public struct WriteTransformsJob : IJobParallelForTransform {
 
+		public GenesArray genes;
+
         [NativeDisableContainerSafetyRestriction]
 		public NativeArray<float2> positions;
 
@@ -410,6 +412,11 @@ namespace ShepProject {
 		public NativeArray<float> rotation;
 
 		public void Execute(int index, TransformAccess transform) {
+
+			if (genes.GetObjectType(index) == ObjectType.Tower)
+			{
+				return;
+			}
 
 			if (!transform.isValid)
 				return;

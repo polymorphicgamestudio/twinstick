@@ -395,6 +395,7 @@ namespace ShepProject {
 
 			WriteTransformsJob wtj = new WriteTransformsJob();
 			wtj.positions = quadTree.positions;
+			wtj.genes = genes;
 			wtj.rotation = headings;
 			wtj.Schedule(quadTree.TransformAccess);
 

@@ -17,6 +17,19 @@ public class BlasterTowerController : BaseTower
     private Vector3 origin;
     private Vector3 endPoint;
 
+    public override void Update()
+    {
+        base.Update();
+
+        //transform.rotation = Quaternion.LookRotation(rotateTarget.position - transform.position);
+
+            //Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(slimeTarget.position), Time.deltaTime * 5);
+
+
+
+    }
+
+
     public override void ShootTurret()
     {
             origin = barrel.position;
