@@ -1,3 +1,4 @@
+using ShepProject;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,11 +24,13 @@ public class FireballController : MonoBehaviour
     {
         if (collider.gameObject.CompareTag("Slime"))
         {
-            Destroy(collider.gameObject);
+            collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Fire);
+            //Destroy(collider.gameObject);
             ParticleSystem exp = Instantiate(explosion, projectile.position, projectile.rotation);
             Destroy(exp.gameObject, 2.0f);
             Destroy(this.gameObject);
         }
+
         if (collider.gameObject.CompareTag("Untagged"))
         {
            Destroy(this.gameObject);
@@ -35,6 +38,7 @@ public class FireballController : MonoBehaviour
            Destroy(exp.gameObject, 2.0f);
 
         }
+
         Destroy(this.gameObject, 2.0f);
     }
 }

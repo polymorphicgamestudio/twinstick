@@ -17,44 +17,34 @@ public class BlasterTowerController : BaseTower
     private Vector3 origin;
     private Vector3 endPoint;
 
-    public static float timeBetweenShots = 2.0f;
-
-    private void Start()
+    public override void ShootTurret()
     {
-        InvokeRepeating("ShootTurret", timeBetweenShots, timeBetweenShots);
-    }
+            origin = barrel.position;
+            endPoint = slimeTarget.position;
 
-    public void ShootTurret()
-    {
-        //if (BaseTower.slimeTarget != null)
-        //{
-        //    origin = barrel.position;
-        //    endPoint = BaseTower.slimeTarget.position;
+            Vector3 dir = endPoint - origin;
+            dir.Normalize();
+            RaycastHit hit;
 
-        //    Vector3 dir = endPoint - origin;
-        //    dir.Normalize();
-        //    RaycastHit hit;
+            if (Physics.Raycast(origin, dir, out hit))
+            {
+                endPoint = hit.point;
+                if (hit.collider.gameObject.CompareTag("Slime"))
+                {
+                    hit.collider.gameObject.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Blaster);
+                    //Destroy(hit.collider.gameObject);
+                }
+            }
+            beam.SetPosition(0, origin);
+            beam.SetPosition(1, endPoint);
 
-        //    if (Physics.Raycast(origin, dir, out hit))
-        //    {
-        //        endPoint = hit.point;
-        //        if (hit.collider.gameObject.CompareTag("Slime"))
-        //        {
-        //            Destroy(hit.collider.gameObject);
-        //        }
-        //    }
-        //    beam.SetPosition(0, origin);
-        //    beam.SetPosition(1, endPoint);
+            ParticleSystem exp = Instantiate(shoot, origin, barrel.rotation);
+            shoot.gameObject.SetActive(true);
+            beam.enabled = true;
+            beam.gameObject.SetActive(true);
 
-        //    ParticleSystem exp = Instantiate(shoot, origin, barrel.rotation);
-        //    shoot.gameObject.SetActive(true);
-        //    beam.enabled = true;
-        //    beam.gameObject.SetActive(true);
-
-        //    StartCoroutine(WaitForATenthSecond());
-        //    Destroy(exp.gameObject, 0.1f);
-        //}
-
+            StartCoroutine(WaitForATenthSecond());
+            Destroy(exp.gameObject, 0.1f);
     }
 
     IEnumerator WaitForATenthSecond()

@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
 public class bombController : MonoBehaviour
 {
     //public ParticleSystem exp;
@@ -28,12 +26,12 @@ public class bombController : MonoBehaviour
     {
         if (collider.gameObject.CompareTag("Slime"))
         {
-
             collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Acid);
             //Destroy(collider.gameObject);
             ParticleSystem exp = Instantiate(explosion, projectile.position, projectile.rotation);
             Destroy(exp.gameObject, 2.0f);
         }
+
         if (collider.gameObject.CompareTag("Untagged"))
         {
             Destroy(this.gameObject);

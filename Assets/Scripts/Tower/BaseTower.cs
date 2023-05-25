@@ -29,10 +29,6 @@ public class BaseTower : MonoBehaviour
         {
             tower.eulerAngles = new Vector3(0, 0, 0);
             SearchForSlime();
-            //if (slimeTarget != null)
-            //{
-            //    slimebool = true;
-            //}
         }
 
         currentTimer -= Time.deltaTime;
@@ -48,13 +44,9 @@ public class BaseTower : MonoBehaviour
             tower.rotation = Quaternion.LookRotation(newDirection);
 
             ShootTurret();
-
-            //if (Vector3.Distance(this.transform.position, slimeTarget.position) > maxDist)
-            //{
-            //    slimebool = false;
-            //}
         }
     }
+
 
 
     public void SearchForSlime()
