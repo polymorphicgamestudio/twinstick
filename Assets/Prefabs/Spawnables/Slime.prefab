@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 7042924763108279681}
   - component: {fileID: 416519773544405897}
   - component: {fileID: 1925384818789691346}
-  - component: {fileID: 6074740546842573170}
   - component: {fileID: 6434790223890336880}
   - component: {fileID: 27624417778204221}
+  - component: {fileID: 2720291396963450576}
   m_Layer: 0
   m_Name: Slime
   m_TagString: Slime
@@ -35,7 +35,7 @@ Transform:
   m_Children:
   - {fileID: 5111066874988098475}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &416519773544405897
 MeshFilter:
@@ -87,27 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &6074740546842573170
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 933172237099427879}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.4
-  m_Center: {x: 0, y: 0.55, z: 0}
 --- !u!54 &6434790223890336880
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -149,6 +128,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyID: -1
   rb: {fileID: 6434790223890336880}
+--- !u!136 &2720291396963450576
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933172237099427879}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.4
+  m_Height: 1.3
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.49406, z: -0.027274996}
 --- !u!1 &7289019829065627466
 GameObject:
   m_ObjectHideFlags: 0
