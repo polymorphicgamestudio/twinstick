@@ -26,13 +26,13 @@ public class IceTowerController : MonoBehaviour
 
     void ShootTurret()
     {
-        if (BaseTower.slimebool == true)
-        {
-                ParticleSystem exp = Instantiate(shoot, barrel.position, positions.rotation);
-                playing = true;
-                Destroy(exp.gameObject, iceDuration);
-                StartCoroutine(WaitForThreeSeconds());
-        }
+        //if (BaseTower.slimebool == true)
+        //{
+        //        ParticleSystem exp = Instantiate(shoot, barrel.position, positions.rotation);
+        //        playing = true;
+        //        Destroy(exp.gameObject, iceDuration);
+        //        StartCoroutine(WaitForThreeSeconds());
+        //}
     }
 
 

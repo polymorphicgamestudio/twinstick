@@ -168,15 +168,15 @@ namespace ShepProject {
 
 		public float GetHealth(int id)
 		{
-			//int index = IDTypeIndex(id) + (int)GeneGroups.Health;
+			int index = IDTypeIndex(id) + (int)GeneGroups.Health;
 
-			return 0;// genes[index];
+			return genes[index];
 		}
 
 		public void SetHealth (int id, float value)
 		{
-			//int index = IDTypeIndex(id) + (int)GeneGroups.Health;
-			//genes[index] = value;
+			int index = IDTypeIndex(id) + (int)GeneGroups.Health;
+			genes[index] = value;
 
 		}
 

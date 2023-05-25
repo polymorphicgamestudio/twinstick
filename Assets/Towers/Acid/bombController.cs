@@ -1,3 +1,4 @@
+using ShepProject;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,7 +28,9 @@ public class bombController : MonoBehaviour
     {
         if (collider.gameObject.CompareTag("Slime"))
         {
-            Destroy(collider.gameObject);
+
+            collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Acid);
+            //Destroy(collider.gameObject);
             ParticleSystem exp = Instantiate(explosion, projectile.position, projectile.rotation);
             Destroy(exp.gameObject, 2.0f);
         }

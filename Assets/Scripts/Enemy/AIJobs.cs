@@ -13,6 +13,8 @@ using static System.Collections.Specialized.BitVector32;
 namespace ShepProject {
 
 
+
+
 	public struct ChooseTargetJob : IJobParallelFor {
 
 		[NativeDisableContainerSafetyRestriction]
@@ -61,7 +63,6 @@ namespace ShepProject {
 
 		}
 	}
-
 
     public struct GatherForcesWithinRangeJob : IJobParallelFor
     {
@@ -693,6 +694,6 @@ namespace ShepProject {
     }
 
 }
-
+ 
 
 

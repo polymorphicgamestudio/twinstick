@@ -26,34 +26,34 @@ public class BlasterTowerController : BaseTower
 
     public void ShootTurret()
     {
-        if (BaseTower.slimeTarget != null)
-        {
-            origin = barrel.position;
-            endPoint = BaseTower.slimeTarget.position;
+        //if (BaseTower.slimeTarget != null)
+        //{
+        //    origin = barrel.position;
+        //    endPoint = BaseTower.slimeTarget.position;
 
-            Vector3 dir = endPoint - origin;
-            dir.Normalize();
-            RaycastHit hit;
+        //    Vector3 dir = endPoint - origin;
+        //    dir.Normalize();
+        //    RaycastHit hit;
 
-            if (Physics.Raycast(origin, dir, out hit))
-            {
-                endPoint = hit.point;
-                if (hit.collider.gameObject.CompareTag("Slime"))
-                {
-                    Destroy(hit.collider.gameObject);
-                }
-            }
-            beam.SetPosition(0, origin);
-            beam.SetPosition(1, endPoint);
+        //    if (Physics.Raycast(origin, dir, out hit))
+        //    {
+        //        endPoint = hit.point;
+        //        if (hit.collider.gameObject.CompareTag("Slime"))
+        //        {
+        //            Destroy(hit.collider.gameObject);
+        //        }
+        //    }
+        //    beam.SetPosition(0, origin);
+        //    beam.SetPosition(1, endPoint);
 
-            ParticleSystem exp = Instantiate(shoot, origin, barrel.rotation);
-            shoot.gameObject.SetActive(true);
-            beam.enabled = true;
-            beam.gameObject.SetActive(true);
+        //    ParticleSystem exp = Instantiate(shoot, origin, barrel.rotation);
+        //    shoot.gameObject.SetActive(true);
+        //    beam.enabled = true;
+        //    beam.gameObject.SetActive(true);
 
-            StartCoroutine(WaitForATenthSecond());
-            Destroy(exp.gameObject, 0.1f);
-        }
+        //    StartCoroutine(WaitForATenthSecond());
+        //    Destroy(exp.gameObject, 0.1f);
+        //}
 
     }
 

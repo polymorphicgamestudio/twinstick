@@ -24,10 +24,10 @@ public class FireTowerController : MonoBehaviour
 
     void ShootTurret()
     {
-        if (BaseTower.slimebool == true) {
-            shoot.Play();
-            var BulletBody = (Rigidbody)Instantiate(bombPrefab, barrel.position, Quaternion.identity);
-            BulletBody.velocity = barrel.forward * bombSpeed;
-        }
+        //if (BaseTower.slimebool == true) {
+        //    shoot.Play();
+        //    var BulletBody = (Rigidbody)Instantiate(bombPrefab, barrel.position, Quaternion.identity);
+        //    BulletBody.velocity = barrel.forward * bombSpeed;
+        //}
     }
 }

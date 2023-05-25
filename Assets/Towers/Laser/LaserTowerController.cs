@@ -32,37 +32,37 @@ public class LaserTowerController : MonoBehaviour
 
     void ShootTurret()
     {
-        if (BaseTower.slimebool == true)
-        {
-            origin = barrel.position;
-            endPoint = BaseTower.slimeTarget.position;
+        //if (BaseTower.slimebool == true)
+        //{
+        //    origin = barrel.position;
+        //    //endPoint = BaseTower.slimeTarget.position;
 
-            Vector3 dir = endPoint - origin;
-            dir.Normalize();
-            RaycastHit hit;
+        //    Vector3 dir = endPoint - origin;
+        //    dir.Normalize();
+        //    RaycastHit hit;
 
-            if (Physics.Raycast(origin, dir, out hit))
-            {
-                endPoint = hit.point;
-                if (hit.collider.gameObject.CompareTag("Slime"))
-                {
-                    Destroy(hit.collider.gameObject);
-                }
-            }
-            beam.SetPosition(0, origin);
-            beam.SetPosition(1, endPoint);
+        //    if (Physics.Raycast(origin, dir, out hit))
+        //    {
+        //        endPoint = hit.point;
+        //        if (hit.collider.gameObject.CompareTag("Slime"))
+        //        {
+        //            Destroy(hit.collider.gameObject);
+        //        }
+        //    }
+        //    beam.SetPosition(0, origin);
+        //    beam.SetPosition(1, endPoint);
 
 
-            ParticleSystem exp = Instantiate(shoot, origin, barrel.rotation);
-            playing = true;
-            beam.enabled = true;
-            beam.gameObject.SetActive(true);
-            ParticleSystem end = Instantiate(endOfBeam, endPoint, barrel.rotation);
+        //    ParticleSystem exp = Instantiate(shoot, origin, barrel.rotation);
+        //    playing = true;
+        //    beam.enabled = true;
+        //    beam.gameObject.SetActive(true);
+        //    ParticleSystem end = Instantiate(endOfBeam, endPoint, barrel.rotation);
 
-            StartCoroutine(WaitForHalfASecond());
-            Destroy(exp.gameObject, beamDuration);
-            Destroy(end.gameObject, beamDuration);
-        }
+        //    StartCoroutine(WaitForHalfASecond());
+        //    Destroy(exp.gameObject, beamDuration);
+        //    Destroy(end.gameObject, beamDuration);
+        //}
     }
 
     IEnumerator WaitForHalfASecond()

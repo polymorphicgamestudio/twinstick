@@ -13,6 +13,8 @@ namespace ShepProject
         [SerializeField]
         private int enemyID;
 
+        public int EnemyID => enemyID;
+
         private GenesArray genes;
 
         [SerializeField]
