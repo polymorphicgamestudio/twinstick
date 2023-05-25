@@ -163,15 +163,16 @@ namespace ShepProject {
 			yield return new WaitForEndOfFrame();
             yield return new WaitForEndOfFrame();
             yield return new WaitForEndOfFrame();
-				
-			if (towers == null)
-				return;
 
-			for (int i = 0; i < towers.Count; i++)
+			if (towers != null)
 			{
 
-				towers[i].gameObject.SetActive(true);
+				for (int i = 0; i < towers.Count; i++)
+				{
 
+					towers[i].gameObject.SetActive(true);
+
+				}
 			}
 
         }
