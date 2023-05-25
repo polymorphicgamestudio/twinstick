@@ -15,7 +15,7 @@ public class BaseTower : MonoBehaviour
     public float maxDist = 20f;
 
     public Transform slimeTarget;
-    public Transform tower;
+    //public Transform tower;
 
     private void Start()
     {
@@ -27,7 +27,7 @@ public class BaseTower : MonoBehaviour
     {
         if (slimeTarget == null)
         {
-            tower.eulerAngles = new Vector3(0, 0, 0);
+            transform.eulerAngles = new Vector3(0, 0, 0);
             SearchForSlime();
         }
 
@@ -40,8 +40,8 @@ public class BaseTower : MonoBehaviour
 
         if (slimeTarget != null)
         {
-            Vector3 newDirection = Vector3.RotateTowards(tower.forward, slimeTarget.position - this.transform.position, Time.deltaTime * 15, 0.0f);
-            tower.rotation = Quaternion.LookRotation(newDirection);
+            Vector3 newDirection = Vector3.RotateTowards(transform.forward, slimeTarget.position - this.transform.position, Time.deltaTime * 15, 0.0f);
+            transform.rotation = Quaternion.LookRotation(newDirection);
 
             ShootTurret();
         }
