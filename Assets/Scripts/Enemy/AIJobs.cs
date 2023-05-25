@@ -10,9 +10,8 @@ using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 using static System.Collections.Specialized.BitVector32;
 
-namespace ShepProject {
-
-
+namespace ShepProject 
+{
 
 
 	public struct ChooseTargetJob : IJobParallelFor {

@@ -55,6 +55,8 @@ namespace ShepProject {
 
 		public int[] idChecks;
 
+		[SerializeField]
+		private List<BaseTower> towers;
 
 		private Dictionary<int, EnemyPhysicsMethods> enemyPhysicsMethods;
 
@@ -151,7 +153,28 @@ namespace ShepProject {
 				targetIDs[i] = ushort.MaxValue;
 
 
+			StartCoroutine(EnableTowers());
+
 		}
+
+
+		private IEnumerator EnableTowers()
+		{
+			yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();
+				
+			if (towers == null)
+				return;
+
+			for (int i = 0; i < towers.Count; i++)
+			{
+
+				towers[i].gameObject.SetActive(true);
+
+			}
+
+        }
 
 		private void Start() {
 

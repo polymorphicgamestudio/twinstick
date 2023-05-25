@@ -1,6 +1,7 @@
 using Drawing;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
@@ -272,6 +273,9 @@ namespace ShepProject
 
             FindPath(startNodeIndex, endNodeIndex);
 
+
+            #region Vector Field Setup
+
             //bool allFilledIn = true;
             //do
             //{
@@ -344,7 +348,7 @@ namespace ShepProject
             //        {
 
             //            continue;
-                    
+
             //        }
 
             //        startNodeIndex = i;
@@ -353,7 +357,7 @@ namespace ShepProject
             //        for (int j = nodes.Length - 1; j >= 0; j--)
             //        {
             //            //most closest one to the end that doesn't have this current node filled in
-                        
+
             //            //then set start and end node paths and rerun the loop
 
             //            //then this will continue until all nodes have all paths
@@ -391,6 +395,7 @@ namespace ShepProject
             //    //trace that back
             //} while (!allFilledIn);
 
+            #endregion
 
 
         }
@@ -404,8 +409,8 @@ namespace ShepProject
             currentNode.gCost = 0;
             currentNode.hCost = math.distance(nodes[startNodeIndex].position, nodes[endNodeIndex].position);
 
-            float orthagonalCost = 1;
-            float diagonalCost = math.SQRT2;
+            float orthagonalCost = nodeLength;
+            float diagonalCost = math.sqrt(8);
 
             //need to change this to just choose a correct node in a corner
             openNodeDifficulties.Add((int)(currentNode.FCost * scalar), currentNode);
@@ -450,9 +455,39 @@ namespace ShepProject
 
                 //has a new currentNode, remove it from open nodes, add it to closed nodes, then check neighbors
 
+
+
                 closedNodes.Add(currentNode.index, currentNode);
                 openNodeKeys.Remove(currentNode.index);
                 openNodeDifficulties.Remove((int)(currentNode.FCost * scalar), currentNode);
+
+                if (drawNodeInfo)
+                {
+
+                    Profiler.BeginSample("Neighbor Node Info");
+                    float3 poss = new float3(nodes[currentNode.index].position.x, 0, nodes[currentNode.index].position.y);
+
+
+                    builder.Label2D(origin + poss - new float3(nodeLength / 4f, 0, 0),
+                        //"Searched: " + searched +
+
+                        "Index: " + currentNode.index +
+                        "\nParent: " + currentNode.parentIndex +
+                        "\nDir: " + currentNode.direction +
+
+                        "\nHCost: " + currentNode.hCost +
+                        "\nGCost: " + currentNode.gCost +
+                        "\nFCost: " + currentNode.FCost,
+
+                        12, Color.black);
+
+
+
+                    Profiler.EndSample();
+
+                }
+
+
 
                 //Profiler.BeginSample("Check Neighbors");
 
@@ -687,51 +722,28 @@ namespace ShepProject
 
                     }
 
-                    if (checkNode.hCost < neighborNode.hCost)
+                    if (neighborNode.gCost < checkNode.gCost)
                     {
 
-                        if (drawNodeInfo)
+                        openNodeDifficulties.Remove(outDifficultyKey, checkNode);
+
+                        openNodeKeys[neighborNode.index] = (int)(neighborNode.FCost * scalar);
+                        openNodeDifficulties.Add(openNodeKeys[neighborNode.index], neighborNode);
+
+                        //expensive, need to get rid of this.
+                        if (!fCostKeys.Contains(openNodeKeys[neighborNode.index]))
                         {
-
-                            Profiler.BeginSample("Neighbor Node Info");
-
-                            float3 poss = new float3(nodes[index].position.x, 0, nodes[index].position.y);
-
-                            builder.Label2D(origin + poss - new float3(nodeLength / 4f, 0, 0),
-                                "Searched: " + searched + "\nHCost: " + neighborNode.hCost + "\nGCost: " + neighborNode.gCost + "\nFCost: " + neighborNode.FCost,
-                                12, Color.black);
-
-
-                            Profiler.EndSample();
-
+                            fCostKeys.Add(openNodeKeys[neighborNode.index]);
                         }
 
-                        openNodeDifficulties.SetValue(checkNode, it);
-                        openNodeKeys[checkNode.index] = (int)(checkNode.FCost * scalar);
                     }
+
 
                 }
 
             }
             else
             {
-
-                if (drawNodeInfo)
-                {
-
-                    Profiler.BeginSample("Neighbor Node Info");
-
-                    float3 poss = new float3(nodes[index].position.x, 0, nodes[index].position.y);
-
-                    builder.Label2D(origin + poss - new float3(nodeLength / 4f, 0, 0),
-                        "Searched: " + searched + "\nHCost: " + neighborNode.hCost + "\nGCost: " + neighborNode.gCost + "\nFCost: " + neighborNode.FCost,
-                        12, Color.black);
-
-
-                    Profiler.EndSample();
-
-                }
-
 
                 openNodeDifficulties.Add((int)(neighborNode.FCost * scalar), neighborNode);
                 openNodeKeys.Add(neighborNode.index, (int)(neighborNode.FCost * scalar));

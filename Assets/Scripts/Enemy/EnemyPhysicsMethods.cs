@@ -78,22 +78,6 @@ namespace ShepProject
         }
 
 
-        private void OnTriggerEnter(Collider other)
-        {
-
-            //check if is bullet, if so then deal damage
-
-
-
-        }
-        private void OnTriggerStay(Collider other)
-        {
-            //check if is bullet or on layer which damages, if so then deal damage
-
-        }
-
-
-
 
 
     }
