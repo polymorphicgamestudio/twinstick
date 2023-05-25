@@ -25,7 +25,6 @@ public class FireballController : MonoBehaviour
         if (collider.gameObject.CompareTag("Slime"))
         {
             collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Fire);
-            //Destroy(collider.gameObject);
             ParticleSystem exp = Instantiate(explosion, projectile.position, projectile.rotation);
             Destroy(exp.gameObject, 2.0f);
             Destroy(this.gameObject);

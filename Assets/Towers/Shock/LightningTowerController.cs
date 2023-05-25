@@ -32,7 +32,6 @@ public class LightningTowerController : BaseTower
                 if (hit.collider.gameObject.CompareTag("Slime"))
                 {
                     hit.collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Lightning);
-                    //Destroy(hit.collider.gameObject);
                 }
             }
             beam.SetPosition(0, origin);

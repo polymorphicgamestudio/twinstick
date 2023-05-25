@@ -10,7 +10,6 @@ public class IceSprayController : MonoBehaviour
     { 
        if (other.gameObject.CompareTag("Slime"))
         {
-            //Destroy(other.gameObject);
             other.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Ice);
         }
     }

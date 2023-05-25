@@ -29,7 +29,6 @@ public class BlasterTowerController : BaseTower
 
     }
 
-
     public override void ShootTurret()
     {
             origin = barrel.position;
@@ -45,7 +44,6 @@ public class BlasterTowerController : BaseTower
                 if (hit.collider.gameObject.CompareTag("Slime"))
                 {
                     hit.collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Blaster);
-                    //Destroy(hit.collider.gameObject);
                 }
             }
             beam.SetPosition(0, origin);
