@@ -7,11 +7,8 @@ using System.Threading;
 using UnityEngine;
 using static UnityEngine.UI.Image;
 
-public class LaserTowerController : BaseTower
-{ 
-    public Transform positions;
+public class LaserTowerController : BaseTower { 
     public Transform barrel;
-    public ParticleSystem shoot;
     public ParticleSystem endOfBeam;
 
     public LineRenderer beam;
@@ -21,13 +18,11 @@ public class LaserTowerController : BaseTower
     private Vector3 endPoint;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         beam.enabled = false;
     }
 
-    public override void ShootTurret()
-    {
+    public override void ShootTurret() {
             origin = barrel.position;
             endPoint = slimeTarget.position;
 
@@ -35,35 +30,27 @@ public class LaserTowerController : BaseTower
             dir.Normalize();
             RaycastHit hit;
 
-            if (Physics.Raycast(origin, dir, out hit))
-            {
+            if (Physics.Raycast(origin, dir, out hit)) {
                 endPoint = hit.point;
-                if (hit.collider.gameObject.CompareTag("Slime"))
-                {
+                if (hit.collider.gameObject.CompareTag("Slime")) {
                     hit.collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Laser);
                 }
             }
             beam.SetPosition(0, origin);
             beam.SetPosition(1, endPoint);
 
-
-            ParticleSystem exp = Instantiate(shoot, origin, barrel.rotation);
             beam.enabled = true;
             beam.gameObject.SetActive(true);
             ParticleSystem end = Instantiate(endOfBeam, endPoint, barrel.rotation);
 
             StartCoroutine(WaitForHalfASecond());
-            Destroy(exp.gameObject, beamDuration);
             Destroy(end.gameObject, beamDuration);
     }
 
-    IEnumerator WaitForHalfASecond()
-    {
+    IEnumerator WaitForHalfASecond() {
         yield return new WaitForSeconds(beamDuration);
         beam.enabled = false;
         beam.gameObject.SetActive(false);
     }
 
 }
-
-

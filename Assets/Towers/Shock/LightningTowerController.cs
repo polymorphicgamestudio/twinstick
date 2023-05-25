@@ -4,12 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LightningTowerController : BaseTower
-{
-
-    public Transform positions;
+public class LightningTowerController : BaseTower { 
     public Transform barrel;
-    public ParticleSystem shoot;
 
     public LineRenderer beam;
     public Transform end;
@@ -17,8 +13,7 @@ public class LightningTowerController : BaseTower
     private Vector3 origin;
     private Vector3 endPoint;
 
-    public override void ShootTurret()
-    {
+    public override void ShootTurret() {
             origin = barrel.position;
             endPoint = slimeTarget.position;
 
@@ -26,8 +21,7 @@ public class LightningTowerController : BaseTower
             dir.Normalize();
             RaycastHit hit;
 
-            if (Physics.Raycast(origin, dir, out hit))
-            {
+            if (Physics.Raycast(origin, dir, out hit)) {
                 endPoint = hit.point;
                 if (hit.collider.gameObject.CompareTag("Slime"))
                 {
@@ -37,17 +31,14 @@ public class LightningTowerController : BaseTower
             beam.SetPosition(0, origin);
             beam.SetPosition(1, endPoint);
 
-            ParticleSystem exp = Instantiate(shoot, endPoint, barrel.rotation);
             beam.enabled = true;
             beam.gameObject.SetActive(true);
             end.position = endPoint;
 
             StartCoroutine(WaitForHalfASecond());
-            Destroy(exp.gameObject, 1f);
     }
 
-    IEnumerator WaitForHalfASecond()
-    {
+    IEnumerator WaitForHalfASecond() {
         yield return new WaitForSeconds(1f);
         beam.enabled = false;
         beam.gameObject.SetActive(false);
