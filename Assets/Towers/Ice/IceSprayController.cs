@@ -1,3 +1,4 @@
+using ShepProject;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,8 +10,8 @@ public class IceSprayController : MonoBehaviour
     { 
        if (other.gameObject.CompareTag("Slime"))
         {
-            Destroy(other.gameObject);
-            //collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Ice);
+            //Destroy(other.gameObject);
+            other.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Ice);
         }
     }
 }

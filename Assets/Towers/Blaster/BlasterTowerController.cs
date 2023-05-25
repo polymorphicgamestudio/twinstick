@@ -31,7 +31,7 @@ public class BlasterTowerController : BaseTower
                 endPoint = hit.point;
                 if (hit.collider.gameObject.CompareTag("Slime"))
                 {
-                    hit.collider.gameObject.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Blaster);
+                    hit.collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Blaster);
                     //Destroy(hit.collider.gameObject);
                 }
             }

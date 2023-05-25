@@ -40,7 +40,7 @@ public class LaserTowerController : BaseTower
                 endPoint = hit.point;
                 if (hit.collider.gameObject.CompareTag("Slime"))
                 {
-                    hit.collider.gameObject.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Laser);
+                    hit.collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Laser);
                     //Destroy(hit.collider.gameObject);
                 }
             }
