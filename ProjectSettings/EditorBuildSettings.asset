@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Justin Test Scene.unity
+    path: Assets/Scenes/TestingScenes/Justin Test Scene.unity
     guid: c1e2f63f34c5fca47b3b17251849c4ef
   - enabled: 0
     path: Assets/Scenes/MainScene.unity
