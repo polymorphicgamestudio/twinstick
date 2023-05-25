@@ -18,6 +18,11 @@ public class BaseTower : MonoBehaviour
     public static Transform slimeTarget;
     public Transform tower;
 
+    private void Start()
+    {
+        ShepProject.ShepGM.inst.EnemyManager.AddTowerToList(this);
+    }
+
     // Update is called once per frame
     void Update()
     {

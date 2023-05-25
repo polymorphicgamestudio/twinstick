@@ -510,7 +510,7 @@ namespace ShepProject {
 		{
 
 			quadTree.RemoveTransform(objectID);
-			
+
 
 		}
 

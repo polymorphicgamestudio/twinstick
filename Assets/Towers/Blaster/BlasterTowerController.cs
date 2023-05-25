@@ -21,12 +21,12 @@ public class BlasterTowerController : BaseTower
 
     private void Start()
     {
-        InvokeRepeating("Shooting", timeBetweenShots, timeBetweenShots);
+        InvokeRepeating("ShootTurret", timeBetweenShots, timeBetweenShots);
     }
 
     public void ShootTurret()
     {
-        if (BaseTower.slimebool == true)
+        if (BaseTower.slimeTarget != null)
         {
             origin = barrel.position;
             endPoint = BaseTower.slimeTarget.position;
@@ -55,13 +55,6 @@ public class BlasterTowerController : BaseTower
             Destroy(exp.gameObject, 0.1f);
         }
 
-    }
-
-    public void Shooting()
-    {
-        if (BaseTower.slimebool == true) {
-            ShootTurret();
-        }
     }
 
     IEnumerator WaitForATenthSecond()
