@@ -210,9 +210,8 @@ GameObject:
   - component: {fileID: 4189082967771640915}
   - component: {fileID: 7199148465906660910}
   - component: {fileID: 5547770341547254285}
-  - component: {fileID: 3378295116791570761}
-  - component: {fileID: 3546030252267013480}
   - component: {fileID: 7606080588936847654}
+  - component: {fileID: 8591872777088146535}
   m_Layer: 10
   m_Name: TowerBlaster
   m_TagString: Tower
@@ -419,32 +418,6 @@ MonoBehaviour:
   wakeSound: {fileID: 8300000, guid: c26074c4c8438a444aa7de385ae79c67, type: 3}
   shootSound: {fileID: 8300000, guid: 35a7156c902680040bc4ad2e827a18a4, type: 3}
   shootParticles: {fileID: 3536865060065689364}
---- !u!114 &3378295116791570761
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4077111011296779276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31238cd0225bd5648ae49c2ab1b426a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RotationBoneHoz: {fileID: 3770160217998941399}
-  RotationBoneVert: {fileID: 5855215440035512831}
---- !u!114 &3546030252267013480
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4077111011296779276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1b7a96fd33c4de47845b7ee4cdfd55f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!135 &7606080588936847654
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -466,6 +439,29 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 1.3
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &8591872777088146535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4077111011296779276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68b9138756a0fc345baa65ce24bbbc9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectID: 0
+  timer: 3
+  currentTimer: 0
+  minDist: 0
+  maxDist: 20
+  slimeTarget: {fileID: 0}
+  rotBoneHoz: {fileID: 3770160217998941399}
+  rotBoneVert: {fileID: 5855215440035512831}
+  barrel: {fileID: 4172032191077313826}
+  shoot: {fileID: 7148873417289596541, guid: 41df7fed09200d145aa61a4a15990cf0, type: 3}
+  beam: {fileID: 5894589939212834646, guid: c744db66cc74bc0458c07e1f6c1caff7, type: 3}
 --- !u!1 &5339181460291822323
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,9 +6,7 @@ using Unity.VisualScripting;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
-public class BlasterTowerController : BaseTower
-{
-    public Transform positions;
+public class BlasterTowerController : BaseTower {
     public Transform barrel;
     public ParticleSystem shoot;
 

@@ -8,7 +8,7 @@ namespace ShepProject {
 		Rigidbody rb;
 		Vector3 moveInput;
 		Vector2 speed = new Vector2(5f, 30f); // walk, run
-		[SerializeField] CameraController cameraController;
+		CameraController cameraController;
 		[HideInInspector] public bool running = false;
 
 		[SerializeField] ParticleSystem runParticles;
@@ -18,6 +18,7 @@ namespace ShepProject {
 		}
 
 		void Start() {
+			cameraController = Camera.main.GetComponent<CameraController>();
 			ShepGM.inst.player = transform;
 			rb = GetComponent<Rigidbody>();
 			ShepGM.inst.actions.Player.Move.performed += Move_performed;

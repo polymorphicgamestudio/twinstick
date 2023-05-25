@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 2430830995324576318}
   - component: {fileID: 4716670968220028755}
   - component: {fileID: -3359475877944215541}
-  - component: {fileID: 6888132337562311130}
   - component: {fileID: 4701473617412490962}
   - component: {fileID: 1754046488251216495}
   m_Layer: 10
@@ -125,20 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 549fc1e6134ca924b91590a9cfcd9fac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6888132337562311130
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 87324928441829980}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31238cd0225bd5648ae49c2ab1b426a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RotationBoneHoz: {fileID: 5967685629078534766}
-  RotationBoneVert: {fileID: 5648788955015229585}
+  hozRotationBone: {fileID: 5967685629078534766}
 --- !u!82 &4701473617412490962
 AudioSource:
   m_ObjectHideFlags: 0

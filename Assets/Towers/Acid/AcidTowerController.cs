@@ -10,7 +10,6 @@ public class AcidTowerController : BaseTower
     public float bombSpeed = 10f;
 
     public Transform barrel;
-    public ParticleSystem shoot;
 
     private Animator anim;
 
@@ -23,7 +22,6 @@ public class AcidTowerController : BaseTower
     public override void ShootTurret()
     {
         anim.Play("Base Layer.Shoot", 0, 0);
-        shoot.Play();
         var BulletBody = (Rigidbody)Instantiate(bombPrefab, barrel.position, Quaternion.identity);
         BulletBody.velocity = barrel.forward * bombSpeed;
     }

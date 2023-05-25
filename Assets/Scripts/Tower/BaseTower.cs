@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-public class BaseTower : MonoBehaviour
-{
+public class BaseTower : MonoBehaviour {
 
     public ushort objectID;
 
@@ -15,70 +11,42 @@ public class BaseTower : MonoBehaviour
     public float maxDist = 20f;
 
     public Transform slimeTarget;
-    //public Transform tower;
 
-    private void Start()
-    {
+	public Transform rotBoneHoz;
+	public Transform rotBoneVert;
+	Animator animator;
+
+	private void Start() {
         ShepProject.ShepGM.inst.EnemyManager.AddTowerToList(this);
-    }
+		animator = GetComponent<Animator>();
+		animator.SetTrigger("Wake");
+	}
 
     // Update is called once per frame
-    public virtual void Update()
-    {
-
-
-        if (slimeTarget != null)
-        {
-            if (!slimeTarget.gameObject.activeInHierarchy)
-            {
-                SearchForSlime();
-            }
-            else
-            { 
-
-
-                transform.rotation = Quaternion.RotateTowards(transform.rotation,
-                    Quaternion.LookRotation(slimeTarget.position - transform.position), Time.deltaTime * 180);
-
-            }
-
-
-        }
-        else
-        {
-            SearchForSlime();
-        }
-
+    public virtual void Update() {
+		if (!slimeTarget || slimeTarget.gameObject.activeInHierarchy)
+			SearchForSlime();
+		else {
+			Quaternion slimeDirection = Quaternion.LookRotation(slimeTarget.position - transform.position);
+			rotBoneHoz.rotation = Quaternion.RotateTowards(rotBoneHoz.rotation, slimeDirection, Time.deltaTime * 90);
+		}
         
-
-
-
         currentTimer -= Time.deltaTime;
-
         if (currentTimer > 0)
             return;
 
-        currentTimer = timer;
+        if (slimeTarget)
+			ShootTurret();
 
-        if (slimeTarget != null)
-        {
+		currentTimer = timer;
+	}
 
-            ShootTurret();
-        }
-    }
-
-
-
-    public void SearchForSlime()
-    {
+    public void SearchForSlime() {
         //slimeTarget = ShepProject.ShepGM.inst.EnemyManager.QuadTree.GetClosestVisibleObject(objectID, ShepProject.ObjectType.Slime, minDist, maxDist);
         slimeTarget = ShepProject.ShepGM.inst.EnemyManager.QuadTree.GetClosestObject(objectID, ShepProject.ObjectType.Slime, minDist, maxDist);
     }
 
-    public virtual void ShootTurret()
-    {
-
-
+    public virtual void ShootTurret() {
+		Debug.Log("PEW!");
     }
-
 }

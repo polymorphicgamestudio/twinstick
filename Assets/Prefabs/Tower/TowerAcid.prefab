@@ -46,9 +46,8 @@ GameObject:
   - component: {fileID: 822805762073733012}
   - component: {fileID: 3105414572072855986}
   - component: {fileID: 4502911868630231006}
-  - component: {fileID: -6452706148326020063}
-  - component: {fileID: 1978777054867466762}
   - component: {fileID: 6436634769766007443}
+  - component: {fileID: 1166721481786246731}
   m_Layer: 10
   m_Name: TowerAcid
   m_TagString: Tower
@@ -255,32 +254,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &-6452706148326020063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3162570614528031948}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31238cd0225bd5648ae49c2ab1b426a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RotationBoneHoz: {fileID: 5172683211812970943}
-  RotationBoneVert: {fileID: 7698009924099055247}
---- !u!114 &1978777054867466762
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3162570614528031948}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1b7a96fd33c4de47845b7ee4cdfd55f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!135 &6436634769766007443
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -302,6 +275,30 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 1.3
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &1166721481786246731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3162570614528031948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c3a1016fa61f44d9365359d208b1ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectID: 0
+  timer: 0.5
+  currentTimer: 0
+  minDist: 0
+  maxDist: 20
+  slimeTarget: {fileID: 0}
+  rotBoneHoz: {fileID: 5172683211812970943}
+  rotBoneVert: {fileID: 7698009924099055247}
+  bombPrefab: {fileID: 2006738054783156371, guid: 10db1ca2c09189744b6c9d0e4db309e4, type: 3}
+  bombSpeed: 10
+  barrel: {fileID: 6032181036920477341}
+  shoot: {fileID: 0}
 --- !u!1 &3302327193128445562
 GameObject:
   m_ObjectHideFlags: 0

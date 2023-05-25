@@ -6,10 +6,10 @@ public class TowerBuildUpEffect : MonoBehaviour {
 	Vector3 towerPos;
 	Quaternion towerRot;
 	GameObject tower;
+	[SerializeField] Transform hozRotationBone;
 
 	public void Initialize(Vector3 towerPosition ,Quaternion towerRotation, float buildTime, GameObject towerObject) {
-		GetComponent<TowerRotationReference>().RotationBoneHoz.rotation = towerRotation;
-
+		hozRotationBone.rotation = towerRotation;
 		GetComponent<Animator>().SetTrigger("Build");
 		towerPos = towerPosition;
 		towerRot = towerRotation;
@@ -18,7 +18,7 @@ public class TowerBuildUpEffect : MonoBehaviour {
 	}
 	void ReplaceWithTurret() {
 		GameObject newTower = Instantiate(tower,towerPos,Quaternion.identity);
-		newTower.GetComponent<TowerRotationReference>().RotationBoneHoz.rotation = towerRot;
+		newTower.GetComponent<BaseTower>().rotBoneHoz.rotation = towerRot;
 		Destroy(gameObject);
 	}
 }

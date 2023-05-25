@@ -4,18 +4,14 @@ using System.Collections.Generic;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
-public class FireTowerController : BaseTower
-{
+public class FireTowerController : BaseTower {
     public Rigidbody bombPrefab;
     public float bombSpeed = 20f;
 
     public Transform barrel;
-    public ParticleSystem shoot;
 
 
-    public override void ShootTurret()
-    {
-            shoot.Play();
+    public override void ShootTurret() {
             var BulletBody = (Rigidbody)Instantiate(bombPrefab, barrel.position, Quaternion.identity);
             BulletBody.velocity = barrel.forward * bombSpeed;
     }

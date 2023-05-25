@@ -14948,9 +14948,8 @@ GameObject:
   - component: {fileID: 7337566513540762636}
   - component: {fileID: 8411314635501248331}
   - component: {fileID: 5862463602725531882}
-  - component: {fileID: 3574457919150541638}
-  - component: {fileID: -290678486241801863}
   - component: {fileID: 6219620478223568691}
+  - component: {fileID: 2644479304098339494}
   m_Layer: 10
   m_Name: TowerLaser
   m_TagString: Tower
@@ -15157,32 +15156,6 @@ MonoBehaviour:
   wakeSound: {fileID: 8300000, guid: 46ecee4ecb8e4054bab0d525b2a85b86, type: 3}
   shootSound: {fileID: 8300000, guid: b3ee69a689d810641b1fcac0ce93e16f, type: 3}
   shootParticles: {fileID: 7452329505511964727}
---- !u!114 &3574457919150541638
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8778488622978463248}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31238cd0225bd5648ae49c2ab1b426a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RotationBoneHoz: {fileID: 2277576498445254763}
-  RotationBoneVert: {fileID: 8477705371668461651}
---- !u!114 &-290678486241801863
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8778488622978463248}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1b7a96fd33c4de47845b7ee4cdfd55f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!135 &6219620478223568691
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -15204,3 +15177,29 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 1.3
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &2644479304098339494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8778488622978463248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 670ce8a9caa9fc44cbcd367c0bc72e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectID: 0
+  timer: 0
+  currentTimer: 0
+  minDist: 0
+  maxDist: 20
+  slimeTarget: {fileID: 0}
+  rotBoneHoz: {fileID: 2277576498445254763}
+  rotBoneVert: {fileID: 8477705371668461651}
+  positions: {fileID: 0}
+  barrel: {fileID: 0}
+  shoot: {fileID: 0}
+  endOfBeam: {fileID: 0}
+  beam: {fileID: 0}
+  beamDuration: 0.5
