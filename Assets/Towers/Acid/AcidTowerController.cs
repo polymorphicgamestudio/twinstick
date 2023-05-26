@@ -11,18 +11,14 @@ public class AcidTowerController : BaseTower
 
     public Transform barrel;
 
-    private Animator anim;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        anim = GetComponent<Animator>();
-    }
 
     public override void ShootTurret()
     {
-        anim.Play("Base Layer.Shoot", 0, 0);
-        var BulletBody = (Rigidbody)Instantiate(bombPrefab, barrel.position, Quaternion.identity);
-        BulletBody.velocity = barrel.forward * bombSpeed;
+        animator.Play("Base Layer.Shoot", 0, 0);
+        Rigidbody bomb = 
+            Instantiate(bombPrefab.gameObject, barrel.position, Quaternion.identity)
+            .GetComponent<Rigidbody>();
+
+        bomb.velocity = barrel.forward * bombSpeed;
     }
 }

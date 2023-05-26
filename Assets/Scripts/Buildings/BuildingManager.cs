@@ -81,8 +81,8 @@ namespace ShepProject
         private void Update()
         {
 
+            #region Building Towers
 
-            
             if (currentHologram != null)
             {
                 currentHologram.transform.position = controller.hologramPos;
@@ -111,6 +111,8 @@ namespace ShepProject
 
                     towers.Add(tower.GetComponent<BaseTower>());
 
+                    Inst.EnemyManager.AddTowerToList(towers[towers.Count - 1]);
+
                     currentBuildUps.RemoveAt(i);
                     buildUpTimers.RemoveAt(i);
 
@@ -121,6 +123,9 @@ namespace ShepProject
 
             }
 
+            #endregion
+
+            #region Tower Functionality
 
             for (int i = 0; i < towers.Count; i++)
             {
@@ -155,7 +160,7 @@ namespace ShepProject
 
             }
 
-
+            #endregion
 
         }
 

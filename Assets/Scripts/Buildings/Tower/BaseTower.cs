@@ -24,7 +24,6 @@ public abstract class BaseTower : MonoBehaviour {
 
 	private void Start() 
     {
-        ShepProject.ShepGM.inst.EnemyManager.AddTowerToList(this);
 		animator = GetComponent<Animator>();
 		animator.SetTrigger("Wake");
 

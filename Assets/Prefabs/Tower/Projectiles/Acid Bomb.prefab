@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 2006738054783156370}
   - component: {fileID: 2006738054783156371}
   - component: {fileID: 2006738054783156368}
-  - component: {fileID: 2006738054783156369}
+  - component: {fileID: 5527182952864859329}
   m_Layer: 0
-  m_Name: acidbomb
+  m_Name: Acid Bomb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89,7 +89,7 @@ MeshRenderer:
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!96 &2006738054783156370
 TrailRenderer:
-  serializedVersion: 2
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -130,6 +130,7 @@ TrailRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Time: 0.3
+  m_PreviewTimeScale: 1
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -175,17 +176,21 @@ TrailRenderer:
       atime6: 0
       atime7: 0
       m_Mode: 0
+      m_ColorSpace: -1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0
     textureMode: 0
+    textureScale: {x: 1, y: 1}
     shadowBias: 0.5
     generateLightingData: 0
   m_MinVertexDistance: 0.1
+  m_MaskInteraction: 0
   m_Autodestruct: 0
   m_Emitting: 1
+  m_ApplyActiveColorSpace: 0
 --- !u!54 &2006738054783156371
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -193,15 +198,26 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2581103228676468692}
-  serializedVersion: 2
+  serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 3
+  m_CollisionDetection: 0
 --- !u!114 &2006738054783156368
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,16 +230,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50a0831769b70374f8cdbd9af9da1030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!65 &2006738054783156369
-BoxCollider:
+  projectile: {fileID: 2006738054783156371}
+  explosion: {fileID: 3779588476158871047, guid: 259c00593548c1a4b9f92c4a3c3ccf5f, type: 3}
+--- !u!135 &5527182952864859329
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2581103228676468692}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.84455997, y: 0.86832005, z: 1.19691}
-  m_Center: {x: 0, y: -0.0000033341653, z: -0.12397312}
+  serializedVersion: 3
+  m_Radius: 0.59845495
+  m_Center: {x: 0, y: 0, z: -0.12397501}
