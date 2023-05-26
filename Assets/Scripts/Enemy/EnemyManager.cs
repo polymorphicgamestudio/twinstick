@@ -91,26 +91,26 @@ namespace ShepProject {
 		private void OnGUI() {
 
 
-			if (GUI.Button(new Rect(50, 25, 250, 50), "Damage Random Enemies")) {
-				int enemiesToDamage = 5;
+			//if (GUI.Button(new Rect(50, 25, 250, 50), "Damage Random Enemies")) {
+			//	int enemiesToDamage = 5;
 
 
-				for (int i = quadTree.positionCount; i > 0; i--) {
+			//	for (int i = quadTree.positionCount; i > 0; i--) {
 
-					if (genes.GetObjectType(i) != ObjectType.Slime)
-						continue;
+			//		if (genes.GetObjectType(i) != ObjectType.Slime)
+			//			continue;
 
-					enemyPhysicsMethods[i].DealDamage(25, DamageType.Blaster);
+			//		enemyPhysicsMethods[i].DealDamage(25, DamageType.Blaster);
 
-					enemiesToDamage--;
+			//		enemiesToDamage--;
 
-					if (enemiesToDamage == 0)
-						break;
+			//		if (enemiesToDamage == 0)
+			//			break;
 
-				}
+			//	}
 
 
-			}
+			//}
 
 
 
@@ -402,6 +402,7 @@ namespace ShepProject {
 			NativeArray<int> idsToCheck = new NativeArray<int>(idChecks, Allocator.TempJob);
 
 			CalculateHeadingJob chj = new CalculateHeadingJob();
+			chj.objectIDs = quadTree.objectIDs;
 			chj.objectForces = objectForces;
 			chj.genes = genes;
 			chj.headings = headings;

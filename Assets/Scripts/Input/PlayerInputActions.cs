@@ -964,6 +964,154 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Buildings"",
+            ""id"": ""ed43dafe-36e6-4587-bdae-7f66ff56b302"",
+            ""actions"": [
+                {
+                    ""name"": ""BuildingOne"",
+                    ""type"": ""Button"",
+                    ""id"": ""624a03bd-a3be-406e-acb5-6e6823378851"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""BuildingTwo"",
+                    ""type"": ""Button"",
+                    ""id"": ""64882454-b9b1-4194-8971-7805a69741f0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""BuildingThree"",
+                    ""type"": ""Button"",
+                    ""id"": ""f30078f9-018f-42a5-bf47-229a93be58ab"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""BuildingFour"",
+                    ""type"": ""Button"",
+                    ""id"": ""d502fa66-1515-40fd-84b7-de964c1ec0ca"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""BuildingFive"",
+                    ""type"": ""Button"",
+                    ""id"": ""26a20559-6da4-4198-a408-34712a89f2da"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""BuildingSix"",
+                    ""type"": ""Button"",
+                    ""id"": ""07e3f06f-d150-460c-8adc-700f67e75997"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""BuildingSeven"",
+                    ""type"": ""Button"",
+                    ""id"": ""897d8215-3e8b-4dcf-9d28-43a62aada6ec"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""4270b0d5-2513-4bc9-ad4c-9b3c65f862fe"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""BuildingTwo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d1d1f3fb-d1c9-4093-b556-167a019a63ca"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""BuildingThree"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""25e2a213-c40c-4ba7-8d59-444efbafc863"",
+                    ""path"": ""<Keyboard>/7"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""BuildingFour"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""79630796-5d40-43cc-8b0e-7640e8ea811b"",
+                    ""path"": ""<Keyboard>/8"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""BuildingFive"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a89d03b-3fae-457a-8f57-255c71ec216e"",
+                    ""path"": ""<Keyboard>/0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""BuildingSeven"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0d200724-94b4-4bc5-b142-ba18ddc944b1"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""BuildingOne"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c2e61a10-4308-4ec1-81d5-747f3ad5f5ce"",
+                    ""path"": ""<Keyboard>/9"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""BuildingSix"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1021,6 +1169,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
+        // Buildings
+        m_Buildings = asset.FindActionMap("Buildings", throwIfNotFound: true);
+        m_Buildings_BuildingOne = m_Buildings.FindAction("BuildingOne", throwIfNotFound: true);
+        m_Buildings_BuildingTwo = m_Buildings.FindAction("BuildingTwo", throwIfNotFound: true);
+        m_Buildings_BuildingThree = m_Buildings.FindAction("BuildingThree", throwIfNotFound: true);
+        m_Buildings_BuildingFour = m_Buildings.FindAction("BuildingFour", throwIfNotFound: true);
+        m_Buildings_BuildingFive = m_Buildings.FindAction("BuildingFive", throwIfNotFound: true);
+        m_Buildings_BuildingSix = m_Buildings.FindAction("BuildingSix", throwIfNotFound: true);
+        m_Buildings_BuildingSeven = m_Buildings.FindAction("BuildingSeven", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1322,6 +1479,100 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         }
     }
     public UIActions @UI => new UIActions(this);
+
+    // Buildings
+    private readonly InputActionMap m_Buildings;
+    private List<IBuildingsActions> m_BuildingsActionsCallbackInterfaces = new List<IBuildingsActions>();
+    private readonly InputAction m_Buildings_BuildingOne;
+    private readonly InputAction m_Buildings_BuildingTwo;
+    private readonly InputAction m_Buildings_BuildingThree;
+    private readonly InputAction m_Buildings_BuildingFour;
+    private readonly InputAction m_Buildings_BuildingFive;
+    private readonly InputAction m_Buildings_BuildingSix;
+    private readonly InputAction m_Buildings_BuildingSeven;
+    public struct BuildingsActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public BuildingsActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @BuildingOne => m_Wrapper.m_Buildings_BuildingOne;
+        public InputAction @BuildingTwo => m_Wrapper.m_Buildings_BuildingTwo;
+        public InputAction @BuildingThree => m_Wrapper.m_Buildings_BuildingThree;
+        public InputAction @BuildingFour => m_Wrapper.m_Buildings_BuildingFour;
+        public InputAction @BuildingFive => m_Wrapper.m_Buildings_BuildingFive;
+        public InputAction @BuildingSix => m_Wrapper.m_Buildings_BuildingSix;
+        public InputAction @BuildingSeven => m_Wrapper.m_Buildings_BuildingSeven;
+        public InputActionMap Get() { return m_Wrapper.m_Buildings; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(BuildingsActions set) { return set.Get(); }
+        public void AddCallbacks(IBuildingsActions instance)
+        {
+            if (instance == null || m_Wrapper.m_BuildingsActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_BuildingsActionsCallbackInterfaces.Add(instance);
+            @BuildingOne.started += instance.OnBuildingOne;
+            @BuildingOne.performed += instance.OnBuildingOne;
+            @BuildingOne.canceled += instance.OnBuildingOne;
+            @BuildingTwo.started += instance.OnBuildingTwo;
+            @BuildingTwo.performed += instance.OnBuildingTwo;
+            @BuildingTwo.canceled += instance.OnBuildingTwo;
+            @BuildingThree.started += instance.OnBuildingThree;
+            @BuildingThree.performed += instance.OnBuildingThree;
+            @BuildingThree.canceled += instance.OnBuildingThree;
+            @BuildingFour.started += instance.OnBuildingFour;
+            @BuildingFour.performed += instance.OnBuildingFour;
+            @BuildingFour.canceled += instance.OnBuildingFour;
+            @BuildingFive.started += instance.OnBuildingFive;
+            @BuildingFive.performed += instance.OnBuildingFive;
+            @BuildingFive.canceled += instance.OnBuildingFive;
+            @BuildingSix.started += instance.OnBuildingSix;
+            @BuildingSix.performed += instance.OnBuildingSix;
+            @BuildingSix.canceled += instance.OnBuildingSix;
+            @BuildingSeven.started += instance.OnBuildingSeven;
+            @BuildingSeven.performed += instance.OnBuildingSeven;
+            @BuildingSeven.canceled += instance.OnBuildingSeven;
+        }
+
+        private void UnregisterCallbacks(IBuildingsActions instance)
+        {
+            @BuildingOne.started -= instance.OnBuildingOne;
+            @BuildingOne.performed -= instance.OnBuildingOne;
+            @BuildingOne.canceled -= instance.OnBuildingOne;
+            @BuildingTwo.started -= instance.OnBuildingTwo;
+            @BuildingTwo.performed -= instance.OnBuildingTwo;
+            @BuildingTwo.canceled -= instance.OnBuildingTwo;
+            @BuildingThree.started -= instance.OnBuildingThree;
+            @BuildingThree.performed -= instance.OnBuildingThree;
+            @BuildingThree.canceled -= instance.OnBuildingThree;
+            @BuildingFour.started -= instance.OnBuildingFour;
+            @BuildingFour.performed -= instance.OnBuildingFour;
+            @BuildingFour.canceled -= instance.OnBuildingFour;
+            @BuildingFive.started -= instance.OnBuildingFive;
+            @BuildingFive.performed -= instance.OnBuildingFive;
+            @BuildingFive.canceled -= instance.OnBuildingFive;
+            @BuildingSix.started -= instance.OnBuildingSix;
+            @BuildingSix.performed -= instance.OnBuildingSix;
+            @BuildingSix.canceled -= instance.OnBuildingSix;
+            @BuildingSeven.started -= instance.OnBuildingSeven;
+            @BuildingSeven.performed -= instance.OnBuildingSeven;
+            @BuildingSeven.canceled -= instance.OnBuildingSeven;
+        }
+
+        public void RemoveCallbacks(IBuildingsActions instance)
+        {
+            if (m_Wrapper.m_BuildingsActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IBuildingsActions instance)
+        {
+            foreach (var item in m_Wrapper.m_BuildingsActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_BuildingsActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public BuildingsActions @Buildings => new BuildingsActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -1366,5 +1617,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnRightClick(InputAction.CallbackContext context);
         void OnTrackedDevicePosition(InputAction.CallbackContext context);
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
+    }
+    public interface IBuildingsActions
+    {
+        void OnBuildingOne(InputAction.CallbackContext context);
+        void OnBuildingTwo(InputAction.CallbackContext context);
+        void OnBuildingThree(InputAction.CallbackContext context);
+        void OnBuildingFour(InputAction.CallbackContext context);
+        void OnBuildingFive(InputAction.CallbackContext context);
+        void OnBuildingSix(InputAction.CallbackContext context);
+        void OnBuildingSeven(InputAction.CallbackContext context);
     }
 }

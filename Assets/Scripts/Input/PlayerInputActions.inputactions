@@ -942,6 +942,154 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Buildings",
+            "id": "ed43dafe-36e6-4587-bdae-7f66ff56b302",
+            "actions": [
+                {
+                    "name": "BuildingOne",
+                    "type": "Button",
+                    "id": "624a03bd-a3be-406e-acb5-6e6823378851",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BuildingTwo",
+                    "type": "Button",
+                    "id": "64882454-b9b1-4194-8971-7805a69741f0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BuildingThree",
+                    "type": "Button",
+                    "id": "f30078f9-018f-42a5-bf47-229a93be58ab",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BuildingFour",
+                    "type": "Button",
+                    "id": "d502fa66-1515-40fd-84b7-de964c1ec0ca",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BuildingFive",
+                    "type": "Button",
+                    "id": "26a20559-6da4-4198-a408-34712a89f2da",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BuildingSix",
+                    "type": "Button",
+                    "id": "07e3f06f-d150-460c-8adc-700f67e75997",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BuildingSeven",
+                    "type": "Button",
+                    "id": "897d8215-3e8b-4dcf-9d28-43a62aada6ec",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4270b0d5-2513-4bc9-ad4c-9b3c65f862fe",
+                    "path": "<Keyboard>/5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "BuildingTwo",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d1d1f3fb-d1c9-4093-b556-167a019a63ca",
+                    "path": "<Keyboard>/6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "BuildingThree",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "25e2a213-c40c-4ba7-8d59-444efbafc863",
+                    "path": "<Keyboard>/7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "BuildingFour",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "79630796-5d40-43cc-8b0e-7640e8ea811b",
+                    "path": "<Keyboard>/8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "BuildingFive",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6a89d03b-3fae-457a-8f57-255c71ec216e",
+                    "path": "<Keyboard>/0",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "BuildingSeven",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0d200724-94b4-4bc5-b142-ba18ddc944b1",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "BuildingOne",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c2e61a10-4308-4ec1-81d5-747f3ad5f5ce",
+                    "path": "<Keyboard>/9",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "BuildingSix",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

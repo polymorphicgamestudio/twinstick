@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6434790223890336880}
   - component: {fileID: 27624417778204221}
   - component: {fileID: 2720291396963450576}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Slime
   m_TagString: Slime
   m_Icon: {fileID: 0}
@@ -162,7 +162,7 @@ GameObject:
   - component: {fileID: 5111066874988098475}
   - component: {fileID: 7173288652295873570}
   - component: {fileID: 8190753835209004546}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wings
   m_TagString: Untagged
   m_Icon: {fileID: 0}

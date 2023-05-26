@@ -8,6 +8,11 @@ public class TestTower : BaseTower
 
     public EnemyManager manager;
 
+    public override void ShootTurret()
+    {
+        throw new System.NotImplementedException();
+    }
+
     public IEnumerator WaitToAdd()
     {
         yield return new WaitForEndOfFrame();

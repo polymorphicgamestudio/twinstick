@@ -452,7 +452,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectID: 0
-  timer: 3
+  timer: 0.2
   currentTimer: 0
   minDist: 0
   maxDist: 20
@@ -462,6 +462,9 @@ MonoBehaviour:
   barrel: {fileID: 4172032191077313826}
   shoot: {fileID: 7148873417289596541, guid: 41df7fed09200d145aa61a4a15990cf0, type: 3}
   beam: {fileID: 5894589939212834646, guid: c744db66cc74bc0458c07e1f6c1caff7, type: 3}
+  mask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &5339181460291822323
 GameObject:
   m_ObjectHideFlags: 0

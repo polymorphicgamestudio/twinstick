@@ -531,8 +531,8 @@ namespace ShepProject
 
     public struct CalculateHeadingJob : IJobParallelFor
     {
-        //[NativeDisableContainerSafetyRestriction]
-        //public NativeArray<ushort> objectIDs;
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<ushort> objectIDs;
 
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<float2> positions;
@@ -552,7 +552,9 @@ namespace ShepProject
         public void Execute(int index)
         {
 
-            ObjectType type = genes.GetObjectType(index);
+            int objectID = objectIDs[index];
+
+            ObjectType type = genes.GetObjectType(objectID);
 
             if (type != ObjectType.Sheep && type != ObjectType.Slime)
                 return;
@@ -560,16 +562,16 @@ namespace ShepProject
 
             float2 moveTowards = new float2();
 
-            if (idsToCheck.Contains(index))
+            if (idsToCheck.Contains(objectID))
             {
                 int test = 0;
             }
 
 
             float3 pos = new float3();
-            pos.x = positions[index].x;
+            pos.x = positions[objectID].x;
             pos.y = .7f;
-            pos.z = positions[index].y;
+            pos.z = positions[objectID].y;
 
             float3 dir = new float3();
 
@@ -578,7 +580,7 @@ namespace ShepProject
             for (int i = 0; i < (int)ObjectType.Sheep; i++)
             {
 
-                tempMagnitude = MathUtil.SqrMagnitude(objectForces[(index * (int)ObjectType.Count) + i]);
+                tempMagnitude = MathUtil.SqrMagnitude(objectForces[(objectID * (int)ObjectType.Count) + i]);
 
                 if (tempMagnitude == 0)
                     continue;
@@ -589,21 +591,21 @@ namespace ShepProject
                     maxMagnitude = tempMagnitude;
 
 
-                objectForces[(index * (int)ObjectType.Count) + i]
-                    = objectForces[(index * (int)ObjectType.Count) + i];// / tempMagnitude;
+                objectForces[(objectID * (int)ObjectType.Count) + i]
+                    = objectForces[(objectID * (int)ObjectType.Count) + i];// / tempMagnitude;
 
                 if (tempMagnitude > 1)
                 {
-                    objectForces[(index * (int)ObjectType.Count) + i] /= tempMagnitude;
+                    objectForces[(objectID * (int)ObjectType.Count) + i] /= tempMagnitude;
                 }
 
 
-                moveTowards += objectForces[(index * (int)ObjectType.Count) + i];
+                moveTowards += objectForces[(objectID * (int)ObjectType.Count) + i];
 
 
-                dir.x = objectForces[(index * (int)ObjectType.Count) + i].x;
+                dir.x = objectForces[(objectID * (int)ObjectType.Count) + i].x;
                 dir.y = 0;
-                dir.z = objectForces[(index * (int)ObjectType.Count) + i].y;
+                dir.z = objectForces[(objectID * (int)ObjectType.Count) + i].y;
 
 
                 builder.Label2D(pos + (math.normalize(dir) / 2), ((ObjectType)i).ToString(), 12);
@@ -622,21 +624,21 @@ namespace ShepProject
             {
 
                 int test = 0;
-                maxMagnitude = genes.GetAttraction(index, ObjectType.Sheep);
+                maxMagnitude = genes.GetAttraction(objectID, ObjectType.Sheep);
             }
             else
             {
                 int test = 0;
             }
 
-            moveTowards += MathUtil.ClampMagnitude(objectForces[(index * (int)ObjectType.Count) + (int)(ObjectType.Sheep)], maxMagnitude);
+            moveTowards += MathUtil.ClampMagnitude(objectForces[(objectID * (int)ObjectType.Count) + (int)(ObjectType.Sheep)], maxMagnitude);
             pos.y = .5f;
 
 
 
-            dir.x = objectForces[(index * (int)ObjectType.Count) + (int)ObjectType.Sheep].x;
+            dir.x = objectForces[(objectID * (int)ObjectType.Count) + (int)ObjectType.Sheep].x;
             dir.y = 0;
-            dir.z = objectForces[(index * (int)ObjectType.Count) + (int)ObjectType.Sheep].y;
+            dir.z = objectForces[(objectID * (int)ObjectType.Count) + (int)ObjectType.Sheep].y;
 
             builder.Label2D(pos + (math.normalize(dir) / 2), ObjectType.Sheep.ToString(), 12);
 
@@ -659,7 +661,7 @@ namespace ShepProject
                 headingCalculation += 2 * math.PI;
             }
 
-            float local = headingCalculation - headings[index];
+            float local = headingCalculation - headings[objectID];
 
             if (local == 0)
                 return;
@@ -668,21 +670,21 @@ namespace ShepProject
             {
 
                 //turn right
-                headings[index] -= 2 * math.PI;
+                headings[objectID] -= 2 * math.PI;
             }
             else if (local > math.PI)
             {
                 //turn left
-                headings[index] += 2 * math.PI;
+                headings[objectID] += 2 * math.PI;
             }
 
-            headings[index]
+            headings[objectID]
                 //= headingCalculation;
-                = math.lerp(headings[index], headingCalculation,
-                math.clamp((math.PI * 3 * genes.GetTurnRate(index)) * deltaTime
+                = math.lerp(headings[objectID], headingCalculation,
+                math.clamp((math.PI * 3 * genes.GetTurnRate(objectID)) * deltaTime
                 / math.abs(local), 0, 1));
 
-            if (headings[index] == float.NaN)
+            if (headings[objectID] == float.NaN)
             {
                 int test = 0;
             }

@@ -12,48 +12,47 @@ public class BlasterTowerController : BaseTower {
 
     public LineRenderer beam;
 
+    public LayerMask mask;
+
     private Vector3 origin;
     private Vector3 endPoint;
 
-    public override void Update()
+    private void Awake()
     {
-        base.Update();
 
-        //transform.rotation = Quaternion.LookRotation(rotateTarget.position - transform.position);
-
-            //Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(slimeTarget.position), Time.deltaTime * 5);
-
-
+        beam = Instantiate(beam.gameObject).GetComponent<LineRenderer>();
 
     }
 
     public override void ShootTurret()
     {
-            origin = barrel.position;
-            endPoint = slimeTarget.position;
+        origin = barrel.position;
+        endPoint = slimeTarget.position;
 
-            Vector3 dir = endPoint - origin;
-            dir.Normalize();
-            RaycastHit hit;
+        Vector3 dir = endPoint - origin;
+        dir.Normalize();
+        RaycastHit hit;
 
-            if (Physics.Raycast(origin, dir, out hit))
+        Debug.DrawRay(origin, dir, Color.cyan, 5);
+
+        if (Physics.Raycast(new Ray(origin, dir), out hit, maxDist, mask))
+        {
+            endPoint = hit.point;
+            if (hit.collider.gameObject.CompareTag("Slime"))
             {
-                endPoint = hit.point;
-                if (hit.collider.gameObject.CompareTag("Slime"))
-                {
-                    hit.collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Blaster);
-                }
+                hit.collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Blaster);
             }
-            beam.SetPosition(0, origin);
-            beam.SetPosition(1, endPoint);
+        }
+        beam.SetPosition(0, origin);
+        beam.SetPosition(1, endPoint);
 
-            ParticleSystem exp = Instantiate(shoot, origin, barrel.rotation);
-            shoot.gameObject.SetActive(true);
-            beam.enabled = true;
-            beam.gameObject.SetActive(true);
+        ParticleSystem exp = Instantiate(shoot, origin, barrel.rotation);
+        shoot.gameObject.SetActive(true);
+        beam.enabled = true;
+        beam.gameObject.SetActive(true);
 
-            StartCoroutine(WaitForATenthSecond());
-            Destroy(exp.gameObject, 0.1f);
+        StartCoroutine(WaitForATenthSecond());
+        Destroy(exp.gameObject, 0.1f);
     }
 
     IEnumerator WaitForATenthSecond()

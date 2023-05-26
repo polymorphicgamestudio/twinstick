@@ -271,129 +271,129 @@ namespace ShepProject
             //int startNodeIndex = 0;
             //int endNodeIndex = nodes.Length - 1;
 
-            FindPath(startNodeIndex, endNodeIndex);
+            //FindPath(startNodeIndex, endNodeIndex);
 
 
             #region Vector Field Setup
 
-            //bool allFilledIn = true;
-            //do
-            //{
-            //    pathLength = 0;
-            //    FindPath(startNodeIndex, endNodeIndex);
+            bool allFilledIn = true;
+            do
+            {
+                pathLength = 0;
+                FindPath(startNodeIndex, endNodeIndex);
 
-            //    //read from finalPathIndices and update data
-
-
-            //    for (int i = 0; i < pathLength; i++)
-            //    {
-            //        //starts with end node, so for both directions on the path
-            //        //need to set every node in the chain of that path
-            //        //ex node 5 of path needs to have all nodes, 1,2,3,4,6,7,8,9 all set
-
-            //        //ends up being n^2 operations :(
-            //        for (int j = 0; j < pathLength; j++)
-            //        {
-            //            //if the node that is being set is the same node
-            //            //that we're setting for
-            //            if (i == j)
-            //            {
-
-            //                //set it to a value that signifies that there is no direction
-            //                vectorField[i * (columns * rows) + finalPathIndices[j].index] = (int)NodeDirection.NoMovement;
-            //                continue;
+                //read from finalPathIndices and update data
 
 
-            //            }
+                for (int i = 0; i < pathLength; i++)
+                {
+                    //starts with end node, so for both directions on the path
+                    //need to set every node in the chain of that path
+                    //ex node 5 of path needs to have all nodes, 1,2,3,4,6,7,8,9 all set
+
+                    //ends up being n^2 operations :(
+                    for (int j = 0; j < pathLength; j++)
+                    {
+                        //if the node that is being set is the same node
+                        //that we're setting for
+                        if (i == j)
+                        {
+
+                            //set it to a value that signifies that there is no direction
+                            vectorField[i * (columns * rows) + finalPathIndices[j].index] = (int)NodeDirection.NoMovement;
+                            continue;
 
 
-
-            //            //vectorField[i * (columns * rows) + finalPathIndices[j].index] = finalPathIndices[i + 1].direction;
-
-            //            if (j < i)
-            //            {
-
-            //                //if its before it in the path, it needs the direction reversed
-            //                //which just needs to be direction - 4 to get opposite for enum
-
-            //                vectorField[i * (columns * rows) + finalPathIndices[j].index]
-            //                    = (byte)(finalPathIndices[i - 1].direction - 4);
-
-            //            }
-            //            else
-            //            {
-
-            //                //this is for after in the path
-            //                vectorField[i * (columns * rows) + finalPathIndices[j].index] = finalPathIndices[i + 1].direction;
-            //            }
-            //        }
+                        }
 
 
 
-            //    }
+                        //vectorField[i * (columns * rows) + finalPathIndices[j].index] = finalPathIndices[i + 1].direction;
+
+                        if (j < i)
+                        {
+
+                            //if its before it in the path, it needs the direction reversed
+                            //which just needs to be direction - 4 to get opposite for enum
+
+                            vectorField[i * (columns * rows) + finalPathIndices[j].index]
+                                = (byte)(finalPathIndices[i - 1].direction - 4);
+
+                        }
+                        else
+                        {
+
+                            //this is for after in the path
+                            vectorField[i * (columns * rows) + finalPathIndices[j].index] = finalPathIndices[i + 1].direction;
+                        }
+                    }
 
 
 
-            //    //after this need to check which ones don't have paths and then queue up a new path
-            //    //try and get furthest ones away first
-
-            //    allFilledIn = true;
-            //    for (int i = 0; i < nodes.Length; i++)
-            //    {
-            //        //first one found that doesn't have everything filled in
-
-            //        // check its "full" variable which is after every single actual field,
-            //        // will be 255 to show that it has no empty spots
-            //        if (AllPathsFilledIn(i))
-            //        {
-
-            //            continue;
-
-            //        }
-
-            //        startNodeIndex = i;
-            //        allFilledIn = false;
-
-            //        for (int j = nodes.Length - 1; j >= 0; j--)
-            //        {
-            //            //most closest one to the end that doesn't have this current node filled in
-
-            //            //then set start and end node paths and rerun the loop
-
-            //            //then this will continue until all nodes have all paths
-
-            //            //
-            //            if (CurrentNodeFilledIn(i, j))
-            //            {
-            //                continue;
-            //            }
-
-            //            endNodeIndex = j;
-
-            //            if (startNodeIndex == endNodeIndex)
-            //            {
-            //                Debug.LogError("StartNodeIndex and EndNodeIndex are the same.");
-            //            }
+                }
 
 
 
-            //            break;
+                //after this need to check which ones don't have paths and then queue up a new path
+                //try and get furthest ones away first
 
-            //        }
+                allFilledIn = true;
+                for (int i = 0; i < nodes.Length; i++)
+                {
+                    //first one found that doesn't have everything filled in
 
-            //        break;
+                    // check its "full" variable which is after every single actual field,
+                    // will be 255 to show that it has no empty spots
+                    if (AllPathsFilledIn(i))
+                    {
+
+                        continue;
+
+                    }
+
+                    startNodeIndex = i;
+                    allFilledIn = false;
+
+                    for (int j = nodes.Length - 1; j >= 0; j--)
+                    {
+                        //most closest one to the end that doesn't have this current node filled in
+
+                        //then set start and end node paths and rerun the loop
+
+                        //then this will continue until all nodes have all paths
+
+                        //
+                        if (CurrentNodeFilledIn(i, j))
+                        {
+                            continue;
+                        }
+
+                        endNodeIndex = j;
+
+                        if (startNodeIndex == endNodeIndex)
+                        {
+                            Debug.LogError("StartNodeIndex and EndNodeIndex are the same.");
+                        }
 
 
-            //    }
+
+                        break;
+
+                    }
+
+                    break;
 
 
-            //    openNodeDifficulties.Clear();
-            //    closedNodes.Clear();
-            //    openNodeKeys.Clear();
-            //    fCostKeys.Clear();
+                }
 
-            //    //trace that back
-            //} while (!allFilledIn);
+
+                openNodeDifficulties.Clear();
+                closedNodes.Clear();
+                openNodeKeys.Clear();
+                fCostKeys.Clear();
+
+                //trace that back
+            } while (!allFilledIn);
 
             #endregion
 
@@ -731,6 +731,7 @@ namespace ShepProject
                         openNodeDifficulties.Add(openNodeKeys[neighborNode.index], neighborNode);
 
                         //expensive, need to get rid of this.
+                        //change this out for acheck with the openNodeDifficulties
                         if (!fCostKeys.Contains(openNodeKeys[neighborNode.index]))
                         {
                             fCostKeys.Add(openNodeKeys[neighborNode.index]);
