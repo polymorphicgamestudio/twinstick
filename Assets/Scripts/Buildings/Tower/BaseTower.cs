@@ -22,6 +22,8 @@ public abstract class BaseTower : MonoBehaviour {
 	public Transform rotBoneVert;
 	public Animator animator;
 
+    public LayerMask mask;
+
 	private void Start() 
     {
 		animator = GetComponent<Animator>();
@@ -34,7 +36,7 @@ public abstract class BaseTower : MonoBehaviour {
     public virtual void ManualUpdate()
     {
 
-        if (slimeTarget)
+        if (slimeTarget != null)
         {
 
             targetSqrDistance = math.distancesq(transform.position, slimeTarget.position);
@@ -57,7 +59,7 @@ public abstract class BaseTower : MonoBehaviour {
         if (currentTimer > 0)
             return;
 
-        if (slimeTarget)
+        if (slimeTarget != null)
             ShootTurret();
 
         currentTimer = timer;

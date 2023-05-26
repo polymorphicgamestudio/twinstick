@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class BombController : MonoBehaviour
 {
-    //public ParticleSystem exp;
 
     public ParticleSystem explosion;
 

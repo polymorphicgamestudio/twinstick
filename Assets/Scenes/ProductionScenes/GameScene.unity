@@ -389,7 +389,7 @@ PrefabInstance:
     - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
       propertyPath: playableArea
       value: 
-      objectReference: {fileID: 3869760021591114930}
+      objectReference: {fileID: 0}
     - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
       propertyPath: modeController
       value: 
