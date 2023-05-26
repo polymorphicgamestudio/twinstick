@@ -28,7 +28,13 @@ namespace ShepProject
             //generate a wall surrounding the area
             GeneratePlayableAreaWall();
             Inst.actions.Buildings.BuildingOne.performed += BuildingOneCallback;
-
+            Inst.actions.Buildings.BuildingTwo.performed += BuildingTwoCallback;
+            Inst.actions.Buildings.BuildingThree.performed += BuildingThreeCallback;
+            Inst.actions.Buildings.BuildingFour.performed += BuildingFourCallback;
+            Inst.actions.Buildings.BuildingFive.performed += BuildingFiveCallback;
+            Inst.actions.Buildings.BuildingSix.performed += BuildingSixCallback;
+            Inst.actions.Buildings.BuildingSeven.performed += BuildingSevenCallback;
+            //Inst.actions.Buildings
 
         }
 
@@ -36,15 +42,17 @@ namespace ShepProject
         private void Update()
         {
 
-            /*
-             * if towers don't have a target, need to search for one
-             * 
-             * 
-             */
+
 
 
             for (int i = 0; i < towers.Count; i++)
             {
+
+                /*
+                 * if towers don't have a target, need to search for one
+                 * 
+                 */
+
                 if (towers[i].NeedsTarget)
                 {
 
@@ -89,13 +97,59 @@ namespace ShepProject
 
         }
 
+        private void BuildingTwoCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+        {
+            InstantiateBuilding(1);
+
+        }
+
+        private void BuildingThreeCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+        {
+            InstantiateBuilding(2);
+
+        }
+
+        private void BuildingFourCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+        {
+            InstantiateBuilding(3);
+
+        }
+
+        private void BuildingFiveCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+        {
+            InstantiateBuilding(4);
+
+        }
+
+        private void BuildingSixCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+        {
+            InstantiateBuilding(5);
+
+        }
+
+        private void BuildingSevenCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+        {
+            InstantiateBuilding(6);
+
+        }
+
+        private void BuildingEightCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+        {
+            InstantiateBuilding(7);
+
+        }
+
+
 
         private void InstantiateBuilding(int towerIndex)
         {
 
+            //instantiate prefab and place it in front of robot
 
 
         }
+
+
 
 
 
