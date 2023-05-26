@@ -270,17 +270,19 @@ namespace ShepProject
 
             }
 
-            if (currentBuildingIndex != towerIndex && currentBuildingIndex != -1)
+            if (currentBuildingIndex != towerIndex)
             {
                 if (currentHologram != null)
                 {
                     Destroy(currentHologram);
                 }
-                else
+                else if (wallPlacement != null)
                 {
                     Destroy(wallPlacement.gameObject);
                 }
             }
+            else
+                return;
 
 
             //special exception for wall
