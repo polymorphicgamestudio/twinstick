@@ -10,7 +10,9 @@ namespace ShepProject
     public class BuildingManager : SystemBase
     {
 
-        public List<BaseTower> prefabs;
+        public GameObject[] hologramPrefabs;
+        public GameObject[] buildUpHolograms;
+        public BaseTower[] prefabs;
         public List<BaseTower> towers;
 
         [SerializeField]
@@ -18,15 +20,43 @@ namespace ShepProject
         [SerializeField]
         private BoxCollider wallCollider;
 
+        [SerializeField]
+        private RobotController controller;
+        [SerializeField]
+        private RobotModeController modeController;
+
+        private int currentBuildingIndex;
+        private GameObject currentHologram;
+        private WallPlacement wallPlacement;
+
+        private List<GameObject> currentBuildUps;
+        private List<float> buildUpTimers;
+
+        [SerializeField] 
+        private AudioClip errorSound;
+
+        private bool running;
+
+        Vector2 bounds = new Vector2(72, 40);  // (5, 3) * 16 - 8
+        Color colorValid = new Color(0.05f, 0.39f, 1f, 0.25f);
+        Color colorInvalid = new Color(1f, 0.07f, 0.07f, 0.25f);
+
 
 
         private void Start()
         {
 
+            currentBuildUps = new List<GameObject>();
+            buildUpTimers = new List<float>();
             towers = new List<BaseTower>();
+
+            currentBuildingIndex = -1;
 
             //generate a wall surrounding the area
             GeneratePlayableAreaWall();
+
+            #region Setup Input Callbacks
+
             Inst.actions.Buildings.BuildingOne.performed += BuildingOneCallback;
             Inst.actions.Buildings.BuildingTwo.performed += BuildingTwoCallback;
             Inst.actions.Buildings.BuildingThree.performed += BuildingThreeCallback;
@@ -34,7 +64,16 @@ namespace ShepProject
             Inst.actions.Buildings.BuildingFive.performed += BuildingFiveCallback;
             Inst.actions.Buildings.BuildingSix.performed += BuildingSixCallback;
             Inst.actions.Buildings.BuildingSeven.performed += BuildingSevenCallback;
-            //Inst.actions.Buildings
+
+            Inst.actions.UI.Click.started += ConfirmBuilding;
+
+
+            Inst.actions.Player.Run.performed += HideHologramsWhileRunning;
+            ShepGM.inst.actions.Player.Run.canceled += ShowHologramsAfterRunning;
+
+
+            #endregion
+
 
         }
 
@@ -43,6 +82,44 @@ namespace ShepProject
         {
 
 
+            
+            if (currentHologram != null)
+            {
+                currentHologram.transform.position = controller.hologramPos;
+                UpdateTowerHologramColor();
+            }
+
+            if (wallPlacement != null)
+            {
+
+                wallPlacement.PositionWall(modeController.WallReferencePosition(), modeController.WallReferenceRotation());
+                //UpdateWallHologramColor();
+            }
+
+            for (int i = 0; i < buildUpTimers.Count; i++)
+            {
+                buildUpTimers[i] -= Time.deltaTime;
+
+                if (buildUpTimers[i] <= 0)
+                {
+
+                    GameObject tower = Instantiate(prefabs[currentBuildingIndex].gameObject);
+                    tower.transform.position = currentBuildUps[i].transform.position;
+                    tower.transform.rotation = currentBuildUps[i].transform.rotation;
+
+                    Destroy(currentBuildUps[i]);
+
+                    towers.Add(tower.GetComponent<BaseTower>());
+
+                    currentBuildUps.RemoveAt(i);
+                    buildUpTimers.RemoveAt(i);
+
+                    i--;
+
+                }
+
+
+            }
 
 
             for (int i = 0; i < towers.Count; i++)
@@ -76,7 +153,6 @@ namespace ShepProject
 
                 towers[i].ManualUpdate();
 
-
             }
 
 
@@ -84,83 +160,243 @@ namespace ShepProject
         }
 
 
-
-
-
-
-
         #region Callbacks
+
+        #region Choosing Buildings
 
         private void BuildingOneCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            InstantiateBuilding(0);
-
+            InstantiateHologram(0);
         }
 
         private void BuildingTwoCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            InstantiateBuilding(1);
-
+            InstantiateHologram(1);
         }
 
         private void BuildingThreeCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            InstantiateBuilding(2);
+            InstantiateHologram(2);
 
         }
 
         private void BuildingFourCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            InstantiateBuilding(3);
+            InstantiateHologram(3);
 
         }
 
         private void BuildingFiveCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            InstantiateBuilding(4);
+            InstantiateHologram(4);
 
         }
 
         private void BuildingSixCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            InstantiateBuilding(5);
+            InstantiateHologram(5);
 
         }
 
         private void BuildingSevenCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            InstantiateBuilding(6);
+            InstantiateHologram(6);
 
         }
 
-        private void BuildingEightCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj)
-        {
-            InstantiateBuilding(7);
+        #endregion
 
-        }
-
-
-
-        private void InstantiateBuilding(int towerIndex)
+        private void ConfirmBuilding(InputAction.CallbackContext obj)
         {
 
-            //instantiate prefab and place it in front of robot
-
+            InstantiateBuildup();
 
         }
 
+        void HideHologramsWhileRunning(InputAction.CallbackContext context)
+        {
+
+            running = true;
+
+            if (modeController.BuildMode)
+            {
+                modeController.TurnOffProjectorParticles();
+            }
+
+            if (currentHologram != null)
+            {
+                Destroy(currentHologram);
+                //currentHologram = null;
+            }
+            else if (wallPlacement != null)
+            {
+                Destroy(wallPlacement.gameObject);
+                //wallPlacement = null;
+            }
 
 
+            
+        }
+        void ShowHologramsAfterRunning(InputAction.CallbackContext context)
+        {
+            running = false;
+
+            if (currentBuildingIndex == -1)
+                return;
+
+            int previous = currentBuildingIndex;
+            currentBuildingIndex = -1;
+            InstantiateHologram(previous);
+
+            if (currentHologram != null || wallPlacement != null)
+                modeController.TurnOnProjectorParticles();
+        
+        }
 
 
         #endregion
 
 
+
+        private void InstantiateHologram(int towerIndex)
+        {
+
+            if (running)
+                return;
+
+            if (currentBuildingIndex == -1 && towerIndex != 6)
+            {
+                modeController.TurnOnBuildMode();
+
+            }
+
+            if (currentBuildingIndex != towerIndex && currentBuildingIndex != -1)
+            {
+                if (currentHologram != null)
+                {
+                    Destroy(currentHologram);
+                }
+                else
+                {
+                    Destroy(wallPlacement.gameObject);
+                }
+            }
+
+
+            //special exception for wall
+            if (towerIndex == 6 && currentBuildingIndex != 6)
+            {
+                modeController.TurnOnProjectorParticles();
+                wallPlacement = Instantiate(hologramPrefabs[towerIndex]).GetComponent<WallPlacement>();
+                wallPlacement.PositionWall(modeController.WallReferencePosition(), modeController.WallReferenceRotation());
+
+
+                currentBuildingIndex = towerIndex;
+                return;
+            }
+
+
+
+            //instantiate hologram prefab and place it in front of robot
+            currentHologram = Instantiate(hologramPrefabs[towerIndex].gameObject);
+            currentHologram.transform.position = controller.hologramPos;
+
+            currentHologram.SetActive(true);
+
+            currentBuildingIndex = towerIndex;
+
+        }
+
+        private void InstantiateBuildup()
+        {
+            if (currentHologram == null && wallPlacement == null)
+                return;
+
+
+            if (currentHologram != null)
+            {
+
+                if (!ValidTowerLocation(controller.forwardTilePos))
+                {
+                    PlayErrorSound();
+                    return;
+                }
+
+                GameObject buildUp = Instantiate(buildUpHolograms[currentBuildingIndex]);
+                buildUp.transform.position = currentHologram.transform.position;
+                buildUp.transform.rotation =
+                    Quaternion.LookRotation(currentHologram.transform.position - ShepGM.inst.player.position, Vector3.up);
+
+                //replace with the actual turret here.
+                buildUp.GetComponent<Animator>().SetTrigger("Build");
+
+                currentBuildUps.Add(buildUp);
+                buildUpTimers.Add(7f);
+
+                buildUp.SetActive(true);
+
+
+
+                Destroy(currentHologram);
+                currentHologram = null;
+            }
+            else
+            {
+
+                if (wallPlacement.validLocation)
+                {
+                    wallPlacement.PlaceWall();
+                    wallPlacement = null;
+
+                }
+                else
+                {
+                    PlayErrorSound();
+                    return;
+                }
+
+            }
+
+            int previous = currentBuildingIndex;
+            currentBuildingIndex = -1;
+
+            InstantiateHologram(previous);
+
+
+        }
+
+
+        void UpdateTowerHologramColor()
+        {
+            foreach (Renderer r in currentHologram.GetComponentsInChildren<Renderer>())
+            {
+                if (ValidTowerLocation(controller.forwardTilePos))
+                    r.material.color = colorValid;
+                else
+                    r.material.color = colorInvalid;
+            }
+        }
+
+
+        bool ValidTowerLocation(Vector3 pos)
+        {
+
+            bool obstructed = Physics.Raycast(pos - Vector3.up, Vector3.up, 3f, LayerMask.GetMask("Tower"));
+            bool inBounds = Mathf.Abs(pos.x) <= bounds.x && Mathf.Abs(pos.z) <= bounds.y;
+            return !obstructed && inBounds;
+
+
+        }
+
+        void PlayErrorSound()
+        {
+            Inst.player.GetComponent<AudioSource>().PlayOneShot(errorSound);
+        }
+
         #region Wall Generation
 
         public void GeneratePlayableAreaWall()
         {
-
 
 
             if (playableArea == null)

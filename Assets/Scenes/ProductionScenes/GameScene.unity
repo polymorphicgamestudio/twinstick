@@ -325,6 +325,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Robot
       objectReference: {fileID: 0}
+    - target: {fileID: 5278291769216056277, guid: 9153483793bc2bc42afa4deea3be1c42, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -383,97 +387,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: prefabs.Array.size
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: prefabs.Array.data[0]
+      propertyPath: controller
       value: 
-      objectReference: {fileID: 8591872777088146535, guid: 46bf500a2456730408be7f39826d678d, type: 3}
+      objectReference: {fileID: 1172078829}
     - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: prefabs.Array.data[1]
+      propertyPath: playableArea
       value: 
-      objectReference: {fileID: 7189411887746284346, guid: 0cdff05f1db0a914ca14bc6e92e75c3b, type: 3}
+      objectReference: {fileID: 3869760021591114930}
     - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: prefabs.Array.data[2]
+      propertyPath: modeController
       value: 
-      objectReference: {fileID: 1166721481786246731, guid: 4b43dabfb88f40046a398269da3a6bb2, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: prefabs.Array.data[3]
-      value: 
-      objectReference: {fileID: 1161416851641063218, guid: d313fb236524a1344a499717e9f0f510, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: prefabs.Array.data[4]
-      value: 
-      objectReference: {fileID: 7618373969385548516, guid: 106818083ef9cba42a55c9a56e5028b2, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: prefabs.Array.data[5]
-      value: 
-      objectReference: {fileID: 2644479304098339494, guid: 9516e8bb84de7544b8e6f77e3b44cfe8, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: hologramPrefabs.Array.size
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: buildUpHolograms.Array.size
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: hologramPrefabs.Array.data[0]
-      value: 
-      objectReference: {fileID: 7352840930205739850, guid: f439fc06aabdd04429d7c9048ac36825, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: hologramPrefabs.Array.data[1]
-      value: 
-      objectReference: {fileID: 404178578318331231, guid: 2de6675ac27d67647b055eeb34019b78, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: hologramPrefabs.Array.data[2]
-      value: 
-      objectReference: {fileID: 2353953998931937674, guid: ef67929209eb4fe4d85e05a05ebcd309, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: hologramPrefabs.Array.data[3]
-      value: 
-      objectReference: {fileID: 4916301425222501161, guid: 76179f516c9d73444bdd9ac35d8ed521, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: hologramPrefabs.Array.data[4]
-      value: 
-      objectReference: {fileID: 8442841979106540446, guid: f230a522a2f5b1f40bd23c406fecb1b7, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: hologramPrefabs.Array.data[5]
-      value: 
-      objectReference: {fileID: 2073919788354195420, guid: 086882d0b34c2f04ca2f9722cf35284f, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: hologramPrefabs.Array.data[6]
-      value: 
-      objectReference: {fileID: 5581380165359829353, guid: ee64df60c596e634e9c0d0652cabc140, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: buildUpHolograms.Array.data[0]
-      value: 
-      objectReference: {fileID: 8438984773925518862, guid: 5f2c117dd5001fa49b2239c319177e60, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: buildUpHolograms.Array.data[1]
-      value: 
-      objectReference: {fileID: 4158086891388123378, guid: 1b51a5dcbc94cee458e94b296f3125ed, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: buildUpHolograms.Array.data[2]
-      value: 
-      objectReference: {fileID: 5384734035660255152, guid: 9150c59afd3c96043abcecee729e97c6, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: buildUpHolograms.Array.data[3]
-      value: 
-      objectReference: {fileID: 4569788366886820251, guid: 33e631a2df49ada49a13709a69b5b761, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: buildUpHolograms.Array.data[4]
-      value: 
-      objectReference: {fileID: 87324928441829980, guid: 1aaa32063284dfd41b21474903f4bfd7, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: buildUpHolograms.Array.data[5]
-      value: 
-      objectReference: {fileID: 6555521609580945563, guid: 7e7aeacc4e068a84392f4f7c14986f8e, type: 3}
-    - target: {fileID: 1831931268759153905, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
-      propertyPath: buildUpHolograms.Array.data[6]
-      value: 
-      objectReference: {fileID: 5581380165359829353, guid: ee64df60c596e634e9c0d0652cabc140, type: 3}
+      objectReference: {fileID: 1172078832}
     - target: {fileID: 4101473460716174021, guid: c3ab37317255e344989e08c763b57cb9, type: 3}
       propertyPath: m_Name
       value: BuildingManager
@@ -788,9 +712,31 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 287371398}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cc0bc82f9f5830740af6a7883dd69234, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1172078829 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 214852274215493275, guid: 9153483793bc2bc42afa4deea3be1c42, type: 3}
+  m_PrefabInstance: {fileID: 287371398}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c77c3d56269694a45a8e4091e01c5014, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1172078832 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5730535541539096436, guid: 9153483793bc2bc42afa4deea3be1c42, type: 3}
+  m_PrefabInstance: {fileID: 287371398}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83330b9e9f590714f8aa37186b5ff9ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1182725454

@@ -30,7 +30,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1831931268759153905
 MonoBehaviour:
@@ -44,3 +44,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92a88517452508341857b22b23b02bd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hologramPrefabs:
+  - {fileID: 7352840930205739850, guid: f439fc06aabdd04429d7c9048ac36825, type: 3}
+  - {fileID: 404178578318331231, guid: 2de6675ac27d67647b055eeb34019b78, type: 3}
+  - {fileID: 2353953998931937674, guid: ef67929209eb4fe4d85e05a05ebcd309, type: 3}
+  - {fileID: 4916301425222501161, guid: 76179f516c9d73444bdd9ac35d8ed521, type: 3}
+  - {fileID: 8442841979106540446, guid: f230a522a2f5b1f40bd23c406fecb1b7, type: 3}
+  - {fileID: 2073919788354195420, guid: 086882d0b34c2f04ca2f9722cf35284f, type: 3}
+  - {fileID: 5581380165359829353, guid: ee64df60c596e634e9c0d0652cabc140, type: 3}
+  buildUpHolograms:
+  - {fileID: 8438984773925518862, guid: 5f2c117dd5001fa49b2239c319177e60, type: 3}
+  - {fileID: 4158086891388123378, guid: 1b51a5dcbc94cee458e94b296f3125ed, type: 3}
+  - {fileID: 5384734035660255152, guid: 9150c59afd3c96043abcecee729e97c6, type: 3}
+  - {fileID: 4569788366886820251, guid: 33e631a2df49ada49a13709a69b5b761, type: 3}
+  - {fileID: 87324928441829980, guid: 1aaa32063284dfd41b21474903f4bfd7, type: 3}
+  - {fileID: 6555521609580945563, guid: 7e7aeacc4e068a84392f4f7c14986f8e, type: 3}
+  - {fileID: 5581380165359829353, guid: ee64df60c596e634e9c0d0652cabc140, type: 3}
+  prefabs:
+  - {fileID: 8591872777088146535, guid: 46bf500a2456730408be7f39826d678d, type: 3}
+  - {fileID: 7189411887746284346, guid: 0cdff05f1db0a914ca14bc6e92e75c3b, type: 3}
+  - {fileID: 1166721481786246731, guid: 4b43dabfb88f40046a398269da3a6bb2, type: 3}
+  - {fileID: 1161416851641063218, guid: d313fb236524a1344a499717e9f0f510, type: 3}
+  - {fileID: 7618373969385548516, guid: 106818083ef9cba42a55c9a56e5028b2, type: 3}
+  - {fileID: 2644479304098339494, guid: 9516e8bb84de7544b8e6f77e3b44cfe8, type: 3}
+  towers: []
+  playableArea: {fileID: 0}
+  wallCollider: {fileID: 1816357759912485284, guid: 2f78a884f09393d41bb265ca722b4575, type: 3}
+  controller: {fileID: 0}
+  modeController: {fileID: 0}
+  errorSound: {fileID: 8300000, guid: 19faa55225acf674898dad95cf8eb425, type: 3}
