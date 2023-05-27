@@ -30,6 +30,7 @@ namespace ShepProject
         private WallPlacement wallPlacement;
 
         private List<GameObject> currentBuildUps;
+        private List<int> buildIndices;
         private List<float> buildUpTimers;
 
         [SerializeField] 
@@ -49,6 +50,8 @@ namespace ShepProject
             currentBuildUps = new List<GameObject>();
             buildUpTimers = new List<float>();
             towers = new List<BaseTower>();
+            buildIndices = new List<int>();
+
 
             currentBuildingIndex = -1;
 
@@ -66,6 +69,14 @@ namespace ShepProject
             Inst.actions.Buildings.BuildingSeven.performed += BuildingSevenCallback;
 
             Inst.actions.UI.Click.started += ConfirmBuilding;
+
+
+            //uncomment and implement these in order to stop build mode
+            Inst.actions.Player.WeaponOne.performed += CancelBuildMode;
+            Inst.actions.Player.WeaponTwo.performed += CancelBuildMode;
+            Inst.actions.Player.WeaponThree.performed += CancelBuildMode;
+
+
 
 
             Inst.actions.Player.Run.performed += HideHologramsWhileRunning;
@@ -103,7 +114,7 @@ namespace ShepProject
                 if (buildUpTimers[i] <= 0)
                 {
 
-                    GameObject tower = Instantiate(prefabs[currentBuildingIndex].gameObject);
+                    GameObject tower = Instantiate(prefabs[buildIndices[i]].gameObject);
                     tower.transform.position = currentBuildUps[i].transform.position;
                     tower.transform.rotation = currentBuildUps[i].transform.rotation;
 
@@ -115,7 +126,7 @@ namespace ShepProject
 
                     currentBuildUps.RemoveAt(i);
                     buildUpTimers.RemoveAt(i);
-
+                    buildIndices.RemoveAt(i);
                     i--;
 
                 }
@@ -210,6 +221,21 @@ namespace ShepProject
         }
 
         #endregion
+
+        private void CancelBuildMode(InputAction.CallbackContext obj)
+        {
+            modeController.TurnOffBuildMode();
+
+            if (currentHologram != null)
+                Destroy(currentHologram);
+
+            if (wallPlacement != null)
+                Destroy(wallPlacement.gameObject);
+
+            currentBuildingIndex = -1;
+
+
+        }
 
         private void ConfirmBuilding(InputAction.CallbackContext obj)
         {
@@ -339,6 +365,7 @@ namespace ShepProject
 
                 currentBuildUps.Add(buildUp);
                 buildUpTimers.Add(7f);
+                buildIndices.Add(currentBuildingIndex);
 
                 buildUp.SetActive(true);
 
