@@ -4,46 +4,57 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LightningTowerController : BaseTower
+public class LightningTowerController : BeamTowerController
 {
 
-    public LineRenderer beam;
+    public GameObject lightningBolt;
     public Transform end;
 
-    private Vector3 origin;
-    private Vector3 endPoint;
+    private RaycastHit hit;
+
+
+    protected override void Start()
+    {
+        base.Start();
+
+        lightningBolt.transform.SetParent(null);
+
+    }
+
+    public override void ManualUpdate()
+    {
+        base.ManualUpdate();
+
+        if (beam.enabled)
+        {
+
+            end.position = hit.point;
+
+        }
+
+    }
+
 
     public override void ShootTurret()
     {
-        origin = barrel.position;
-        endPoint = slimeTarget.position;
+        direction = barrel.position - transform.position;
+        direction.y = 0;
 
-        Vector3 dir = endPoint - origin;
-        dir.Normalize();
-        RaycastHit hit;
-
-        if (Physics.Raycast(origin, dir, out hit))
+        if (!Physics.Raycast(new Ray(barrel.position, direction), out hit, maxDist, mask))
         {
-            endPoint = hit.point;
-            if (hit.collider.gameObject.CompareTag("Slime"))
-            {
-                hit.collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Lightning);
-            }
+            return;
         }
-        beam.SetPosition(0, origin);
-        beam.SetPosition(1, endPoint);
 
-        beam.enabled = true;
-        beam.gameObject.SetActive(true);
-        end.position = endPoint;
+        hit.collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Blaster);
 
-        StartCoroutine(WaitForHalfASecond());
+
+
+        base.ShootTurret();
+
+        end.position = hit.point;
+
     }
 
-    IEnumerator WaitForHalfASecond()
-    {
-        yield return new WaitForSeconds(1f);
-        beam.enabled = false;
-        beam.gameObject.SetActive(false);
-    }
+
+
 }

@@ -25,8 +25,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1553354484848905667}
-  m_LocalRotation: {x: 0, y: -0.97842973, z: 0, w: 0.2065799}
-  m_LocalPosition: {x: 2.0805492, y: 1.3269997, z: -15.063794}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -34,7 +34,7 @@ Transform:
   - {fileID: 1553354486107316119}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: -156.156, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!120 &1553354484848905670
 LineRenderer:
   serializedVersion: 2
@@ -78,8 +78,8 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: 26, y: 1.32, z: 45.1}
-  - {x: 26, y: 1.32, z: 38.937}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 2
@@ -162,10 +162,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EndPosition: {fileID: 1553354486390967520}
   Generations: 3
-  Duration: 0.09
+  Duration: 0.01
   ChaosFactor: 0.15
   Rows: 6
-  Columns: 1
+  Columns: 3
   AnimationMode: 1
   useLight: 1
   pointLight: {fileID: 1553354486107316116}
@@ -287,7 +287,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1553354486390967523}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 2.665, y: 0, z: 0.291}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -32,8 +32,8 @@ public abstract class BeamTowerController : BaseTower
 
     public override void ShootTurret()
     {
-
-        barrelParticles.Play();
+        if (barrelParticles != null) 
+            barrelParticles.Play();
         currentBeamActivationTime = beamActivationTime;
 
         beam.enabled = true;
