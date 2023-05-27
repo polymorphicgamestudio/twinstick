@@ -7,57 +7,52 @@ using System.Threading;
 using UnityEngine;
 using static UnityEngine.UI.Image;
 
-public class LaserTowerController : BaseTower
+public class LaserTowerController : BeamTowerController
 {
 
+    [SerializeField]
+    private Laser laser;
 
-    public ParticleSystem endOfBeam;
+    private RaycastHit[] hits;
 
-    public LineRenderer beam;
-    public float beamDuration = 0.5f;
-
-    private Vector3 origin;
-    private Vector3 endPoint;
-
-    // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        beam.enabled = false;
+        base.Start();
+        laser.SetBeamDistances(maxDist);
     }
 
-    public override void ShootTurret()
+
+    public override void ManualUpdate()
     {
-        origin = barrel.position;
-        endPoint = slimeTarget.position;
 
-        Vector3 dir = endPoint - origin;
-        dir.Normalize();
-        RaycastHit hit;
 
-        if (Physics.Raycast(origin, dir, out hit))
+        base.ManualUpdate();
+
+
+        if (beam.enabled)
         {
-            endPoint = hit.point;
-            if (hit.collider.gameObject.CompareTag("Slime"))
+            direction = barrel.position - transform.position;
+            direction.Normalize();
+            direction.y = 0;
+
+            hits = Physics.RaycastAll(new Ray(barrel.position, direction), maxDist, mask);
+
+            if (hits.Length == 0)
+                return;
+
+            for (int i = 0; i < hits.Length; i++)
             {
-                hit.collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Laser);
+                hits[i].collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Laser);
+
             }
+
+
         }
-        beam.SetPosition(0, origin);
-        beam.SetPosition(1, endPoint);
 
-        beam.enabled = true;
-        beam.gameObject.SetActive(true);
-        ParticleSystem end = Instantiate(endOfBeam, endPoint, barrel.rotation);
 
-        StartCoroutine(WaitForHalfASecond());
-        Destroy(end.gameObject, beamDuration);
+
     }
 
-    IEnumerator WaitForHalfASecond()
-    {
-        yield return new WaitForSeconds(beamDuration);
-        beam.enabled = false;
-        beam.gameObject.SetActive(false);
-    }
+
 
 }

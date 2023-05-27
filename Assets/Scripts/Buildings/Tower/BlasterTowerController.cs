@@ -5,17 +5,10 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class BlasterTowerController : BaseTower 
+public class BlasterTowerController : BeamTowerController
 {
 
-    public ParticleSystem blasterParticles;
-
-    public LineRenderer beam;
-    private Vector3 direction;
-
-
-    public float laserActivationTime;
-    private float currentlaserActivationTime;
+    private RaycastHit hit;
 
 
     public override void ManualUpdate()
@@ -24,39 +17,35 @@ public class BlasterTowerController : BaseTower
 
         if (beam.enabled)
         {
-            currentlaserActivationTime -= Time.deltaTime;
 
-            if (currentlaserActivationTime < 0)
-                beam.enabled = false;
-
+            beam.SetPosition(0, barrel.position);
+            beam.SetPosition(1, hit.point);
 
         }
 
-
     }
-
 
     public override void ShootTurret()
     {
         direction = barrel.position - transform.position;
         direction.y = 0;
 
-        if (!Physics.Raycast(new Ray(barrel.position, direction), out RaycastHit hit, maxDist, mask))
+        if (!Physics.Raycast(new Ray(barrel.position, direction), out hit, maxDist, mask))
         {
             return;
         }
 
         hit.collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Blaster);
 
-        beam.enabled = true;
-        beam.SetPosition(0, barrel.position);
-        beam.SetPosition(1, hit.point);
-
-        blasterParticles.Play();
+        base.ShootTurret();
 
 
-        currentlaserActivationTime = laserActivationTime;
-            
+
+
+
+
+
     }
+
 
 }

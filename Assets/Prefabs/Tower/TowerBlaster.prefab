@@ -459,14 +459,13 @@ MonoBehaviour:
   slimeTarget: {fileID: 0}
   rotBoneHoz: {fileID: 3770160217998941399}
   rotBoneVert: {fileID: 5855215440035512831}
-  animator: {fileID: 0}
   mask:
     serializedVersion: 2
     m_Bits: 128
   barrel: {fileID: 4172032191077313826}
-  blasterParticles: {fileID: 2693510478044710855}
+  barrelParticles: {fileID: 2693510478044710855}
   beam: {fileID: 1879553106351586658}
-  laserActivationTime: 0.2
+  beamActivationTime: 0.1
 --- !u!1 &5339181460291822323
 GameObject:
   m_ObjectHideFlags: 0

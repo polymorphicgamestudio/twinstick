@@ -33,7 +33,7 @@ public abstract class BaseTower : MonoBehaviour
     public LayerMask mask;
     public Transform barrel;
 
-	private void Start() 
+    protected virtual void Start() 
     {
 		animator = GetComponent<Animator>();
 		animator.SetTrigger("Wake");
