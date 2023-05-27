@@ -6,17 +6,14 @@ using UnityEngine;
 
 public class AcidTowerController : BaseTower
 {
-    public Rigidbody bombPrefab;
+    public GameObject bombPrefab;
     public float bombSpeed = 10f;
-
-    public Transform barrel;
-
 
     public override void ShootTurret()
     {
         animator.Play("Base Layer.Shoot", 0, 0);
         Rigidbody bomb = 
-            Instantiate(bombPrefab.gameObject, barrel.position, Quaternion.identity)
+            Instantiate(gameObject, barrel.position, Quaternion.identity)
             .GetComponent<Rigidbody>();
 
         bomb.velocity = barrel.forward * bombSpeed;

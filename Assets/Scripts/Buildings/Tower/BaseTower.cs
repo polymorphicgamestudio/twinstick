@@ -1,11 +1,15 @@
 using Unity.Mathematics;
 using UnityEngine;
 
-public abstract class BaseTower : MonoBehaviour {
+public abstract class BaseTower : MonoBehaviour 
+{
 
+    [HideInInspector]
     public ushort objectID;
 
     public float timer;
+
+    [HideInInspector]
     public float currentTimer;
 
     public float minDist = 0f;
@@ -16,13 +20,18 @@ public abstract class BaseTower : MonoBehaviour {
 
 
     public bool NeedsTarget => slimeTarget == null;
+
+    [HideInInspector]
     public Transform slimeTarget;
 
 	public Transform rotBoneHoz;
 	public Transform rotBoneVert;
-	public Animator animator;
+
+
+	protected Animator animator;
 
     public LayerMask mask;
+    public Transform barrel;
 
 	private void Start() 
     {

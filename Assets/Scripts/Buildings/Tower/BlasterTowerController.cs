@@ -7,8 +7,7 @@ using UnityEngine;
 
 public class BlasterTowerController : BaseTower 
 {
- 
-    public Transform barrel;
+
     public ParticleSystem blasterParticles;
 
     public LineRenderer beam;

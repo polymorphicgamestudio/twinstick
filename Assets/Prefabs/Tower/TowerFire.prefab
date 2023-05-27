@@ -5590,14 +5590,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectID: 0
-  timer: 0
+  timer: 0.5
   currentTimer: 0
   minDist: 0
   maxDist: 20
   slimeTarget: {fileID: 0}
   rotBoneHoz: {fileID: 5916002734980033242}
   rotBoneVert: {fileID: 6013516840170974966}
-  bombPrefab: {fileID: 3051856718375855193, guid: f91dc3a8fe794b84b82fea96b13e0533, type: 3}
-  bombSpeed: 20
+  animator: {fileID: 0}
+  mask:
+    serializedVersion: 2
+    m_Bits: 128
   barrel: {fileID: 6600784619927576588}
-  shoot: {fileID: 0}
+  bombPrefab: {fileID: 1950153041623984267, guid: f91dc3a8fe794b84b82fea96b13e0533, type: 3}
+  bombSpeed: 10
+  barrel: {fileID: 6600784619927576588}
