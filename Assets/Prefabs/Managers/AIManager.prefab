@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5453079091326956306}
   - component: {fileID: 2746231355933929674}
   m_Layer: 0
-  m_Name: EnemyManager
+  m_Name: AIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8121321063624790235}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2746231355933929674
 MonoBehaviour:
@@ -47,12 +47,26 @@ MonoBehaviour:
   burrowPrefab: {fileID: 3911888185303433699, guid: a62055d6a4268a940a9c1bae779f32fd, type: 3}
   sheepPrefab: {fileID: 8759591037758108741, guid: 717e80078cde2704f99bd475bd0ff376, type: 3}
   endOfWaveCanvasParent: {fileID: 0}
-  burrowCount: 2
-  sheepCount: 10
+  burrowCount: 10
+  sheepCount: 1
   maxEnemies: 2000
   TreeObjectCount: 0
   waveNumber: 0
   countdownToWave: 0
   currentCountdownToWave: 0
-  enemiesCountToSpawn: 20
+  enemiesCountToSpawn: 100
   spawningEnemies: 1
+  idChecks: 
+  slimeValues:
+    sheepAttraction: 1
+    towerAttraction: -1
+    slimeAttraction: 1
+    wallAttraction: 1
+    towerViewRange: 20
+    slimeViewRange: 8
+    playerViewRange: 10
+    wallViewRange: 4
+    slimeOptimalDistance: -1
+    slimeSpeed: 3.05
+    slimeTurnRate: 0.8
+    slimeHealth: 100

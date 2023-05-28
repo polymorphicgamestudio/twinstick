@@ -21,7 +21,7 @@ namespace ShepProject {
 		public NativeList<ushort> deletions;
 		public NativeArray<float2> positions;
 
-		public EnemyManager enemyManager;
+		public AIManager enemyManager;
 		private Transform[] transforms;
 		public Transform[] Transforms => transforms;
 

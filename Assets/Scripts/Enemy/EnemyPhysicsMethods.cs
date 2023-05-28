@@ -19,7 +19,7 @@ namespace ShepProject
 
         [SerializeField]
         private Rigidbody rb;
-        private EnemyManager manager;
+        private AIManager manager;
 
 
         public bool Initialized()
@@ -35,7 +35,7 @@ namespace ShepProject
         }
 
 
-        public void SetInitialInfo(ushort enemyID, GenesArray genes, EnemyManager manager)
+        public void SetInitialInfo(ushort enemyID, GenesArray genes, AIManager manager)
         {
 
             this.manager = manager;

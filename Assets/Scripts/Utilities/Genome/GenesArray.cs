@@ -270,9 +270,6 @@ namespace ShepProject
 
         }
 
-
-
-
         public void Dispose()
         {
             genes.Dispose();

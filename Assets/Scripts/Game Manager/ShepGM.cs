@@ -22,7 +22,7 @@ namespace ShepProject
 		public Transform player;
 
 		[SerializeField]
-		private EnemyManager enemyManager;
+		private AIManager aiManager;
 
 		[SerializeField]
 		private BuildingManager buildingManager;
@@ -30,7 +30,7 @@ namespace ShepProject
 		[SerializeField]
 		private PathfindingManager pathfindingManager;
 
-		public EnemyManager EnemyManager => enemyManager;
+		public AIManager AIManager => aiManager;
 
 		public event EventTrigger gameOver;
 
@@ -41,9 +41,9 @@ namespace ShepProject
 			actions.UI.Enable();
 			actions.Buildings.Enable();
 
-			if (enemyManager != null)
+			if (aiManager != null)
 			{
-				enemyManager.Initialize(this);
+				aiManager.Initialize(this);
 
 			}
 

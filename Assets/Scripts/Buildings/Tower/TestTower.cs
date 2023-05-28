@@ -6,7 +6,7 @@ using UnityEngine;
 public class TestTower : BaseTower
 {
 
-    public EnemyManager manager;
+    public AIManager manager;
 
     public override void ShootTurret()
     {
