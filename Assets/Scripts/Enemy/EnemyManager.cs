@@ -55,9 +55,6 @@ namespace ShepProject {
 
 		public int[] idChecks;
 
-		[SerializeField]
-		private List<BaseTower> towers;
-
 		private Dictionary<int, EnemyPhysicsMethods> enemyPhysicsMethods;
 
 
@@ -130,7 +127,7 @@ namespace ShepProject {
 
 
 			int targetCount = 100;
-			genes = new GenesArray(maxEnemies * ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
+			genes = new GenesArray(maxEnemies, ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
 
 			choosableTargets = new NativeList<ushort>(targetCount, Allocator.Persistent);
 			targetIDs = new NativeArray<ushort>(maxEnemies, Allocator.Persistent);
@@ -153,29 +150,8 @@ namespace ShepProject {
 				targetIDs[i] = ushort.MaxValue;
 
 
-			StartCoroutine(EnableTowers());
-
 		}
 
-
-		private IEnumerator EnableTowers()
-		{
-			yield return new WaitForEndOfFrame();
-            yield return new WaitForEndOfFrame();
-            yield return new WaitForEndOfFrame();
-
-			if (towers != null)
-			{
-
-				for (int i = 0; i < towers.Count; i++)
-				{
-
-					towers[i].gameObject.SetActive(true);
-
-				}
-			}
-
-        }
 
 		private void Start() {
 
@@ -554,6 +530,7 @@ namespace ShepProject {
 
 			enemiesLeftToSpawn--;
 			ushort id = quadTree.AddTransform(enemy);
+			genes.AddGenesToObject(id);
 
 			//offset 1 for type, then attractions count
 			genes.SetObjectType(id, ObjectType.Slime);
@@ -621,6 +598,7 @@ namespace ShepProject {
                 sheep.transform.position = new Vector3(Random.Range(min, max), 0, Random.Range(min, max));
 
                 ushort id = quadTree.AddTransform(sheep.transform);
+				genes.AddGenesToObject(id);
 
                 genes.SetObjectType(id, ObjectType.Sheep);
                 genes.SetAttraction(id, ObjectType.Slime, 1);
@@ -645,7 +623,6 @@ namespace ShepProject {
 
 
 		}
-
 
         private void AddBurrow(int count = 1) 
 		{
@@ -672,8 +649,6 @@ namespace ShepProject {
 			}
 
 		}
-
-
 
 		#endregion
 

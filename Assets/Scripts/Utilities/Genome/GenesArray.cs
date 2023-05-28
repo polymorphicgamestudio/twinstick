@@ -5,42 +5,46 @@ using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 
-namespace ShepProject {
+namespace ShepProject
+{
 
 
-	public enum GeneGroups {
+    public enum GeneGroups
+    {
 
-		Type,
-		StatStartIndex = 1 // object type
-			+ (int)ObjectType.Count //for all the possible attractions an object can have
-			+ (int)ViewRange.Count
-			+ (int)DamageType.Count
-			+ (int)OptimalDistance.Count,
-		Speed,
-		TurnRate,
-		Health,
-		TotalGeneCount
+        Type,
+        StatStartIndex = 1 // object type
+            + (int)ObjectType.Count //for all the possible attractions an object can have
+            + (int)ViewRange.Count
+            + (int)DamageType.Count
+            + (int)OptimalDistance.Count,
+        Speed,
+        TurnRate,
+        Health,
+        TotalGeneCount
 
-	}
+    }
 
     #region Same ordering needed for these enums
 
-	public enum ViewRange {
-		Slime,
-		Tower,
-		Player,
-		Wall,
-		Count
-	}
+    public enum ViewRange
+    {
+        Slime,
+        Tower,
+        Player,
+        Wall,
+        Count
+    }
 
-	public enum ObjectType {
+    public enum ObjectType
+    {
 
-		Slime,
-		Tower,
+        Slime,
+        Tower,
         Player,
         Wall,
         Sheep,
-		Count
+        Count
 
     }
 
@@ -67,67 +71,109 @@ namespace ShepProject {
 
     }
 
-    public struct GenesArray {
+    public struct GenesArray
+    {
 
-		[NativeDisableContainerSafetyRestriction]
-		private NativeArray<float> genes;
+        [NativeDisableContainerSafetyRestriction]
+        private NativeArray<float> genes;
 
-		public GenesArray(int genesCount, Allocator type) {
+        [NativeDisableContainerSafetyRestriction]
+        private NativeArray<ObjectType> objectTypes;
 
-			genes = new NativeArray<float>(genesCount, type);
-            genes = new NativeArray<float>(genesCount, type);
+        [NativeDisableContainerSafetyRestriction]
+        private NativeArray<ushort> geneIDs;
+
+        private ushort objectCount;
+
+        public ushort ObjectCount => objectCount;
+
+        public GenesArray(int maxObjects, int genesPerObject, Allocator type)
+        {
+
+            genes = new NativeArray<float>(maxObjects * genesPerObject, type);
+            objectTypes = new NativeArray<ObjectType>(maxObjects, type);
+            geneIDs = new NativeArray<ushort>(maxObjects, type);
+
+            for (int i = 0; i < geneIDs.Length; i++)
+            {
+                geneIDs[i] = ushort.MaxValue;
+
+            }
+
+            objectCount = 0;
         }
 
-        #region Get Specific Gene Methods
-        private int IDTypeIndex(int id) {
 
-			return id * (int)GeneGroups.TotalGeneCount;
-		}
+
+        #region Get Specific Gene Methods
+
+        public void AddGenesToObject(ushort objectID)
+        {
+            geneIDs[objectID] = objectCount;
+            objectCount++;
+        }
+
+        private int IDTypeIndex(int id)
+        {
+
+            if (geneIDs[id] == ushort.MaxValue)
+            {
+                Debug.LogError("Object hasn't been assigned.");
+                return ushort.MaxValue;
+            }
+
+            return geneIDs[id] * (int)GeneGroups.TotalGeneCount;
+        }
 
         public ObjectType GetObjectType(int id)
         {
-            return (ObjectType)genes[IDTypeIndex(id)];
+            return objectTypes[id];
         }
 
         public void SetObjectType(int id, ObjectType type)
         {
-            genes[IDTypeIndex(id)] = (int)type;
+            objectTypes[id] = type;
         }
 
         public float GetAttraction(int id, int attraction)
-		{
+        {
             return genes[IDTypeIndex(id) + 1 + attraction];
         }
 
-		public float GetAttraction(int id, ObjectType attraction) {
+        public float GetAttraction(int id, ObjectType attraction)
+        {
 
-			return GetAttraction(id, (int)attraction);
-		}
-		public void SetAttraction(int id, ObjectType attraction, float value) {
+            return GetAttraction(id, (int)attraction);
+        }
+        public void SetAttraction(int id, ObjectType attraction, float value)
+        {
 
-			genes[IDTypeIndex(id) + 1 + (int)attraction] = value;
+            genes[IDTypeIndex(id) + 1 + (int)attraction] = value;
 
-		}
+        }
 
-		public float GetViewRange(int id, ViewRange range) {
+        public float GetViewRange(int id, ViewRange range)
+        {
 
-			return genes[IDTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range];
-		}
+            return genes[IDTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range];
+        }
 
-		public void SetViewRange(int id, ViewRange range, float value) {
+        public void SetViewRange(int id, ViewRange range, float value)
+        {
 
-			genes[IDTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range] = value;
-		}
+            genes[IDTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range] = value;
+        }
 
-		public float GetResistance(int id, DamageType damageType) {
+        public float GetResistance(int id, DamageType damageType)
+        {
 
-			return genes[IDTypeIndex(id) + (int)damageType]; 
-		}
+            return genes[IDTypeIndex(id) + (int)damageType];
+        }
 
         public void SetResistance(int id, DamageType damageType, float value)
         {
-			genes[IDTypeIndex(id) + (int)damageType] = value;
-		}
+            genes[IDTypeIndex(id) + (int)damageType] = value;
+        }
 
         public float GetOptimalDistance(int id, OptimalDistance optimalDistance)
         {
@@ -155,57 +201,59 @@ namespace ShepProject {
             genes[IDTypeIndex(id) + (int)GeneGroups.Speed] = speed;
         }
 
-        public float GetTurnRate(int id) {
+        public float GetTurnRate(int id)
+        {
 
-			return genes[IDTypeIndex(id) + (int)GeneGroups.TurnRate];
-		}
+            return genes[IDTypeIndex(id) + (int)GeneGroups.TurnRate];
+        }
 
-		public void SetTurnRate(int id, float value) {
+        public void SetTurnRate(int id, float value)
+        {
 
-			genes[IDTypeIndex(id) + (int)GeneGroups.TurnRate] = value;
+            genes[IDTypeIndex(id) + (int)GeneGroups.TurnRate] = value;
 
-		}
+        }
 
-		public float GetHealth(int id)
-		{
-			int index = IDTypeIndex(id) + (int)GeneGroups.Health;
+        public float GetHealth(int id)
+        {
+            int index = IDTypeIndex(id) + (int)GeneGroups.Health;
 
-			return genes[index];
-		}
+            return genes[index];
+        }
 
-		public void SetHealth (int id, float value)
-		{
-			int index = IDTypeIndex(id) + (int)GeneGroups.Health;
-			genes[index] = value;
+        public void SetHealth(int id, float value)
+        {
+            int index = IDTypeIndex(id) + (int)GeneGroups.Health;
+            genes[index] = value;
 
-		}
+        }
 
 
-		#endregion
+        #endregion
 
-		public void ResetIDGenes(int id)
-		{
+        public void ResetIDGenes(int id)
+        {
 
-			int startIndex = id * (int)GeneGroups.TotalGeneCount;
+            int startIndex = id * (int)GeneGroups.TotalGeneCount;
 
 
             for (int i = startIndex; i < startIndex + (int)GeneGroups.TotalGeneCount; i++)
-			{
-				genes[i] = -1;
+            {
+                genes[i] = -1;
 
-			}
+            }
 
 
-		}
+        }
 
-		/// <summary>
-		/// When an object's ID is updated, need to call this method to update the information
-		/// to still be correct in the array.
-		/// </summary>
-		/// <param name="readFrom"></param>
-		/// <param name="writeTo"></param>
-		public void TransferGenes(int readFrom, int writeTo)
-		{
+        /// <summary>
+        /// When an object's ID is updated, need to call this method to update the information
+        /// to still be correct in the array.
+        /// </summary>
+        /// <param name="readFrom"></param>
+        /// <param name="writeTo"></param>
+        public void TransferGenes(int readFrom, int writeTo)
+        {
 
             int readStartIndex = readFrom * (int)GeneGroups.TotalGeneCount;
             int writeStartIndex = writeTo * (int)GeneGroups.TotalGeneCount;
@@ -214,7 +262,7 @@ namespace ShepProject {
             for (int i = 0; i < (int)GeneGroups.TotalGeneCount; i++)
             {
                 genes[writeStartIndex + i] = genes[readStartIndex + i];
-				genes[readStartIndex + i] = -1;
+                genes[readStartIndex + i] = -1;
 
             }
 
@@ -225,13 +273,16 @@ namespace ShepProject {
 
 
 
-        public void Dispose() {
+        public void Dispose()
+        {
+            genes.Dispose();
+            geneIDs.Dispose();
+            objectTypes.Dispose();
+        
+        }
 
-			genes.Dispose();
-		}
 
 
-
-	}
+    }
 
 }
