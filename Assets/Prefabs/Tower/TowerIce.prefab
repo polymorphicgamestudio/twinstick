@@ -904,6 +904,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: IceSpray
       objectReference: {fileID: 0}
+    - target: {fileID: 3637528566991714881, guid: a1b7605916cf68e4daadb9f61b7bad25, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

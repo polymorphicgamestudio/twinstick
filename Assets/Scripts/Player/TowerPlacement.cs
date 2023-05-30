@@ -51,6 +51,7 @@ public class TowerPlacement : MonoBehaviour {
 
 	//! this should be updated to use the new input system!
 	void UpdateActionSelectionNumber() {
+		/*
 		if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) actionSelectionNumber = 1;
 		if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) actionSelectionNumber = 2;
 		if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)) actionSelectionNumber = 3;
@@ -63,6 +64,20 @@ public class TowerPlacement : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0)) actionSelectionNumber = 0;
 		if (Input.GetKeyDown(KeyCode.Q)) actionSelectionNumber--;
 		if (Input.GetKeyDown(KeyCode.E)) actionSelectionNumber++;
+		*/
+		//still temporary solution but using new input system.  all this functionality should probably be elsewhere of course.
+		if (Keyboard.current.digit1Key.wasPressedThisFrame || Keyboard.current.numpad1Key.wasPressedThisFrame) actionSelectionNumber = 1;
+		if (Keyboard.current.digit2Key.wasPressedThisFrame || Keyboard.current.numpad1Key.wasPressedThisFrame) actionSelectionNumber = 2;
+		if (Keyboard.current.digit3Key.wasPressedThisFrame || Keyboard.current.numpad1Key.wasPressedThisFrame) actionSelectionNumber = 3;
+		if (Keyboard.current.digit4Key.wasPressedThisFrame || Keyboard.current.numpad1Key.wasPressedThisFrame) actionSelectionNumber = 4;
+		if (Keyboard.current.digit5Key.wasPressedThisFrame || Keyboard.current.numpad1Key.wasPressedThisFrame) actionSelectionNumber = 5;
+		if (Keyboard.current.digit6Key.wasPressedThisFrame || Keyboard.current.numpad1Key.wasPressedThisFrame) actionSelectionNumber = 6;
+		if (Keyboard.current.digit7Key.wasPressedThisFrame || Keyboard.current.numpad1Key.wasPressedThisFrame) actionSelectionNumber = 7;
+		if (Keyboard.current.digit8Key.wasPressedThisFrame || Keyboard.current.numpad1Key.wasPressedThisFrame) actionSelectionNumber = 8;
+		if (Keyboard.current.digit9Key.wasPressedThisFrame || Keyboard.current.numpad1Key.wasPressedThisFrame) actionSelectionNumber = 9;
+		if (Keyboard.current.digit0Key.wasPressedThisFrame || Keyboard.current.numpad1Key.wasPressedThisFrame) actionSelectionNumber = 0;
+		if (Keyboard.current.qKey.wasPressedThisFrame) actionSelectionNumber--;
+		if (Keyboard.current.eKey.wasPressedThisFrame) actionSelectionNumber++;
 
 		if (ShepGM.inst.actions.Player.ActionSelectionDown.triggered) actionSelectionNumber--;
 		if (ShepGM.inst.actions.Player.ActionSelectionUp.triggered) actionSelectionNumber++;
