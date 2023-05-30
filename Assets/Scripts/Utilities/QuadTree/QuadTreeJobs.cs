@@ -414,7 +414,7 @@ namespace ShepProject {
 		public void Execute(int index, TransformAccess transform) {
 
 			if (genes.GetObjectType(index) != ObjectType.Slime
-				|| genes.GetObjectType(index) != ObjectType.Sheep)
+				&& genes.GetObjectType(index) != ObjectType.Sheep)
 			{
 				return;
 			}
