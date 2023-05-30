@@ -1,0 +1,784 @@
+fileFormatVersion: 2
+guid: 0f3337260a4ca194bb28a0ea780652f5
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 12
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 0
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 0
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: HUD_PanelOutlineBottom
+      rect:
+        serializedVersion: 2
+        x: 364
+        y: 743
+        width: 463
+        height: 228
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 222, y: 0, z: 222, w: 226}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 497003a375d1d8045991c7644740e266
+      internalID: 1172816974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_PanelOutlineBottomSide
+      rect:
+        serializedVersion: 2
+        x: 361
+        y: 743
+        width: 3
+        height: 9
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 7}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc11ae9834baf5e4f80afbedba0dc6e0
+      internalID: -1418882233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_PanelFillBottom
+      rect:
+        serializedVersion: 2
+        x: 359
+        y: 471
+        width: 463
+        height: 228
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 222, y: 0, z: 222, w: 226}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a93714ac9ea371145847a752b27d611f
+      internalID: 508273305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_PanelFillBottomSide
+      rect:
+        serializedVersion: 2
+        x: 356
+        y: 471
+        width: 3
+        height: 9
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 7}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f73441cdc29ffb446972811db7fc9c98
+      internalID: -1498910598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_PanelOutlineTop
+      rect:
+        serializedVersion: 2
+        x: 882
+        y: 715
+        width: 371
+        height: 182
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 176, y: 180, z: 176, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 434c0d6bafb98dc47997362a854c5b84
+      internalID: -161500475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_PanelFillTop
+      rect:
+        serializedVersion: 2
+        x: 882
+        y: 496
+        width: 371
+        height: 182
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 176, y: 180, z: 176, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39b0892bcb6b77c4d9e84285abda0edf
+      internalID: 2058280464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_PanelOutlineTopSide
+      rect:
+        serializedVersion: 2
+        x: 879
+        y: 888
+        width: 3
+        height: 9
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 7, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5636fc66e29fe3945835991c5df8c932
+      internalID: -1287686309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_PanelFillTopSide
+      rect:
+        serializedVersion: 2
+        x: 879
+        y: 669
+        width: 3
+        height: 9
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 7, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10458083ec9f4eb4987f6924fbaac5e6
+      internalID: -1747618775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_PanelOutlineMiddle
+      rect:
+        serializedVersion: 2
+        x: 841
+        y: 161
+        width: 256
+        height: 258
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 68, y: 108, z: 68, w: 108}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ee8d00b4f2e4fe48a160235f3992033
+      internalID: -154774758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_PanelFillMiddle
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 161
+        width: 256
+        height: 258
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 68, y: 108, z: 68, w: 108}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eed9f40b87e50344aa12cb2ed1f930f1
+      internalID: -760570095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_ActionButtonOutline
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 808
+        width: 150
+        height: 149
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 11, y: 11, z: 11, w: 11}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd776a2a377da704cb430fee2e62c5f0
+      internalID: 1099854401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_ActionButtonFill
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 808
+        width: 150
+        height: 150
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 11, y: 11, z: 11, w: 11}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5d6b6a29c52e8d4baeec42607ed2a60
+      internalID: -79787307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_CircleButtonOutline
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 648
+        width: 151
+        height: 150
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d1d9db1de5ff8847bba67a2ab827fd2
+      internalID: -785802405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_CircleBUttonFill
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 648
+        width: 151
+        height: 150
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c868a4e784866f04a9fca4659fcc5658
+      internalID: 2128795327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_ActionIconAcid
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 18
+        width: 116
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1226084eefc7e00429273879280ec125
+      internalID: -1663009437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_ActionIconFire
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 18
+        width: 116
+        height: 116
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc747f78f7e391e4bb925e70a21d6943
+      internalID: 850366950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_ActionIconBlaster
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 17
+        width: 116
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7e482920bb6f7f42a3e05c2f5aa53bd
+      internalID: 73102355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_ActionIconShock
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 18
+        width: 116
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 719866785e5e6104a8481820c4e7d36b
+      internalID: -799314176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_ActionIconIce
+      rect:
+        serializedVersion: 2
+        x: 624
+        y: 18
+        width: 116
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75bae9184fb6b734eaec990862aac876
+      internalID: 376690495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_ActionIconLaser
+      rect:
+        serializedVersion: 2
+        x: 776
+        y: 18
+        width: 116
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6dec7dc96a31e1c4ca073c734cd71ad0
+      internalID: -43686176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_IconHighScore
+      rect:
+        serializedVersion: 2
+        x: 957
+        y: 0
+        width: 150
+        height: 150
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a242bb0b848ecd4abd8e0eda973dd45
+      internalID: 163274774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_IconSheep
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 223
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f307480eb68e1f4fbdf173fb2560e08
+      internalID: -637971381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_IconCamera
+      rect:
+        serializedVersion: 2
+        x: 447
+        y: 217
+        width: 93
+        height: 93
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9406f8b5dba461744884856a862c28bc
+      internalID: -283636204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_IconHamburger
+      rect:
+        serializedVersion: 2
+        x: 359
+        y: 153
+        width: 68
+        height: 68
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d85c223c948de74784878b66b75b136
+      internalID: 1032008659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_UseCountContainer
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 159
+        width: 55
+        height: 55
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d25b57bce66d1e748adb6b1e5c9d7df7
+      internalID: 1901808242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_ActionIconSnipe
+      rect:
+        serializedVersion: 2
+        x: 1130
+        y: 8
+        width: 116
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1876492e02cf11f4d890569b91102476
+      internalID: 1728145261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_ActionIconShoot
+      rect:
+        serializedVersion: 2
+        x: 1131
+        y: 137
+        width: 116
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a289b5bdbe71294ea4255513649669e
+      internalID: 1960461453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_ActionIconBlast
+      rect:
+        serializedVersion: 2
+        x: 1132
+        y: 270
+        width: 116
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7109d7f720e729248a9a2b0a4f3b5294
+      internalID: -2110504723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HUD_ActionIconWall
+      rect:
+        serializedVersion: 2
+        x: 1130
+        y: 385
+        width: 116
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd7b93846afdfda4883d009f7687dd47
+      internalID: -2143024840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IconInfinty
+      rect:
+        serializedVersion: 2
+        x: 1266
+        y: 453
+        width: 38
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db35c3dfa2438e848ae4bc1aebc0cf39
+      internalID: 496574861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      HUD_ActionButtonFill: -79787307
+      HUD_ActionButtonOutline: 1099854401
+      HUD_ActionIconAcid: -1663009437
+      HUD_ActionIconBlast: -2110504723
+      HUD_ActionIconBlaster: 73102355
+      HUD_ActionIconFire: 850366950
+      HUD_ActionIconIce: 376690495
+      HUD_ActionIconLaser: -43686176
+      HUD_ActionIconShock: -799314176
+      HUD_ActionIconShoot: 1960461453
+      HUD_ActionIconSnipe: 1728145261
+      HUD_ActionIconWall: -2143024840
+      HUD_CircleBUttonFill: 2128795327
+      HUD_CircleButtonOutline: -785802405
+      HUD_IconCamera: -283636204
+      HUD_IconHamburger: 1032008659
+      HUD_IconHighScore: 163274774
+      HUD_IconSheep: 412425406
+      HUD_PanelFillBottom: 508273305
+      HUD_PanelFillBottomSide: -1498910598
+      HUD_PanelFillMiddle: -760570095
+      HUD_PanelFillTop: 2058280464
+      HUD_PanelFillTopSide: -1747618775
+      HUD_PanelOutlineBottom: 1172816974
+      HUD_PanelOutlineBottomSide: -1418882233
+      HUD_PanelOutlineMiddle: -154774758
+      HUD_PanelOutlineTop: -161500475
+      HUD_PanelOutlineTopSide: -1287686309
+      HUD_UseCountContainer: 1901808242
+      IconInfinty: 496574861
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
