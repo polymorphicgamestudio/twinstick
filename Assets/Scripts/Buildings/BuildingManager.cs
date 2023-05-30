@@ -26,6 +26,8 @@ namespace ShepProject
         private RobotModeController modeController;
 
         private int currentBuildingIndex;
+        public int actionSelectionNumber;
+
         private GameObject currentHologram;
         private WallPlacement wallPlacement;
 
@@ -72,9 +74,11 @@ namespace ShepProject
 
 
             //uncomment and implement these in order to stop build mode
-            Inst.actions.Player.WeaponOne.performed += CancelBuildMode;
-            Inst.actions.Player.WeaponTwo.performed += CancelBuildMode;
-            Inst.actions.Player.WeaponThree.performed += CancelBuildMode;
+
+
+            Inst.actions.Player.WeaponOne.performed += ActionSelectionOne;
+            Inst.actions.Player.WeaponTwo.performed += ActionSelectionTwo;
+            Inst.actions.Player.WeaponThree.performed += ActionSelectionThree;
 
 
 
@@ -222,7 +226,31 @@ namespace ShepProject
 
         #endregion
 
-        private void CancelBuildMode(InputAction.CallbackContext obj)
+
+        private void ActionSelectionOne(InputAction.CallbackContext obj)
+        {
+            actionSelectionNumber = 1;
+            CancelBuildMode();
+
+
+        }
+        private void ActionSelectionTwo(InputAction.CallbackContext obj)
+        {
+            actionSelectionNumber = 2;
+            CancelBuildMode();
+
+
+        }
+
+        private void ActionSelectionThree(InputAction.CallbackContext obj)
+        {
+
+            actionSelectionNumber = 3;
+            CancelBuildMode();
+
+        }
+
+        private void CancelBuildMode()
         {
             modeController.TurnOffBuildMode();
 
@@ -291,6 +319,8 @@ namespace ShepProject
 
         private void InstantiateHologram(int towerIndex)
         {
+
+            actionSelectionNumber = towerIndex + 4;
 
             if (running)
                 return;
