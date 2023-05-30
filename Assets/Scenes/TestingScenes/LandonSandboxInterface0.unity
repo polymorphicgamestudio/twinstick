@@ -551,9 +551,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1376883475}
-  playableArea: {fileID: 0}
-  wallCollider: {fileID: 0}
-  enemyManager: {fileID: 0}
+  aiManager: {fileID: 0}
+  buildingManager: {fileID: 0}
+  pathfindingManager: {fileID: 0}
 --- !u!4 &246015355
 Transform:
   m_ObjectHideFlags: 0
@@ -9205,7 +9205,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: bb86efd25a62a4d49b57f4aceb0fa2a7, type: 3}
+  m_Sprite: {fileID: 1099854401, guid: 0f3337260a4ca194bb28a0ea780652f5, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -10711,7 +10711,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26d81cd0bc2918b42acc2562b5058f0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraController: {fileID: 0}
   running: 0
   runParticles: {fileID: 0}
 --- !u!54 &1376883477
