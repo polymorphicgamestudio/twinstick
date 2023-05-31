@@ -361,11 +361,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   barrel: {fileID: 3578508331868303610}
-  barrelParticles: {fileID: 0}
-  beam: {fileID: 7334720914237780548}
-  beamActivationTime: 0.2
   lightningBolt: {fileID: 7334720914237780545}
   end: {fileID: 7334720912698078050}
+  beamActivationTime: 0.1
 --- !u!1 &2825773110333614817
 GameObject:
   m_ObjectHideFlags: 0
@@ -809,6 +807,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: LightningBolt
       objectReference: {fileID: 0}
+    - target: {fileID: 1553354484848905667, guid: c8b700312f47a164b8d011a1957a8806, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1553354484848905670, guid: c8b700312f47a164b8d011a1957a8806, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -831,10 +833,5 @@ GameObject:
 --- !u!4 &7334720914237780546 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1553354484848905664, guid: c8b700312f47a164b8d011a1957a8806, type: 3}
-  m_PrefabInstance: {fileID: 8089791371216994178}
-  m_PrefabAsset: {fileID: 0}
---- !u!120 &7334720914237780548 stripped
-LineRenderer:
-  m_CorrespondingSourceObject: {fileID: 1553354484848905670, guid: c8b700312f47a164b8d011a1957a8806, type: 3}
   m_PrefabInstance: {fileID: 8089791371216994178}
   m_PrefabAsset: {fileID: 0}
