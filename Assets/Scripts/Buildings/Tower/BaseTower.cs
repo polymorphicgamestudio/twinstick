@@ -77,6 +77,11 @@ public abstract class BaseTower : MonoBehaviour
     }
 
 
-    public abstract void ShootTurret();
+    public virtual void ShootTurret()
+    {
+
+        animator.SetTrigger("Shoot");
+
+    }
 
 }
