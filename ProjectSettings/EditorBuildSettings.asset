@@ -5,11 +5,17 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/TestingScenes/Justin Test Scene.unity
     guid: c1e2f63f34c5fca47b3b17251849c4ef
   - enabled: 0
-    path: Assets/Scenes/MainScene.unity
-    guid: eace8d9415952624d81f5d50aff631fa
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/ProductionScenes/TitleScreen.unity
+    guid: 37aa4979cd2e8534190216567265e4f2
+  - enabled: 1
+    path: Assets/Scenes/ProductionScenes/GameScene.unity
+    guid: 20ae116611701a548a4fefc9ef43ca67
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: f9d47c3c53735ab4db12e0ba3b522a0d, type: 2}
