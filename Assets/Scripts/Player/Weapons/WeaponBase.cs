@@ -27,6 +27,9 @@ public class WeaponBase
         if (!shooting)
             return;
 
+
+        currentTimer = timer;
+
         Shoot();
 
 

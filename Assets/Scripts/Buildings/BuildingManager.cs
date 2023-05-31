@@ -49,6 +49,8 @@ namespace ShepProject
         private void Start()
         {
 
+            actionSelectionNumber = 1;
+
             currentBuildUps = new List<GameObject>();
             buildUpTimers = new List<float>();
             towers = new List<BaseTower>();

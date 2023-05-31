@@ -18,12 +18,22 @@ namespace ShepProject
         public int currentWeapon;
         public WeaponBase[] weapons;
 
+
+        private void Awake()
+        {
+
+            currentWeapon = 0;
+            weapons[currentWeapon].EquipWeapon(bulletSpawn);
+
+
+        }
+
+
         // Start is called before the first frame update
         void Start()
         {
             Inst = ShepGM.inst;
             controller = GetComponent<RobotController>();
-            currentWeapon = -1;
 
             Inst.actions.Player.Action.started += Shoot;
             Inst.actions.Player.Action.canceled += ShootCanceled;

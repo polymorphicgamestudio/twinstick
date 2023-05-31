@@ -39,8 +39,6 @@ public abstract class BeamTowerController : BaseTower
         currentBeamActivationTime = beamActivationTime;
 
         beam.enabled = true;
-        //beam.SetPosition(0, barrel.position);
-        //beam.SetPosition(1, hit.point);
 
 
     }
