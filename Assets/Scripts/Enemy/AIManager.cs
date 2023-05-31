@@ -303,11 +303,11 @@ namespace ShepProject
 
             }
 
+
             ResetNativeArrayJob<float2> resetJob = new ResetNativeArrayJob<float2>();
             resetJob.array = objectForces;
             JobHandle resetJobHandle
                 = resetJob.Schedule(objectForces.Length, SystemInfo.processorCount);
-
 
             quadTree.NewFrame();
 
@@ -326,10 +326,7 @@ namespace ShepProject
 
             TreeObjectCount = quadTree.positionCount;
 
-            //if (quadTree.positionCount >= 1000)
-            //spawningEnemies = false;
             quadTree.Update();
-
 
             resetJobHandle.Complete();
 
@@ -652,7 +649,7 @@ namespace ShepProject
                 //else
                 //burrow.gameObject.transform.position = new Vector3(Random.Range(-min, -max), 0, Random.Range(-min, -max));
 
-                burrow.Initialize(this, .5f);
+                burrow.Initialize(this, 1f);
 
                 burrows.Add(burrow);
                 burrow.gameObject.SetActive(true);

@@ -16,7 +16,7 @@ namespace ShepProject
         public NativeArray<T> array;
         public void Execute(int index)
         {
-            array[index] = new T();
+            array[index] = default;
         }
     }
 
