@@ -345,6 +345,13 @@ namespace ShepProject
 
                 localPosition = (positions[objectIDs[i]] - positions[objectID]);
 
+                float sqDist = MathUtil.SqrMagnitude(localPosition);
+
+
+                //if the positions are the exact same return
+                if (sqDist < .001f)
+                    continue;
+
 
                 //for debugging rays only
                 Vector3 pos = new Vector3();
@@ -354,7 +361,6 @@ namespace ShepProject
 
                 Vector3 local = new Vector3();
 
-                float sqDist = (math.pow(localPosition.x, 2) + math.pow(localPosition.y, 2));
 
                 //if greater than this distance, ignore and continue on
                 if (sqDist > maxDistSq)
@@ -500,7 +506,6 @@ namespace ShepProject
                                 * genes.GetAttraction(objectID, targetType));
 
 
-
                         }
                         ////sheep will go close to towers since 
                         //else if (objType == ObjectType.Sheep)
@@ -518,6 +523,9 @@ namespace ShepProject
                     default:
                         break;
                 }
+
+
+
 
 
             }
@@ -602,7 +610,6 @@ namespace ShepProject
 
                 moveTowards += objectForces[(objectID * (int)ObjectType.Count) + i];
 
-
                 dir.x = objectForces[(objectID * (int)ObjectType.Count) + i].x;
                 dir.y = 0;
                 dir.z = objectForces[(objectID * (int)ObjectType.Count) + i].y;
@@ -622,19 +629,11 @@ namespace ShepProject
             }
             else if (maxMagnitude == 0)
             {
-
-                int test = 0;
                 maxMagnitude = genes.GetAttraction(objectID, ObjectType.Sheep);
-            }
-            else
-            {
-                int test = 0;
             }
 
             moveTowards += MathUtil.ClampMagnitude(objectForces[(objectID * (int)ObjectType.Count) + (int)(ObjectType.Sheep)], maxMagnitude);
             pos.y = .5f;
-
-
 
             dir.x = objectForces[(objectID * (int)ObjectType.Count) + (int)ObjectType.Sheep].x;
             dir.y = 0;
@@ -678,17 +677,9 @@ namespace ShepProject
                 headings[objectID] += 2 * math.PI;
             }
 
-            headings[objectID]
-                //= headingCalculation;
-                = math.lerp(headings[objectID], headingCalculation,
+            headings[objectID] = math.lerp(headings[objectID], headingCalculation,
                 math.clamp((math.PI * 3 * genes.GetTurnRate(objectID)) * deltaTime
                 / math.abs(local), 0, 1));
-
-            if (headings[objectID] == float.NaN)
-            {
-                int test = 0;
-            }
-
 
 
         }
