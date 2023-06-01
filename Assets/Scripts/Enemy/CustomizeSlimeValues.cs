@@ -66,7 +66,7 @@ public class CustomizeSlimeValues : MonoBehaviour
     //public float slimeTurnRate;
     //public float slimeHealth;
 
-    public AIManager manager;
+    public NPCManager manager;
 
     public Toggle toggleShow;
     [Space(15)]

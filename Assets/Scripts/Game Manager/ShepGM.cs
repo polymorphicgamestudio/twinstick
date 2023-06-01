@@ -22,7 +22,7 @@ namespace ShepProject
 		public Transform player;
 
 		[SerializeField]
-		private AIManager aiManager;
+		private NPCManager aiManager;
 
 		[SerializeField]
 		private BuildingManager buildingManager;
@@ -30,7 +30,7 @@ namespace ShepProject
 		[SerializeField]
 		private PathfindingManager pathfindingManager;
 
-		public AIManager AIManager => aiManager;
+		public NPCManager AIManager => aiManager;
 
 		public event EventTrigger gameOver;
 

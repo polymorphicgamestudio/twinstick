@@ -21,7 +21,7 @@ namespace ShepProject {
 		public NativeList<ushort> deletions;
 		public NativeArray<float2> positions;
 
-		public AIManager enemyManager;
+		public NPCManager enemyManager;
 		private Transform[] transforms;
 		public Transform[] Transforms => transforms;
 
@@ -535,26 +535,19 @@ namespace ShepProject {
 		{
 
 
+
 			Transform inactive = transforms[objectID];
 			inactive.gameObject.SetActive(false);
 			transforms[objectID] = null;
 
-
-
             ushort sorted = sortedObjectIDs[objectID];
 			ushort overwrite = objectIDs[positionCount];
-			//ushort overwriteSorted = sortedObjectIDs[objectIDs[positionCount]];
 
+            sortedObjectIDs[objectIDs[positionCount]] = sortedObjectIDs[objectID];
+            sortedObjectIDs[objectID] = (ushort)positionCount;
 
-
-			objectIDs[sorted] = overwrite;
+            objectIDs[sorted] = overwrite;
             objectIDs[positionCount] = objectID;
-
-			//need to update the sortedIDs as well to make sure there are no errors
-
-			sortedObjectIDs[objectIDs[positionCount]] = sortedObjectIDs[objectID];
-			sortedObjectIDs[objectID] = (ushort)positionCount;
-
 
             positionCount--;
 			return inactive;

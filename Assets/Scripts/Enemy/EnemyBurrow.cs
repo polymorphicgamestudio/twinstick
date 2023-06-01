@@ -7,15 +7,13 @@ namespace ShepProject {
     public class EnemyBurrow : MonoBehaviour {
 
 
-        private AIManager manager;
-        [SerializeField]
-        private GameObject enemyPrefab;
+        private NPCManager manager;
         private float spawnTime;
         private float currentSpawnTime;
 
         private int enemiesToSpawn;
 
-        public void Initialize(AIManager manager, float spawnTime) {
+        public void Initialize(NPCManager manager, float spawnTime) {
 
 			this.manager = manager;
 			this.spawnTime = spawnTime;
@@ -43,11 +41,14 @@ namespace ShepProject {
 
             //spawn base enemy prefab which has all base behaviours
             //then add it to the list
-            GameObject enemy = GameObject.Instantiate(enemyPrefab);
-            enemy.transform.position = transform.position;
-            enemy.SetActive(true);
 
-			manager.AddEnemyToList(enemy.transform);
+
+
+            EnemyPhysicsMethods enemy = manager.GetPooledSlime();
+            enemy.transform.position = transform.position;
+            enemy.gameObject.SetActive(true);
+
+			manager.AddEnemyToList(enemy);
 
 
 

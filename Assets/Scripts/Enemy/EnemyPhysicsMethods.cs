@@ -11,7 +11,7 @@ namespace ShepProject
     {
 
         [SerializeField]
-        private int enemyID;
+        private ushort enemyID;
 
         public int EnemyID => enemyID;
 
@@ -19,12 +19,12 @@ namespace ShepProject
 
         [SerializeField]
         private Rigidbody rb;
-        private AIManager manager;
-
+        private NPCManager manager;
+        private float currentHealth;
 
         public bool Initialized()
         {
-            return enemyID != -1;
+            return enemyID != ushort.MaxValue;
 
         }
 
@@ -35,7 +35,7 @@ namespace ShepProject
         }
 
 
-        public void SetInitialInfo(ushort enemyID, GenesArray genes, AIManager manager)
+        public void SetInitialInfo(ushort enemyID, GenesArray genes, NPCManager manager)
         {
 
             this.manager = manager;
@@ -51,21 +51,16 @@ namespace ShepProject
                                             //using this part when resistances work
             float scaledDamage = amount;// * genes.GetResistance(enemyID, damageType);
 
-            
+            currentHealth = genes.GetHealth(enemyID);
+            currentHealth -= scaledDamage;
 
+            genes.SetHealth(enemyID, currentHealth);
 
-            float health = genes.GetHealth(enemyID);
-
-
-            health -= scaledDamage;
-
-            genes.SetHealth(enemyID, health);
-
-            if (health < 0) 
+            if (currentHealth <= 0) 
             {
                 //enemy is dead, let enemyManager know
-                manager.OnEnemyDeath((ushort)enemyID);
-                enemyID = -1;
+                manager.OnEnemyDeath(enemyID);
+                enemyID = ushort.MaxValue;
             }
 
 

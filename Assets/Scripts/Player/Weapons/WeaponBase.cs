@@ -43,6 +43,7 @@ public class WeaponBase
 
     public void Shoot()
     {
+
         GameObject bullet = GameObject.Instantiate(projectile);
         bullet.transform.position = bulletSpawn.position;
         bullet.transform.rotation = bulletSpawn.rotation;

@@ -5744,7 +5744,7 @@ MonoBehaviour:
   currentWeapon: 0
   weapons:
   - name: Machine gun
-    timer: 0.5
+    timer: 0.03
     currentTimer: 0
     bulletSpeed: 20
     shooting: 0
