@@ -496,6 +496,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2746231355933929674, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
+      propertyPath: enemiesCountToSpawn
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 5453079091326956306, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: m_RootOrder
       value: 2

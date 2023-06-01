@@ -28,6 +28,15 @@ public class LaserTowerController : BeamTowerController
 
         base.ManualUpdate();
 
+        if (!beam.enabled)
+        {
+            laser.laserEnd.gameObject.SetActive(false);
+        }
+        else
+        {
+            laser.laserEnd.gameObject.SetActive(true);
+
+        }
 
         if (beam.enabled)
         {

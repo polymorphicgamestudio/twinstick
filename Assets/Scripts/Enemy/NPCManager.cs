@@ -26,37 +26,31 @@ namespace ShepProject
         private GameObject burrowPrefab;
         public GameObject sheepPrefab;
         public GameObject endOfWaveCanvasParent;
-        [SerializeField]
-        private EnemyPhysicsMethods slimePrefab;
-
-        [SerializeField]
-        private ushort initialSlimePool;
-
 
         public int burrowCount;
         public int sheepCount;
         public int maxEnemies;
 
-        [HideInInspector]
+        [ReadOnly]
         public int TreeObjectCount;
 
-        //[SerializeField]
-
+        [SerializeField]
         private int waveNumber;
         private bool duringWave;
         private bool updateInitialize;
 
         [SerializeField]
         private float countdownToWave;
+        [SerializeField]
         private float currentCountdownToWave;
 
         [SerializeField]
-        private int startingEnemyCount;
+        private int enemiesCountToSpawn;
         private int enemiesLeftToSpawn;
 
         private int enemiesLeftToKill;
 
-        //[SerializeField]
+        [SerializeField]
         private bool spawningEnemies;
 
         public int[] idChecks;
@@ -64,7 +58,6 @@ namespace ShepProject
         private Dictionary<int, EnemyPhysicsMethods> enemyPhysicsMethods;
 
 
-        private EnemyObjectPool slimePool;
 
         private List<EnemyBurrow> burrows;
 
@@ -142,7 +135,6 @@ namespace ShepProject
 
             int targetCount = 100;
             genes = new GenesArray(maxEnemies, ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
-            slimePool = new EnemyObjectPool(slimePrefab, (ushort)(initialSlimePool * 5), initialSlimePool);
 
             choosableTargets = new NativeList<ushort>(targetCount, Allocator.Persistent);
             targetIDs = new NativeArray<ushort>(maxEnemies, Allocator.Persistent);
@@ -277,8 +269,8 @@ namespace ShepProject
                 //spawn any additional required burrows
                 //then set the amount of enemies for them to each spawn
 
-                enemiesLeftToSpawn = startingEnemyCount;
-                int avg = startingEnemyCount / burrows.Count;
+                enemiesLeftToSpawn = enemiesCountToSpawn;
+                int avg = enemiesCountToSpawn / burrows.Count;
 
                 for (int i = 0; i < burrows.Count; i++)
                 {
@@ -302,8 +294,8 @@ namespace ShepProject
                 //all enemies have been assigned
                 //so now set the enemies left to spawn to the enemiesCountToSpawn
                 //in order to create a signal when all required enemies have been spawned
-                enemiesLeftToSpawn = startingEnemyCount;
-                enemiesLeftToKill = startingEnemyCount;
+                enemiesLeftToSpawn = enemiesCountToSpawn;
+                enemiesLeftToKill = enemiesCountToSpawn;
 
                 return;
 
@@ -419,13 +411,11 @@ namespace ShepProject
             for (int i = 0; i <= quadTree.positionCount; i++)
             {
 
-                //if being chased, set velocity, otherwise don't
-                int ID = quadTree.objectIDs[i];
-
                 if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Sheep)
                 {
 
-
+                    //if being chased, set velocity, otherwise don't
+                    int ID = quadTree.objectIDs[i];
 
                     if (sheepDistancesToSlimes[ID] > 64)
                     {
@@ -449,7 +439,7 @@ namespace ShepProject
                         quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
                             = (quadTree.Transforms[quadTree.objectIDs[i]].forward * (genes.GetSpeed(quadTree.objectIDs[i]) / 2f));
                     }
-                    else if (sheepDistancesToSlimes[ID] >= 0)
+                    else if (sheepDistancesToSlimes[ID] > 4)
                     {
                         //run animation
                         quadTree.Transforms[quadTree.objectIDs[i]].gameObject
@@ -457,8 +447,8 @@ namespace ShepProject
                         quadTree.Transforms[quadTree.objectIDs[i]].gameObject
                             .GetComponent<Animator>().SetBool("Running", true);
 
-                        quadTree.Transforms[ID].gameObject.GetComponent<Rigidbody>().velocity
-                            = (quadTree.Transforms[ID].forward * genes.GetSpeed(ID));
+                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
+                            = (quadTree.Transforms[quadTree.objectIDs[i]].forward * genes.GetSpeed(quadTree.objectIDs[i]));
                     }
                     else
                     {
@@ -476,9 +466,9 @@ namespace ShepProject
                         }
                         //choosableTargets[quadTree.objectIDs[i] - 1] = ushort.MaxValue;
 
-                        //sheep has died
+                        //die
                         genes.ResetIDGenes(quadTree.objectIDs[i]);
-                        RemoveObjectFromTree(quadTree.objectIDs[i]);
+                        quadTree.QueueDeletion(quadTree.objectIDs[i]);
 
                         for (int j = 0; j < targetIDs.Length; j++)
                         {
@@ -504,8 +494,8 @@ namespace ShepProject
                 else if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Slime)
                 {
 
-                    enemyPhysicsMethods[ID]
-                        .SetVelocity(quadTree.Transforms[ID].forward * genes.GetSpeed(ID));
+                    quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
+                        = (quadTree.Transforms[quadTree.objectIDs[i]].forward * genes.GetSpeed(quadTree.objectIDs[i]));
 
                 }
 
@@ -514,7 +504,7 @@ namespace ShepProject
 
             Profiler.EndSample();
 
-            //quadTree.ProcessDeletions();
+            quadTree.ProcessDeletions();
 
 
         }
@@ -524,24 +514,29 @@ namespace ShepProject
         /// </summary>
         /// <param name="objectID"></param>
         /// <param name="replacementOldID"></param>
-        private Transform RemoveObjectFromTree(ushort objectID)
+        private void RemoveObjectFromTree(ushort objectID)
         {
 
-            return quadTree.RemoveTransform(objectID);
+            quadTree.RemoveTransform(objectID);
 
 
         }
 
         #region Adding Object Types To Quad Tree
 
-        public void AddEnemyToList(EnemyPhysicsMethods enemy)
+        public void AddEnemyToList(Transform enemy)
         {
 
-            enemiesLeftToSpawn--;
-            ushort id = quadTree.AddTransform(enemy.transform);
-            genes.AddGenesToObject(id);
 
-            Debug.Log("Add Enemy: " + id);
+            //this needs to have object pooling attached to it
+            //probably will eventually need to also have specific settings 
+            //to control exactly what type of enemy is spawned
+            //and to control its genes
+
+
+            enemiesLeftToSpawn--;
+            ushort id = quadTree.AddTransform(enemy);
+            genes.AddGenesToObject(id);
 
             //offset 1 for type, then attractions count
             genes.SetObjectType(id, ObjectType.Slime);
@@ -557,23 +552,23 @@ namespace ShepProject
             genes.SetViewRange(id, ViewRange.Wall, slimeValues.wallViewRange);
 
             genes.SetOptimalDistance(id, OptimalDistance.Slime, slimeValues.slimeOptimalDistance);
-                //-8 / genes.GetViewRange(id, ViewRange.Slime));
+            //-8 / genes.GetViewRange(id, ViewRange.Slime));
 
             //value within something like 1-20
             genes.SetSpeed(id, slimeValues.slimeSpeed);
             genes.SetTurnRate(id, slimeValues.slimeTurnRate);
             genes.SetHealth(id, slimeValues.slimeHealth);
 
-            if (!enemy.Initialized())
+            EnemyPhysicsMethods methods = enemy.GetComponent<EnemyPhysicsMethods>();
+
+            if (!methods.Initialized())
             {
-                enemy.SetInitialInfo(id, genes, this);
-            }
-            else
-            {
-                enemy.UpdateID(id);
+                methods.SetInitialInfo(id, genes, this);
             }
 
-            enemyPhysicsMethods.Add(id, enemy);
+            enemyPhysicsMethods.Add(id, methods);
+
+
 
         }
 
@@ -617,6 +612,7 @@ namespace ShepProject
 
                 genes.SetTurnRate(id, .5f);
                 genes.SetViewRange(id, ViewRange.Slime, 8);
+                genes.SetSpeed(id, 3f);
 
                 choosableTargets.Add(id);
 
@@ -652,7 +648,7 @@ namespace ShepProject
                 //else
                 //burrow.gameObject.transform.position = new Vector3(Random.Range(-min, -max), 0, Random.Range(-min, -max));
 
-                burrow.Initialize(this, .4f);
+                burrow.Initialize(this, 1f);
 
                 burrows.Add(burrow);
                 burrow.gameObject.SetActive(true);
@@ -663,25 +659,13 @@ namespace ShepProject
 
         #endregion
 
-        public EnemyPhysicsMethods GetPooledSlime()
-        {
-
-            return slimePool.GetObject();
-
-        }
-
         public void OnEnemyDeath(ushort id)
         {
 
-            Debug.Log("Enemy Death: " + id);
-
-            slimePool.ReturnObject(enemyPhysicsMethods[id]);
-
-            genes.ResetIDGenes(id);
             RemoveObjectFromTree(id);
 
-
             enemyPhysicsMethods.Remove(id);
+
 
             enemiesLeftToKill--;
 
@@ -690,6 +674,27 @@ namespace ShepProject
                 duringWave = false;
                 updateInitialize = true;
             }
+
+
+            //EnemyPhysicsMethods methods;
+
+            //if (!enemyPhysicsMethods.TryGetValue(replacementOldID, out methods))
+            //    return;
+
+            //methods.UpdateID(id);
+            //enemyPhysicsMethods.Remove(replacementOldID);
+            //enemyPhysicsMethods.Add(id, methods);
+
+            //genes.TransferGenes(replacementOldID, id);
+
+            //update targetID and heading
+            //update genes array as well
+
+
+
+
+
+            //Debug.Log("Enemy Dead!");
 
 
         }

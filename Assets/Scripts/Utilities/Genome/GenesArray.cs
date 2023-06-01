@@ -38,7 +38,7 @@ namespace ShepProject
 
     public enum ObjectType
     {
-        None = -1,
+
         Slime,
         Tower,
         Player,
@@ -83,10 +83,9 @@ namespace ShepProject
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<ushort> geneIDs;
 
-        [NativeDisableContainerSafetyRestriction]
-        private NativeList<ushort> availables;
+        private ushort objectCount;
 
-
+        public ushort ObjectCount => objectCount;
 
         public GenesArray(int maxObjects, int genesPerObject, Allocator type)
         {
@@ -94,32 +93,32 @@ namespace ShepProject
             genes = new NativeArray<float>(maxObjects * genesPerObject, type);
             objectTypes = new NativeArray<ObjectType>(maxObjects, type);
             geneIDs = new NativeArray<ushort>(maxObjects, type);
-            availables = new NativeList<ushort>(maxObjects, type);
 
             for (int i = 0; i < geneIDs.Length; i++)
             {
                 geneIDs[i] = ushort.MaxValue;
 
             }
-            for (int i = 0; i < availables.Capacity; i++)
-            {
-                availables.AddNoResize((ushort)((availables.Capacity) - i));
 
-            }
-
+            objectCount = 0;
         }
 
 
 
         #region Get Specific Gene Methods
 
-        private int ObjectTypeIndex(int id)
+        public void AddGenesToObject(ushort objectID)
+        {
+            geneIDs[objectID] = objectCount;
+            objectCount++;
+        }
+
+        private int IDTypeIndex(int id)
         {
 
             if (geneIDs[id] == ushort.MaxValue)
             {
-                Debug.LogError("ObjectID  " + id + " with GeneID "
-                    + geneIDs[id] + " hasn't been assigned.");
+                Debug.LogError("Object hasn't been assigned.");
                 return ushort.MaxValue;
             }
 
@@ -138,7 +137,7 @@ namespace ShepProject
 
         public float GetAttraction(int id, int attraction)
         {
-            return genes[ObjectTypeIndex(id) + 1 + attraction];
+            return genes[IDTypeIndex(id) + 1 + attraction];
         }
 
         public float GetAttraction(int id, ObjectType attraction)
@@ -149,53 +148,43 @@ namespace ShepProject
         public void SetAttraction(int id, ObjectType attraction, float value)
         {
 
-            genes[ObjectTypeIndex(id) + 1 + (int)attraction] = value;
+            genes[IDTypeIndex(id) + 1 + (int)attraction] = value;
 
         }
 
         public float GetViewRange(int id, ViewRange range)
         {
-            if (ObjectTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range > genes.Length)
-            {
 
-                ObjectTypeIndex(id);
-
-                int test = 0;
-
-
-
-            }
-
-            return genes[ObjectTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range];
+            return genes[IDTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range];
         }
 
         public void SetViewRange(int id, ViewRange range, float value)
         {
 
-            genes[ObjectTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range] = value;
+            genes[IDTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range] = value;
         }
 
         public float GetResistance(int id, DamageType damageType)
         {
 
-            return genes[ObjectTypeIndex(id) + (int)damageType];
+            return genes[IDTypeIndex(id) + (int)damageType];
         }
 
         public void SetResistance(int id, DamageType damageType, float value)
         {
-            genes[ObjectTypeIndex(id) + (int)damageType] = value;
+            genes[IDTypeIndex(id) + (int)damageType] = value;
         }
 
         public float GetOptimalDistance(int id, OptimalDistance optimalDistance)
         {
-            return genes[ObjectTypeIndex(id)
+            return genes[IDTypeIndex(id)
                 + (int)ObjectType.Count + (int)ViewRange.Count
                 + (int)DamageType.Count + (int)optimalDistance];
         }
 
         public void SetOptimalDistance(int id, OptimalDistance optimalDistance, float value)
         {
-            genes[ObjectTypeIndex(id)
+            genes[IDTypeIndex(id)
                 + (int)ObjectType.Count + (int)ViewRange.Count
                 + (int)DamageType.Count + (int)optimalDistance] = value;
         }
@@ -203,75 +192,82 @@ namespace ShepProject
         public float GetSpeed(int id)
         {
 
-            return genes[ObjectTypeIndex(id) + (int)GeneGroups.Speed];
+            return genes[IDTypeIndex(id) + (int)GeneGroups.Speed];
         }
 
         public void SetSpeed(int id, float speed)
         {
 
-            genes[ObjectTypeIndex(id) + (int)GeneGroups.Speed] = speed;
+            genes[IDTypeIndex(id) + (int)GeneGroups.Speed] = speed;
         }
 
         public float GetTurnRate(int id)
         {
 
-            return genes[ObjectTypeIndex(id) + (int)GeneGroups.TurnRate];
+            return genes[IDTypeIndex(id) + (int)GeneGroups.TurnRate];
         }
 
         public void SetTurnRate(int id, float value)
         {
 
-            genes[ObjectTypeIndex(id) + (int)GeneGroups.TurnRate] = value;
+            genes[IDTypeIndex(id) + (int)GeneGroups.TurnRate] = value;
 
         }
 
         public float GetHealth(int id)
         {
+            int index = IDTypeIndex(id) + (int)GeneGroups.Health;
 
-            return genes[ObjectTypeIndex(id) + (int)GeneGroups.Health];
+            return genes[index];
         }
 
         public void SetHealth(int id, float value)
         {
-
-            genes[ObjectTypeIndex(id) + (int)GeneGroups.Health] = value;
+            int index = IDTypeIndex(id) + (int)GeneGroups.Health;
+            genes[index] = value;
 
         }
 
 
         #endregion
 
-        public void AddGenesToObject(ushort objectID)
-        {
-            //availableIDsEndIndex++;
-            //geneIDs[objectID] = availables[availableIDsEndIndex];
-
-            geneIDs[objectID] = availables[availables.Length - 1];
-            availables.RemoveAt(availables.Length - 1);
-
-        }
-
-
         public void ResetIDGenes(int id)
         {
 
-            Debug.Log("Resetting ObjectID " + id + " With GeneID: " + geneIDs[id]);
+            int startIndex = id * (int)GeneGroups.TotalGeneCount;
 
-            for (int i = ObjectTypeIndex(id);
-                i < ObjectTypeIndex(id) + (int)GeneGroups.TotalGeneCount; i++)
+
+            for (int i = startIndex; i < startIndex + (int)GeneGroups.TotalGeneCount; i++)
             {
                 genes[i] = -1;
 
             }
 
-            //need to add the returned ID to the end
-            //and then the id at the end position to where this one was
 
-            availables.AddNoResize(geneIDs[id]);
-            
+        }
 
-            objectTypes[geneIDs[id]] = ObjectType.None;
-            geneIDs[id] = ushort.MaxValue;
+        /// <summary>
+        /// When an object's ID is updated, need to call this method to update the information
+        /// to still be correct in the array.
+        /// </summary>
+        /// <param name="readFrom"></param>
+        /// <param name="writeTo"></param>
+        public void TransferGenes(int readFrom, int writeTo)
+        {
+
+            int readStartIndex = readFrom * (int)GeneGroups.TotalGeneCount;
+            int writeStartIndex = writeTo * (int)GeneGroups.TotalGeneCount;
+
+
+            for (int i = 0; i < (int)GeneGroups.TotalGeneCount; i++)
+            {
+                genes[writeStartIndex + i] = genes[readStartIndex + i];
+                genes[readStartIndex + i] = -1;
+
+            }
+
+
+
         }
 
         public void Dispose()
@@ -279,7 +275,7 @@ namespace ShepProject
             genes.Dispose();
             geneIDs.Dispose();
             objectTypes.Dispose();
-            availables.Dispose();
+
         }
 
 

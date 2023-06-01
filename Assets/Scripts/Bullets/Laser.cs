@@ -9,7 +9,7 @@ namespace ShepProject
     {
 
         [SerializeField]
-        private Transform laserEnd;
+        public Transform laserEnd;
         [SerializeField]
         private Transform muzzleEffect;
 
