@@ -46,11 +46,17 @@ namespace ShepProject
         [SerializeField]
         private float currentCountdownToWave;
 
+        public float CurrentCountdownToWave => currentCountdownToWave;
+
+
         [SerializeField]
         private int enemiesCountToSpawn;
         private int enemiesLeftToSpawn;
 
         private int enemiesLeftToKill;
+
+
+        public Button startButton;
 
         [SerializeField]
         private bool spawningEnemies;
@@ -59,7 +65,7 @@ namespace ShepProject
 
         private Dictionary<int, EnemyPhysicsMethods> enemyPhysicsMethods;
 
-
+        public Transform[] burrowLocations;
 
         private List<EnemyBurrow> burrows;
 
@@ -131,9 +137,25 @@ namespace ShepProject
         #endregion
 
 
+        public void StartRound()
+        {
+            currentCountdownToWave = 0;
+
+
+            for (int i = 0; i < choosableTargets.Length; i++)
+            {
+
+                quadTree.Transforms[choosableTargets[i]].GetComponent<Rigidbody>().isKinematic = false;
+
+
+            }
+
+        }
+
         private void Awake()
         {
 
+            startButton.onClick.AddListener(StartRound);
 
             int targetCount = 100;
             genes = new GenesArray(maxEnemies, ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
@@ -579,12 +601,12 @@ namespace ShepProject
 
 
             //for adding all the child points to make sure enemies can avoid them correctly
-            for (int i = 0; i < wall.childCount;)
+            for (int i = 0; i < 5; i++)
             {
 
 
-                ushort id = quadTree.AddTransform(wall.transform.GetChild(i));
-                wall.transform.GetChild(i).parent = null;
+                ushort id = quadTree.AddTransform(wall.transform.GetChild(0));
+                wall.transform.GetChild(0).parent = null;
                 genes.SetObjectType(id, ObjectType.Wall);
 
 
@@ -595,8 +617,8 @@ namespace ShepProject
         private void AddSheepToList()
         {
 
-            int min = -40;
-            int max = -30;
+            int min = -10;
+            int max = 10;
 
             for (int i = 0; i < sheepCount; i++)
             {
@@ -614,6 +636,7 @@ namespace ShepProject
 
                 genes.SetTurnRate(id, .5f);
                 genes.SetViewRange(id, ViewRange.Slime, 8);
+                genes.SetSpeed(id, 3);
 
                 choosableTargets.Add(id);
 
@@ -635,19 +658,11 @@ namespace ShepProject
         private void AddBurrow(int count = 1)
         {
 
-            int min = 30;
-            int max = 40;
-
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < burrowLocations.Length; i++)
             {
                 EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
 
-
-
-                //if (Random.value > .5f)
-                burrow.gameObject.transform.position = new Vector3(Random.Range(min, max), 0, Random.Range(min, max));
-                //else
-                //burrow.gameObject.transform.position = new Vector3(Random.Range(-min, -max), 0, Random.Range(-min, -max));
+                burrow.transform.position = burrowLocations[i].position;
 
                 burrow.Initialize(this, .2f);
 
@@ -655,6 +670,28 @@ namespace ShepProject
                 burrow.gameObject.SetActive(true);
 
             }
+
+
+            //int min = 30;
+            //int max = 40;
+
+            //for (int i = 0; i < count; i++)
+            //{
+            //    EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
+
+
+
+            //    //if (Random.value > .5f)
+            //    burrow.gameObject.transform.position = new Vector3(Random.Range(min, max), 0, Random.Range(min, max));
+            //    //else
+            //    //burrow.gameObject.transform.position = new Vector3(Random.Range(-min, -max), 0, Random.Range(-min, -max));
+
+            //    burrow.Initialize(this, .2f);
+
+            //    burrows.Add(burrow);
+            //    burrow.gameObject.SetActive(true);
+
+            //}
 
         }
 

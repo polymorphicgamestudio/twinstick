@@ -143,6 +143,9 @@ namespace ShepProject
             #endregion
 
             #region Tower Functionality
+            
+            if (Inst.AIManager.CurrentCountdownToWave > 0)
+                return;
 
             for (int i = 0; i < towers.Count; i++)
             {
@@ -411,6 +414,8 @@ namespace ShepProject
 
                 if (wallPlacement.validLocation)
                 {
+                    Inst.AIManager.AddWallToList(wallPlacement.transform);
+
                     wallPlacement.PlaceWall();
                     wallPlacement = null;
 

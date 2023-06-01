@@ -30,7 +30,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1831931268759153905
 MonoBehaviour:
@@ -65,11 +65,12 @@ MonoBehaviour:
   - {fileID: 7189411887746284346, guid: 0cdff05f1db0a914ca14bc6e92e75c3b, type: 3}
   - {fileID: 1166721481786246731, guid: 4b43dabfb88f40046a398269da3a6bb2, type: 3}
   - {fileID: 1161416851641063218, guid: d313fb236524a1344a499717e9f0f510, type: 3}
-  - {fileID: 7618373969385548516, guid: 106818083ef9cba42a55c9a56e5028b2, type: 3}
+  - {fileID: 3721593933739565660, guid: b3af8d0d5a03f6f41bd421d9aecb10ea, type: 3}
   - {fileID: 2644479304098339494, guid: 9516e8bb84de7544b8e6f77e3b44cfe8, type: 3}
   towers: []
   playableArea: {fileID: 0}
   wallCollider: {fileID: 1816357759912485284, guid: 2f78a884f09393d41bb265ca722b4575, type: 3}
   controller: {fileID: 0}
   modeController: {fileID: 0}
+  actionSelectionNumber: 0
   errorSound: {fileID: 8300000, guid: 19faa55225acf674898dad95cf8eb425, type: 3}

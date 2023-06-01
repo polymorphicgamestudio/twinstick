@@ -5,8 +5,8 @@ public class IceTowerController : BaseTower
     public ParticleSystem iceParticles;
     public Collider particlesCollider;
 
-    public float particleActivationTime;
-    public float currentParticleActivationTime;
+    //public float particleActivationTime;
+    //public float currentParticleActivationTime;
 
 
     public override void ManualUpdate()
@@ -15,10 +15,7 @@ public class IceTowerController : BaseTower
 
         if (iceParticles.isPlaying)
         {
-            currentParticleActivationTime -= Time.deltaTime;
-
-            if (currentParticleActivationTime < 0)
-                particlesCollider.enabled = false;
+            particlesCollider.enabled = true;
 
         }
         else
@@ -38,7 +35,7 @@ public class IceTowerController : BaseTower
         iceParticles.Play();
         particlesCollider.enabled = true;
 
-        currentParticleActivationTime = particleActivationTime;
+        //currentParticleActivationTime = particleActivationTime;
 
         //play the particles for a set amount of time
         //then they will auto turn off
