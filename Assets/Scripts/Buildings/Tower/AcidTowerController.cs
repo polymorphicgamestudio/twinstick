@@ -13,7 +13,7 @@ public class AcidTowerController : BaseTower
     {
         animator.Play("Base Layer.Shoot", 0, 0);
         Rigidbody bomb = 
-            Instantiate(gameObject, barrel.position, Quaternion.identity)
+            Instantiate(bombPrefab, barrel.position, Quaternion.identity)
             .GetComponent<Rigidbody>();
 
         bomb.velocity = barrel.forward * bombSpeed;

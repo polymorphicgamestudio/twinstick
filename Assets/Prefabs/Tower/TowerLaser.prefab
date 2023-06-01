@@ -669,7 +669,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wakeSound: {fileID: 8300000, guid: 46ecee4ecb8e4054bab0d525b2a85b86, type: 3}
   shootSound: {fileID: 8300000, guid: b3ee69a689d810641b1fcac0ce93e16f, type: 3}
-  shootParticles: {fileID: 0}
+  shootParticles: {fileID: 522906542353395405}
 --- !u!135 &6219620478223568691
 SphereCollider:
   m_ObjectHideFlags: 0
