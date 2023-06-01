@@ -541,6 +541,8 @@ namespace ShepProject
             ushort id = quadTree.AddTransform(enemy.transform);
             genes.AddGenesToObject(id);
 
+            Debug.Log("Add Enemy: " + id);
+
             //offset 1 for type, then attractions count
             genes.SetObjectType(id, ObjectType.Slime);
             genes.SetAttraction(id, ObjectType.Sheep, slimeValues.sheepAttraction); // 1
@@ -670,6 +672,8 @@ namespace ShepProject
 
         public void OnEnemyDeath(ushort id)
         {
+
+            Debug.Log("Enemy Death: " + id);
 
             slimePool.ReturnObject(enemyPhysicsMethods[id]);
 

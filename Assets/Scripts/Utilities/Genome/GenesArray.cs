@@ -118,7 +118,8 @@ namespace ShepProject
 
             if (geneIDs[id] == ushort.MaxValue)
             {
-                Debug.LogError("Object " + id + " hasn't been assigned.");
+                Debug.LogError("ObjectID  " + id + " with GeneID "
+                    + geneIDs[id] + " hasn't been assigned.");
                 return ushort.MaxValue;
             }
 
@@ -154,6 +155,16 @@ namespace ShepProject
 
         public float GetViewRange(int id, ViewRange range)
         {
+            if (ObjectTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range > genes.Length)
+            {
+
+                ObjectTypeIndex(id);
+
+                int test = 0;
+
+
+
+            }
 
             return genes[ObjectTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range];
         }
@@ -243,6 +254,8 @@ namespace ShepProject
 
         public void ResetIDGenes(int id)
         {
+
+            Debug.Log("Resetting ObjectID " + id + " With GeneID: " + geneIDs[id]);
 
             for (int i = ObjectTypeIndex(id);
                 i < ObjectTypeIndex(id) + (int)GeneGroups.TotalGeneCount; i++)

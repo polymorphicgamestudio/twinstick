@@ -48,6 +48,9 @@ namespace ShepProject
         {
             //get the resistance for this type of damage to check for any decreases in damage
             //then deal the damage
+
+            Debug.Log("Deal Damage: " + enemyID);
+
                                             //using this part when resistances work
             float scaledDamage = amount;// * genes.GetResistance(enemyID, damageType);
 
