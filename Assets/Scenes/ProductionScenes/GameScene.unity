@@ -468,6 +468,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1494804415}
     - target: {fileID: 4780329423942147732, guid: ca70309ab32f0c04ab33bf98d268d33e, type: 3}
+      propertyPath: npcManager
+      value: 
+      objectReference: {fileID: 1494804415}
+    - target: {fileID: 4780329423942147732, guid: ca70309ab32f0c04ab33bf98d268d33e, type: 3}
       propertyPath: enemyManager
       value: 
       objectReference: {fileID: 1494804415}

@@ -155,7 +155,7 @@ namespace ShepProject
             burrows = new List<EnemyBurrow>();
             quadTree = new QuadTree(maxEnemies, 35);
 
-            quadTree.enemyManager = this;
+            quadTree.npcManager = this;
 
             currentCountdownToWave = countdownToWave;
 

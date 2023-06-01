@@ -21,7 +21,7 @@ namespace ShepProject {
 		public NativeList<ushort> deletions;
 		public NativeArray<float2> positions;
 
-		public NPCManager enemyManager;
+		public NPCManager npcManager;
 		private Transform[] transforms;
 		public Transform[] Transforms => transforms;
 
@@ -272,7 +272,7 @@ namespace ShepProject {
 
             AssignTypesJob asj = new AssignTypesJob();
             asj.objectIDs = objectIDs;
-            asj.genes = enemyManager.Genes;
+            asj.genes = npcManager.Genes;
             asj.quads = quads;
 			asj.size = assignTypesSize;
             asj.Schedule(assignTypesSize, 1).Complete();
@@ -363,7 +363,7 @@ namespace ShepProject {
             for (int i = current.startIndex; i <= current.endIndex; i++)
             {
 
-                if (enemyManager.Genes.GetObjectType(objectIDs[i]) != objectType)
+                if (npcManager.Genes.GetObjectType(objectIDs[i]) != objectType)
                     continue;
 
 				local = (positions[objectIDs[i]] - positions[objectID]);
