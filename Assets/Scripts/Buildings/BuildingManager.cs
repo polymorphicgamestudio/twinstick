@@ -128,7 +128,7 @@ namespace ShepProject
 
                     towers.Add(tower.GetComponent<BaseTower>());
 
-                    Inst.NPCManager.AddTowerToList(towers[towers.Count - 1]);
+                    Inst.AIManager.AddTowerToList(towers[towers.Count - 1]);
 
                     currentBuildUps.RemoveAt(i);
                     buildUpTimers.RemoveAt(i);
@@ -159,7 +159,7 @@ namespace ShepProject
                     //.GetClosestObject(objectID, ShepProject.ObjectType.Slime, minDist, maxDist);
 
                     towers[i].slimeTarget =
-                        Inst.NPCManager.QuadTree
+                        Inst.AIManager.QuadTree
                         .GetClosestObject(towers[i].objectID, ObjectType.Slime, towers[i].minDist, towers[i].maxDist);
                     
                 }
@@ -513,7 +513,7 @@ namespace ShepProject
                 inst.transform.position = startPosition;
                 startPosition.x += wallCollider.size.x;
 
-                Inst.NPCManager.AddWallToList(inst.transform);
+                Inst.AIManager.AddWallToList(inst.transform);
 
             }
 
@@ -533,7 +533,7 @@ namespace ShepProject
                 q.eulerAngles += new Vector3(0, 90, 0);
                 inst.transform.rotation = q;
 
-                Inst.NPCManager.AddWallToList(inst.transform);
+                Inst.AIManager.AddWallToList(inst.transform);
 
             }
 

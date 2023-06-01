@@ -221,6 +221,18 @@ namespace ShepProject
         }
     }
 
+    public struct FindPathsJob : IJobParallelFor
+    {
+
+        public NativeArray<SquareNode> nodes;
+
+
+        public void Execute(int index)
+        {
+
+        }
+
+    }
 
     public struct GenerateVectorFieldJob : IJob
     {
@@ -435,12 +447,6 @@ namespace ShepProject
                 //Profiler.EndSample();
                 if (!openNodeDifficulties.TryGetFirstValue(minKeyCost, out currentNode, out it))
                 {
-
-                    if (fCostKeys.Length == 0)
-                    {
-                        int test = 0;
-                    }
-
                     fCostKeys.RemoveAt(minKeyCostIndex);
 
                     continue;
@@ -577,59 +583,59 @@ namespace ShepProject
 
 
 
-            //Profiler.BeginSample("Draw Closed Nodes");
+            Profiler.BeginSample("Draw Closed Nodes");
 
-            //NativeArray<PathNode> searchedNodes = closedNodes.GetValueArray(Allocator.Temp);
+            NativeArray<PathNode> searchedNodes = closedNodes.GetValueArray(Allocator.Temp);
 
-            //float3 position = new float3();
-            //for (int k = 0; k < searchedNodes.Length; k++)
-            //{
+            float3 position = new float3();
+            for (int k = 0; k < searchedNodes.Length; k++)
+            {
 
-            //    if (finalPathIndices.Contains(searchedNodes[k]))
-            //        continue;
+                if (finalPathIndices.Contains(searchedNodes[k]))
+                    continue;
 
-            //    position.x = nodes[searchedNodes[k].index].position.x;
-            //    position.z = nodes[searchedNodes[k].index].position.y;
-            //    position += origin;
+                position.x = nodes[searchedNodes[k].index].position.x;
+                position.z = nodes[searchedNodes[k].index].position.y;
+                position += origin;
 
-            //    builder.SolidPlane(position, new float3(0, 1, 0),
-            //        new float2(nodeLength), Color.red);
+                builder.SolidPlane(position, new float3(0, 1, 0),
+                    new float2(nodeLength), Color.red);
 
-            //}
-
-
-
-
-            //searchedNodes.Dispose();
-
-            //Profiler.EndSample();
-
-            //Profiler.BeginSample("Draw Open Nodes");
-
-            //NativeArray<PathNode> openSearched = openNodeDifficulties.GetValueArray(Allocator.Temp);
-
-            //position = new float3();
-            //for (int k = 0; k < openSearched.Length; k++)
-            //{
-
-            //    //if (finalPathIndices.Contains(openSearched[k].index))
-            //    //    continue;
-
-            //    position.x = nodes[openSearched[k].index].position.x;
-            //    position.z = nodes[openSearched[k].index].position.y;
-            //    position += origin;
-
-            //    builder.SolidPlane(position, new float3(0, 1, 0),
-            //        new float2(nodeLength), Color.green);
-
-            //}
+            }
 
 
 
 
-            //openSearched.Dispose();
+            searchedNodes.Dispose();
 
-            //Profiler.EndSample();
+            Profiler.EndSample();
+
+            Profiler.BeginSample("Draw Open Nodes");
+
+            NativeArray<PathNode> openSearched = openNodeDifficulties.GetValueArray(Allocator.Temp);
+
+            position = new float3();
+            for (int k = 0; k < openSearched.Length; k++)
+            {
+
+                //if (finalPathIndices.Contains(openSearched[k].index))
+                //    continue;
+
+                position.x = nodes[openSearched[k].index].position.x;
+                position.z = nodes[openSearched[k].index].position.y;
+                position += origin;
+
+                builder.SolidPlane(position, new float3(0, 1, 0),
+                    new float2(nodeLength), Color.green);
+
+            }
+
+
+
+
+            openSearched.Dispose();
+
+            Profiler.EndSample();
 
             //draw final path
 

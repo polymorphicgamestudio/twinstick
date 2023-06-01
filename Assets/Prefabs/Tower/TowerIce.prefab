@@ -907,14 +907,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: IceSpray
       objectReference: {fileID: 0}
-    - target: {fileID: 8066810457729057275, guid: 786431af67dff83458c61175366240ad, type: 3}
-      propertyPath: m_ExcludeLayers.m_Bits
-      value: 1919
-      objectReference: {fileID: 0}
-    - target: {fileID: 8066810457729057275, guid: 786431af67dff83458c61175366240ad, type: 3}
-      propertyPath: m_IncludeLayers.m_Bits
-      value: 128
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -21,7 +21,7 @@ namespace ShepProject {
 		public NativeList<ushort> deletions;
 		public NativeArray<float2> positions;
 
-		public NPCManager npcManager;
+		public AIManager enemyManager;
 		private Transform[] transforms;
 		public Transform[] Transforms => transforms;
 
@@ -272,7 +272,7 @@ namespace ShepProject {
 
             AssignTypesJob asj = new AssignTypesJob();
             asj.objectIDs = objectIDs;
-            asj.genes = npcManager.Genes;
+            asj.genes = enemyManager.Genes;
             asj.quads = quads;
 			asj.size = assignTypesSize;
             asj.Schedule(assignTypesSize, 1).Complete();
@@ -363,7 +363,7 @@ namespace ShepProject {
             for (int i = current.startIndex; i <= current.endIndex; i++)
             {
 
-                if (npcManager.Genes.GetObjectType(objectIDs[i]) != objectType)
+                if (enemyManager.Genes.GetObjectType(objectIDs[i]) != objectType)
                     continue;
 
 				local = (positions[objectIDs[i]] - positions[objectID]);
@@ -535,19 +535,26 @@ namespace ShepProject {
 		{
 
 
-
 			Transform inactive = transforms[objectID];
 			inactive.gameObject.SetActive(false);
 			transforms[objectID] = null;
 
+
+
             ushort sorted = sortedObjectIDs[objectID];
 			ushort overwrite = objectIDs[positionCount];
+            //ushort overwriteSorted = sortedObjectIDs[objectIDs[positionCount]];
+
 
             sortedObjectIDs[objectIDs[positionCount]] = sortedObjectIDs[objectID];
             sortedObjectIDs[objectID] = (ushort)positionCount;
 
+
             objectIDs[sorted] = overwrite;
             objectIDs[positionCount] = objectID;
+
+			//need to update the sortedIDs as well to make sure there are no errors
+
 
             positionCount--;
 			return inactive;

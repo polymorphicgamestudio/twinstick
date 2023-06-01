@@ -468,10 +468,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1494804415}
     - target: {fileID: 4780329423942147732, guid: ca70309ab32f0c04ab33bf98d268d33e, type: 3}
-      propertyPath: npcManager
-      value: 
-      objectReference: {fileID: 1494804415}
-    - target: {fileID: 4780329423942147732, guid: ca70309ab32f0c04ab33bf98d268d33e, type: 3}
       propertyPath: enemyManager
       value: 
       objectReference: {fileID: 1494804415}
@@ -498,7 +494,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2746231355933929674, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: enemiesCountToSpawn
-      value: 50
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 5453079091326956306, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: m_RootOrder
@@ -546,7 +542,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8121321063624790235, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: m_Name
-      value: NPCManager
+      value: AIManager
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -822,7 +818,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ac433cbada76014fa3608aca4f60d61, type: 3}
+  m_Script: {fileID: 11500000, guid: 47b39e040d99894409ddaf27ca4c7e9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1512308247

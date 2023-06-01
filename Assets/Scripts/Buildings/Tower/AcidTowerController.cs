@@ -11,7 +11,8 @@ public class AcidTowerController : BaseTower
 
     public override void ShootTurret()
     {
-        animator.Play("Base Layer.Shoot", 0, 0);
+        base.ShootTurret();
+
         Rigidbody bomb = 
             Instantiate(bombPrefab, barrel.position, Quaternion.identity)
             .GetComponent<Rigidbody>();

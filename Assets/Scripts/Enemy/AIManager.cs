@@ -17,7 +17,9 @@ namespace ShepProject
 {
 
 
-    public class NPCManager : SystemBase
+
+
+    public class AIManager : SystemBase
     {
 
         #region Variables
@@ -147,7 +149,7 @@ namespace ShepProject
             burrows = new List<EnemyBurrow>();
             quadTree = new QuadTree(maxEnemies, 35);
 
-            quadTree.npcManager = this;
+            quadTree.enemyManager = this;
 
             currentCountdownToWave = countdownToWave;
 
@@ -439,7 +441,7 @@ namespace ShepProject
                         quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
                             = (quadTree.Transforms[quadTree.objectIDs[i]].forward * (genes.GetSpeed(quadTree.objectIDs[i]) / 2f));
                     }
-                    else if (sheepDistancesToSlimes[ID] > 4)
+                    else if (sheepDistancesToSlimes[ID] >= 4)
                     {
                         //run animation
                         quadTree.Transforms[quadTree.objectIDs[i]].gameObject
@@ -552,7 +554,7 @@ namespace ShepProject
             genes.SetViewRange(id, ViewRange.Wall, slimeValues.wallViewRange);
 
             genes.SetOptimalDistance(id, OptimalDistance.Slime, slimeValues.slimeOptimalDistance);
-            //-8 / genes.GetViewRange(id, ViewRange.Slime));
+                //-8 / genes.GetViewRange(id, ViewRange.Slime));
 
             //value within something like 1-20
             genes.SetSpeed(id, slimeValues.slimeSpeed);
@@ -612,7 +614,6 @@ namespace ShepProject
 
                 genes.SetTurnRate(id, .5f);
                 genes.SetViewRange(id, ViewRange.Slime, 8);
-                genes.SetSpeed(id, 3f);
 
                 choosableTargets.Add(id);
 
@@ -648,7 +649,7 @@ namespace ShepProject
                 //else
                 //burrow.gameObject.transform.position = new Vector3(Random.Range(-min, -max), 0, Random.Range(-min, -max));
 
-                burrow.Initialize(this, 1f);
+                burrow.Initialize(this, .2f);
 
                 burrows.Add(burrow);
                 burrow.gameObject.SetActive(true);

@@ -94,11 +94,9 @@ public class TitleScreenControllerNavigation : MonoBehaviour {
 		ShepGM.inst.actions.UI.Navigate.performed += Navigate_performed;
 		ShepGM.inst.actions.Player.MouseDelta.performed += MouseDelta_performed;
 	}
-    private void OnDestroy() {
+
+    private void OnDestroy(){
         ShepGM.inst.actions.UI.Navigate.performed -= Navigate_performed;
         ShepGM.inst.actions.Player.MouseDelta.performed -= MouseDelta_performed;
     }
-
-
-
 }
