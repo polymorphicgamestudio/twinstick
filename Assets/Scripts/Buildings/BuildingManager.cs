@@ -215,6 +215,10 @@ namespace ShepProject {
         private void GamepadActionSelection(InputAction.CallbackContext obj)
         {
 
+
+			if (Inst.MouseOverHUD())
+				return;
+
             if (actionSelectionNumber > 0 && actionSelectionNumber < 4)
             {
                 controller.animController.SetTrigger("Shoot");
@@ -264,11 +268,22 @@ namespace ShepProject {
 
         //I really hate how this works, but I'm setting this up for now because selecting towers from the HUD
         //using the mouse doesn't work otherwise.  Still not a fan of building manager for the record  - landon 
-        public void SetStateFromActionSelectionNumber(int actionNumber) {
-			actionSelectionNumber = actionNumber > 10 ? 10 : actionNumber < 1 ? 1 : actionNumber;
+        public void SetStateFromActionSelectionNumber(int actionNumber)
+        {
+
+			actionSelectionNumber = actionNumber;// actionNumber > 10 ? 10 : actionNumber < 1 ? 1 : actionNumber;
 			if (actionSelectionNumber > 3)
-				InstantiateHologram(actionSelectionNumber - 4);
-		}
+			{
+                modeController.TurnOnBuildMode();
+
+                InstantiateHologram(actionSelectionNumber - 4);
+
+			}
+			else
+			{
+                modeController.TurnOffBuildMode();
+            }
+        }
 
         #region Callbacks for Cancelling Buildings
 
@@ -315,8 +330,8 @@ namespace ShepProject {
 
         private void ConfirmBuilding(InputAction.CallbackContext obj)
         {
-            if (ShepGM.inst.MouseOverHUD()) return;
-            InstantiateBuildup();
+            if (Inst.MouseOverHUD()) return;
+				InstantiateBuildup();
         }
 
         void HideHologramsWhileRunning(InputAction.CallbackContext context)

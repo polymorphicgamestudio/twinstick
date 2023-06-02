@@ -92,6 +92,9 @@ namespace ShepProject
 
         private void Shoot(InputAction.CallbackContext obj)
         {
+            if (Inst.MouseOverHUD())
+                return;
+
             if (currentWeapon == 0)
                 weapons[currentWeapon].shooting = true;
 
