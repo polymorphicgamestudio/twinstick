@@ -281,7 +281,7 @@ namespace ShepProject {
 			}
 			else
 			{
-                modeController.TurnOffBuildMode();
+				CancelBuildMode();
             }
         }
 

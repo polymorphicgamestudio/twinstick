@@ -92,6 +92,9 @@ namespace ShepProject
 
         private void Shoot(InputAction.CallbackContext obj)
         {
+            if (GetComponent<RobotModeController>().BuildMode)
+                return;
+
             if (Inst.MouseOverHUD())
                 return;
 
