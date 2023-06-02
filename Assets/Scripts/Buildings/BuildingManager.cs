@@ -69,7 +69,11 @@ namespace ShepProject {
 			Inst.actions.Buildings.BuildingSix.performed += BuildingSixCallback;
 			Inst.actions.Buildings.BuildingSeven.performed += BuildingSevenCallback;
 
-			Inst.actions.UI.Click.started += ConfirmBuilding;
+            Inst.actions.Player.ActionSelectionDown.started += SelectionToLeft;
+            Inst.actions.Player.ActionSelectionDown.started += SelectionToRight;
+            Inst.actions.Player.Action.started += GamepadActionSelection;
+
+            Inst.actions.UI.Click.started += ConfirmBuilding;
 
 			//uncomment and implement these in order to stop build mode
 
@@ -84,7 +88,7 @@ namespace ShepProject {
 		}
 
 
-		private void Update() {
+        private void Update() {
 
 			#region Building Towers
 
@@ -166,11 +170,13 @@ namespace ShepProject {
 		}
 
 
-		#region Callbacks
+        #region Callbacks
 
-		#region Choosing Buildings
+        #region Choosing Buildings
 
-		private void BuildingOneCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        #region Keyboard
+
+        private void BuildingOneCallback(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
 			InstantiateHologram(0);
 		}
 
@@ -202,19 +208,71 @@ namespace ShepProject {
 			InstantiateHologram(6);
 
 		}
+        #endregion
 
-		#endregion
+        #region Gamepad
+
+        private void GamepadActionSelection(InputAction.CallbackContext obj)
+        {
+
+            if (actionSelectionNumber > 0 && actionSelectionNumber < 4)
+            {
+                controller.animController.SetTrigger("Shoot");
+
+            }
+            else
+            {
+                InstantiateBuildup();
+            }
+
+        }
+
+        private void SelectionToLeft(InputAction.CallbackContext obj)
+        {
+            if (actionSelectionNumber >= 4 && actionSelectionNumber < 10)
+            {
+
+                actionSelectionNumber--;
+                InstantiateHologram(actionSelectionNumber - 4);
+
+            }
 
 
-		//I really hate how this works, but I'm setting this up for now because selecting towers from the HUD
-		//using the mouse doesn't work otherwise.  Still not a fan of building manager for the record  - landon 
-		public void SetStateFromActionSelectionNumber(int actionNumber) {
+        }
+
+
+        private void SelectionToRight(InputAction.CallbackContext obj)
+        {
+            if (actionSelectionNumber >= 4 && actionSelectionNumber < 10)
+            {
+
+
+                actionSelectionNumber++;
+                InstantiateHologram(actionSelectionNumber - 4);
+
+            }
+
+
+;
+        }
+
+
+        #endregion
+
+        #endregion
+
+
+        //I really hate how this works, but I'm setting this up for now because selecting towers from the HUD
+        //using the mouse doesn't work otherwise.  Still not a fan of building manager for the record  - landon 
+        public void SetStateFromActionSelectionNumber(int actionNumber) {
 			actionSelectionNumber = actionNumber > 10 ? 10 : actionNumber < 1 ? 1 : actionNumber;
 			if (actionSelectionNumber > 3)
 				InstantiateHologram(actionSelectionNumber - 4);
 		}
 
-		private void ActionSelectionOne(InputAction.CallbackContext obj) {
+        #region Callbacks for Cancelling Buildings
+
+        private void ActionSelectionOne(InputAction.CallbackContext obj) {
 			actionSelectionNumber = 1;
 			CancelBuildMode();
 
@@ -234,66 +292,74 @@ namespace ShepProject {
 
 		}
 
-		public void CancelBuildMode() {
-			modeController.TurnOffBuildMode();
+        #endregion
 
-			if (currentHologram != null)
-				Destroy(currentHologram);
+        #endregion
 
-			if (wallPlacement != null)
-				Destroy(wallPlacement.gameObject);
+        #region Building Related
 
-			currentBuildingIndex = -1;
+        public void CancelBuildMode()
+        {
+            modeController.TurnOffBuildMode();
 
+            if (currentHologram != null)
+                Destroy(currentHologram);
 
-		}
+            if (wallPlacement != null)
+                Destroy(wallPlacement.gameObject);
 
-		private void ConfirmBuilding(InputAction.CallbackContext obj) {
-			if (ShepGM.inst.MouseOverHUD()) return;
-			InstantiateBuildup();
-		}
-
-		void HideHologramsWhileRunning(InputAction.CallbackContext context) {
-
-			running = true;
-
-			if (modeController.BuildMode) {
-				modeController.TurnOffProjectorParticles();
-			}
-
-			if (currentHologram != null) {
-				Destroy(currentHologram);
-				//currentHologram = null;
-			}
-			else if (wallPlacement != null) {
-				Destroy(wallPlacement.gameObject);
-				//wallPlacement = null;
-			}
+            currentBuildingIndex = -1;
 
 
+        }
 
-		}
-		void ShowHologramsAfterRunning(InputAction.CallbackContext context) {
-			running = false;
+        private void ConfirmBuilding(InputAction.CallbackContext obj)
+        {
+            if (ShepGM.inst.MouseOverHUD()) return;
+            InstantiateBuildup();
+        }
 
-			if (currentBuildingIndex == -1)
-				return;
+        void HideHologramsWhileRunning(InputAction.CallbackContext context)
+        {
 
-			int previous = currentBuildingIndex;
-			currentBuildingIndex = -1;
-			InstantiateHologram(previous);
+            running = true;
 
-			if (currentHologram != null || wallPlacement != null)
-				modeController.TurnOnProjectorParticles();
+            if (modeController.BuildMode)
+            {
+                modeController.TurnOffProjectorParticles();
+            }
 
-		}
-
-
-		#endregion
+            if (currentHologram != null)
+            {
+                Destroy(currentHologram);
+                //currentHologram = null;
+            }
+            else if (wallPlacement != null)
+            {
+                Destroy(wallPlacement.gameObject);
+                //wallPlacement = null;
+            }
 
 
 
-		private void InstantiateHologram(int towerIndex) {
+        }
+        void ShowHologramsAfterRunning(InputAction.CallbackContext context)
+        {
+            running = false;
+
+            if (currentBuildingIndex == -1)
+                return;
+
+            int previous = currentBuildingIndex;
+            currentBuildingIndex = -1;
+            InstantiateHologram(previous);
+
+            if (currentHologram != null || wallPlacement != null)
+                modeController.TurnOnProjectorParticles();
+
+        }
+
+        private void InstantiateHologram(int towerIndex) {
 
 			actionSelectionNumber = towerIndex + 4;
 
@@ -419,9 +485,11 @@ namespace ShepProject {
 			Inst.player.GetComponent<AudioSource>().PlayOneShot(errorSound);
 		}
 
-		#region Wall Generation
+        #endregion
 
-		public void GeneratePlayableAreaWall() {
+        #region Wall Generation
+
+        public void GeneratePlayableAreaWall() {
 
 
 			if (playableArea == null) {
