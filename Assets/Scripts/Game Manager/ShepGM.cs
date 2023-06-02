@@ -23,15 +23,15 @@ namespace ShepProject {
 		public Transform player;
 
 		[SerializeField]
-		private AIManager aiManager;
+		private NPCManager npcs;
 
 		[SerializeField]
-		private BuildingManager buildingManager;
+		private BuildingManager buildings;
 
 		[SerializeField]
-		private PathfindingManager pathfindingManager;
+		private PathfindingManager pathfinding;
 
-		public AIManager AIManager => aiManager;
+		public NPCManager NPCS => npcs;
 
 		public event EventTrigger gameOver;
 
@@ -45,16 +45,16 @@ namespace ShepProject {
 			actions.UI.Enable();
 			actions.Buildings.Enable();
 
-			if (aiManager != null) {
-				aiManager.Initialize(this);
+			if (npcs != null) {
+				npcs.Initialize(this);
 			}
 
-			if (pathfindingManager != null) {
-				pathfindingManager.Initialize(this);
+			if (pathfinding != null) {
+				pathfinding.Initialize(this);
 			}
 
-			if (buildingManager != null) {
-				buildingManager.Initialize(this);
+			if (buildings != null) {
+				buildings.Initialize(this);
 			}
 
 

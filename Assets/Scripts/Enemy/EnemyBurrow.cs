@@ -7,7 +7,7 @@ namespace ShepProject {
     public class EnemyBurrow : MonoBehaviour {
 
 
-        private AIManager manager;
+        private NPCManager manager;
         [SerializeField]
         private GameObject enemyPrefab;
         private float spawnTime;
@@ -15,7 +15,7 @@ namespace ShepProject {
 
         private int enemiesToSpawn;
 
-        public void Initialize(AIManager manager, float spawnTime) {
+        public void Initialize(NPCManager manager, float spawnTime) {
 
 			this.manager = manager;
 			this.spawnTime = spawnTime;

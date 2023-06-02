@@ -19,7 +19,7 @@ namespace ShepProject
 
 
 
-    public class AIManager : SystemBase
+    public class NPCManager : SystemBase
     {
 
         #region Variables
@@ -171,7 +171,7 @@ namespace ShepProject
             burrows = new List<EnemyBurrow>();
             quadTree = new QuadTree(maxEnemies, 35);
 
-            quadTree.enemyManager = this;
+            quadTree.npcManager = this;
 
             currentCountdownToWave = countdownToWave;
 
@@ -218,6 +218,9 @@ namespace ShepProject
 
         void Update()
         {
+
+            enemiesCountToSpawn = slimeValues.slimeCount;
+
             if (!duringWave)
             {
                 NonWaveUpdate();

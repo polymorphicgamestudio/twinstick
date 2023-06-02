@@ -8,13 +8,16 @@ using UnityEngine.UI;
 public class InitialSlimeValues
 {
 
+    [Range(100, 2000)]
+    public int slimeCount;
+
     [Range(0, 1)]
     public float sheepAttraction;
     [Range(-1, 1)]
     public float towerAttraction;
-    [Range(0, 1)]
+    [Range(-1, 1)]
     public float slimeAttraction;
-    [Range(0, 1)]
+    [Range(-1, 1)]
     public float wallAttraction;
 
     [Range(0, 50)]
@@ -66,7 +69,7 @@ public class CustomizeSlimeValues : MonoBehaviour
     //public float slimeTurnRate;
     //public float slimeHealth;
 
-    public AIManager manager;
+    public NPCManager manager;
 
     public Toggle toggleShow;
     [Space(15)]
@@ -88,6 +91,8 @@ public class CustomizeSlimeValues : MonoBehaviour
     public Slider slimeSpeed;
     public Slider slimeTurnRate;
     public Slider slimeHealth;
+
+    public Slider slimeCount;
 
 
     public InitialSlimeValues values;
@@ -111,7 +116,7 @@ public class CustomizeSlimeValues : MonoBehaviour
         slimeSpeed.value = values.slimeSpeed;
         slimeTurnRate.value = values.slimeTurnRate;
         slimeHealth.value = values.slimeHealth;
-
+        slimeCount.value = values.slimeCount;
 
         //values = new InitialSlimeValues();
 
@@ -139,6 +144,7 @@ public class CustomizeSlimeValues : MonoBehaviour
         }
 
 
+        values.slimeCount = (int)slimeCount.value;
         values.sheepAttraction = sheepAttraction.value;
         values.towerAttraction = towerAttraction.value;
         values.slimeAttraction = slimeAttraction.value;

@@ -116,7 +116,7 @@ namespace ShepProject {
 
 					towers.Add(tower.GetComponent<BaseTower>());
 
-					Inst.AIManager.AddTowerToList(towers[towers.Count - 1]);
+					Inst.NPCS.AddTowerToList(towers[towers.Count - 1]);
 
 					currentBuildUps.RemoveAt(i);
 					buildUpTimers.RemoveAt(i);
@@ -132,7 +132,7 @@ namespace ShepProject {
 
 			#region Tower Functionality
 
-			if (Inst.AIManager.CurrentCountdownToWave > 0)
+			if (Inst.NPCS.CurrentCountdownToWave > 0)
 				return;
 
 			for (int i = 0; i < towers.Count; i++) {
@@ -148,7 +148,7 @@ namespace ShepProject {
 					//.GetClosestObject(objectID, ShepProject.ObjectType.Slime, minDist, maxDist);
 
 					towers[i].slimeTarget =
-						Inst.AIManager.QuadTree
+						Inst.NPCS.QuadTree
 						.GetClosestObject(towers[i].objectID, ObjectType.Slime, towers[i].minDist, towers[i].maxDist);
 
 				}
@@ -455,7 +455,7 @@ namespace ShepProject {
 			else {
 
 				if (wallPlacement.validLocation) {
-					Inst.AIManager.AddWallToList(wallPlacement.transform);
+					Inst.NPCS.AddWallToList(wallPlacement.transform);
 
 					wallPlacement.PlaceWall();
 					wallPlacement = null;
@@ -551,7 +551,7 @@ namespace ShepProject {
 				inst.transform.position = startPosition;
 				startPosition.x += wallCollider.size.x;
 
-				Inst.AIManager.AddWallToList(inst.transform);
+				Inst.NPCS.AddWallToList(inst.transform);
 
 			}
 
@@ -569,7 +569,7 @@ namespace ShepProject {
 				q.eulerAngles += new Vector3(0, 90, 0);
 				inst.transform.rotation = q;
 
-				Inst.AIManager.AddWallToList(inst.transform);
+				Inst.NPCS.AddWallToList(inst.transform);
 
 			}
 
