@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5453079091326956306}
-  - component: {fileID: 2746231355933929674}
+  - component: {fileID: 7182491602775243239}
   m_Layer: 0
-  m_Name: AIManager
+  m_Name: NPCManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,9 +30,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2746231355933929674
+--- !u!114 &7182491602775243239
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,32 +41,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 8121321063624790235}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47b39e040d99894409ddaf27ca4c7e9f, type: 3}
+  m_Script: {fileID: 11500000, guid: bb2793e8dee69094bb6a6fab581ca9aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   burrowPrefab: {fileID: 3911888185303433699, guid: a62055d6a4268a940a9c1bae779f32fd, type: 3}
   sheepPrefab: {fileID: 8759591037758108741, guid: 717e80078cde2704f99bd475bd0ff376, type: 3}
   endOfWaveCanvasParent: {fileID: 0}
-  burrowCount: 10
+  slimePrefab: {fileID: 27624417778204221, guid: d3835c63c2cab04448df5a6b0161012f, type: 3}
+  burrowCount: 8
   sheepCount: 25
-  maxEnemies: 4000
+  maxEnemies: 2000
   TreeObjectCount: 0
   waveNumber: 0
   countdownToWave: 0
   currentCountdownToWave: 0
-  enemiesCountToSpawn: 500
-  spawningEnemies: 1
+  initialSlimeSpawnCount: 100
+  startButton: {fileID: 0}
+  spawningEnemies: 0
   idChecks: 
+  burrowLocations: []
   slimeValues:
+    slimeCount: 200
     sheepAttraction: 1
     towerAttraction: -1
-    slimeAttraction: 1
-    wallAttraction: 1
-    towerViewRange: 20
+    slimeAttraction: -0.5
+    wallAttraction: -1
+    towerViewRange: 15
     slimeViewRange: 8
-    playerViewRange: 10
-    wallViewRange: 4
-    slimeOptimalDistance: -1
-    slimeSpeed: 3.05
-    slimeTurnRate: 0.8
+    playerViewRange: 8
+    wallViewRange: 10
+    slimeOptimalDistance: -0.75
+    slimeSpeed: 3.5
+    slimeTurnRate: 0.6
     slimeHealth: 100
