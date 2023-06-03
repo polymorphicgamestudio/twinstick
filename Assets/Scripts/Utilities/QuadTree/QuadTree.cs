@@ -545,15 +545,13 @@ namespace ShepProject {
 			ushort overwrite = objectIDs[positionCount];
             //ushort overwriteSorted = sortedObjectIDs[objectIDs[positionCount]];
 
-
             sortedObjectIDs[objectIDs[positionCount]] = sortedObjectIDs[objectID];
             sortedObjectIDs[objectID] = (ushort)positionCount;
-
 
             objectIDs[sorted] = overwrite;
             objectIDs[positionCount] = objectID;
 
-			//need to update the sortedIDs as well to make sure there are no errors
+            //need to update the sortedIDs as well to make sure there are no errors
 
 
             positionCount--;

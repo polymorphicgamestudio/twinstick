@@ -29,6 +29,8 @@ namespace ShepProject
         public GameObject sheepPrefab;
         public GameObject endOfWaveCanvasParent;
 
+        public EnemyPhysicsMethods slimePrefab;
+
         public int burrowCount;
         public int sheepCount;
         public int maxEnemies;
@@ -50,7 +52,7 @@ namespace ShepProject
 
 
         [SerializeField]
-        private int enemiesCountToSpawn;
+        private int initialSlimeSpawnCount;
         private int enemiesLeftToSpawn;
 
         private int enemiesLeftToKill;
@@ -87,6 +89,7 @@ namespace ShepProject
         public QuadTree QuadTree => quadTree;
 
         public InitialSlimeValues slimeValues;
+        public EnemyObjectPool slimePool;
 
 
         public bool SpawningEnemies => spawningEnemies;
@@ -160,6 +163,9 @@ namespace ShepProject
             int targetCount = 100;
             genes = new GenesArray(maxEnemies, ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
 
+            slimePool = new EnemyObjectPool(slimePrefab, 
+                (ushort)(initialSlimeSpawnCount * 5), (ushort)initialSlimeSpawnCount);
+
             choosableTargets = new NativeList<ushort>(targetCount, Allocator.Persistent);
             targetIDs = new NativeArray<ushort>(maxEnemies, Allocator.Persistent);
             sheepDistancesToSlimes = new NativeArray<float>(targetCount * (int)ObjectType.Count, Allocator.Persistent);
@@ -219,7 +225,7 @@ namespace ShepProject
         void Update()
         {
 
-            enemiesCountToSpawn = slimeValues.slimeCount;
+            initialSlimeSpawnCount = (ushort)slimeValues.slimeCount;
 
             if (!duringWave)
             {
@@ -296,8 +302,8 @@ namespace ShepProject
                 //spawn any additional required burrows
                 //then set the amount of enemies for them to each spawn
 
-                enemiesLeftToSpawn = enemiesCountToSpawn;
-                int avg = enemiesCountToSpawn / burrows.Count;
+                enemiesLeftToSpawn = initialSlimeSpawnCount;
+                int avg = initialSlimeSpawnCount / burrows.Count;
 
                 for (int i = 0; i < burrows.Count; i++)
                 {
@@ -321,8 +327,8 @@ namespace ShepProject
                 //all enemies have been assigned
                 //so now set the enemies left to spawn to the enemiesCountToSpawn
                 //in order to create a signal when all required enemies have been spawned
-                enemiesLeftToSpawn = enemiesCountToSpawn;
-                enemiesLeftToKill = enemiesCountToSpawn;
+                enemiesLeftToSpawn = initialSlimeSpawnCount;
+                enemiesLeftToKill = initialSlimeSpawnCount;
 
                 return;
 
@@ -549,6 +555,7 @@ namespace ShepProject
 
         }
 
+
         #region Adding Object Types To Quad Tree
 
         public void AddEnemyToList(Transform enemy)
@@ -620,8 +627,8 @@ namespace ShepProject
         private void AddSheepToList()
         {
 
-            int min = -10;
-            int max = 10;
+            int min = -40;
+            int max = -30;
 
             for (int i = 0; i < sheepCount; i++)
             {
@@ -661,11 +668,20 @@ namespace ShepProject
         private void AddBurrow(int count = 1)
         {
 
-            for (int i = 0; i < burrowLocations.Length; i++)
+
+            int min = 30;
+            int max = 40;
+
+            for (int i = 0; i < count; i++)
             {
                 EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
 
-                burrow.transform.position = burrowLocations[i].position;
+
+
+                //if (Random.value > .5f)
+                burrow.gameObject.transform.position = new Vector3(Random.Range(min, max), 0, Random.Range(min, max));
+                //else
+                //burrow.gameObject.transform.position = new Vector3(Random.Range(-min, -max), 0, Random.Range(-min, -max));
 
                 burrow.Initialize(this, .2f);
 
@@ -673,28 +689,6 @@ namespace ShepProject
                 burrow.gameObject.SetActive(true);
 
             }
-
-
-            //int min = 30;
-            //int max = 40;
-
-            //for (int i = 0; i < count; i++)
-            //{
-            //    EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
-
-
-
-            //    //if (Random.value > .5f)
-            //    burrow.gameObject.transform.position = new Vector3(Random.Range(min, max), 0, Random.Range(min, max));
-            //    //else
-            //    //burrow.gameObject.transform.position = new Vector3(Random.Range(-min, -max), 0, Random.Range(-min, -max));
-
-            //    burrow.Initialize(this, .2f);
-
-            //    burrows.Add(burrow);
-            //    burrow.gameObject.SetActive(true);
-
-            //}
 
         }
 
@@ -705,6 +699,9 @@ namespace ShepProject
 
             RemoveObjectFromTree(id);
 
+            slimePool.ReturnObject(enemyPhysicsMethods[id]);
+
+            genes.ResetIDGenes(id);
             enemyPhysicsMethods.Remove(id);
 
 

@@ -8,8 +8,6 @@ namespace ShepProject {
 
 
         private NPCManager manager;
-        [SerializeField]
-        private GameObject enemyPrefab;
         private float spawnTime;
         private float currentSpawnTime;
 
@@ -43,7 +41,8 @@ namespace ShepProject {
 
             //spawn base enemy prefab which has all base behaviours
             //then add it to the list
-            GameObject enemy = GameObject.Instantiate(enemyPrefab);
+            GameObject enemy = manager.slimePool.GetObject().gameObject;
+            
             enemy.transform.position = transform.position;
             enemy.SetActive(true);
 
