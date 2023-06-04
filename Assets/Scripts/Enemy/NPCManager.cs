@@ -555,6 +555,22 @@ namespace ShepProject
 
         }
 
+        public void UpdateSlimeValues(InitialSlimeValues slimeValues)
+        {
+            this.slimeValues = slimeValues;
+
+            for (int i = 0; i <= quadTree.positionCount; i++)
+            {
+                if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Slime)
+                {
+
+                    UpdateEnemyGenes(quadTree.objectIDs[i]);
+
+                }
+
+            }
+
+        }
 
         #region Adding Object Types To Quad Tree
 
@@ -572,6 +588,24 @@ namespace ShepProject
             ushort id = quadTree.AddTransform(enemy);
             genes.AddGenesToObject(id);
 
+            UpdateEnemyGenes(id);
+
+            EnemyPhysicsMethods methods = enemy.GetComponent<EnemyPhysicsMethods>();
+
+            if (!methods.Initialized())
+            {
+                methods.SetInitialInfo(id, genes, this);
+            }
+
+            enemyPhysicsMethods.Add(id, methods);
+
+
+
+        }
+
+        private void UpdateEnemyGenes(int id)
+        {
+
             //offset 1 for type, then attractions count
             genes.SetObjectType(id, ObjectType.Slime);
             genes.SetAttraction(id, ObjectType.Sheep, slimeValues.sheepAttraction); // 1
@@ -586,23 +620,12 @@ namespace ShepProject
             genes.SetViewRange(id, ViewRange.Wall, slimeValues.wallViewRange);
 
             genes.SetOptimalDistance(id, OptimalDistance.Slime, slimeValues.slimeOptimalDistance);
-                //-8 / genes.GetViewRange(id, ViewRange.Slime));
+            //-8 / genes.GetViewRange(id, ViewRange.Slime));
 
             //value within something like 1-20
             genes.SetSpeed(id, slimeValues.slimeSpeed);
             genes.SetTurnRate(id, slimeValues.slimeTurnRate);
             genes.SetHealth(id, slimeValues.slimeHealth);
-
-            EnemyPhysicsMethods methods = enemy.GetComponent<EnemyPhysicsMethods>();
-
-            if (!methods.Initialized())
-            {
-                methods.SetInitialInfo(id, genes, this);
-            }
-
-            enemyPhysicsMethods.Add(id, methods);
-
-
 
         }
 

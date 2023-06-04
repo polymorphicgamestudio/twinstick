@@ -1,14 +1,15 @@
 using ShepProject;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 [System.Serializable]
-public class InitialSlimeValues
+public struct InitialSlimeValues
 {
 
-    [Range(100, 2000)]
+    [Range(100, 5000)]
     public int slimeCount;
 
     [Range(0, 1)]
@@ -39,36 +40,49 @@ public class InitialSlimeValues
     [Range(1, 1000)]
     public float slimeHealth;
 
+    public override bool Equals(object obj)
+    {
+        return obj is InitialSlimeValues values &&
+               slimeCount == values.slimeCount &&
+               sheepAttraction == values.sheepAttraction &&
+               towerAttraction == values.towerAttraction &&
+               slimeAttraction == values.slimeAttraction &&
+               wallAttraction == values.wallAttraction &&
+               towerViewRange == values.towerViewRange &&
+               slimeViewRange == values.slimeViewRange &&
+               playerViewRange == values.playerViewRange &&
+               wallViewRange == values.wallViewRange &&
+               slimeOptimalDistance == values.slimeOptimalDistance &&
+               slimeSpeed == values.slimeSpeed &&
+               slimeTurnRate == values.slimeTurnRate &&
+               slimeHealth == values.slimeHealth;
+    }
 
+    public override int GetHashCode()
+    {
+        HashCode hash = new HashCode();
+        hash.Add(slimeCount);
+        hash.Add(sheepAttraction);
+        hash.Add(towerAttraction);
+        hash.Add(slimeAttraction);
+        hash.Add(wallAttraction);
+        hash.Add(towerViewRange);
+        hash.Add(slimeViewRange);
+        hash.Add(playerViewRange);
+        hash.Add(wallViewRange);
+        hash.Add(slimeOptimalDistance);
+        hash.Add(slimeSpeed);
+        hash.Add(slimeTurnRate);
+        hash.Add(slimeHealth);
 
+        return hash.ToHashCode();
+    }
 }
 
 
 
 public class CustomizeSlimeValues : MonoBehaviour
 {
-    ////[Range(0, 1)] 
-    //public float sheepAttraction;
-    ////[Range(-1, 1)] 
-    //public float towerAttraction;
-    ////[Range(0, 1)] 
-    //public float slimeAttraction;
-    ////[Range(0, 1)] 
-    //public float wallAttraction;
-
-    //public float towerViewRange;
-    //public float slimeViewRange;
-    //public float playerViewRange;
-    //public float wallViewRange;
-
-    ////[Range(-1, 1)] 
-    //public float slimeOptimalDistance;
-
-    //public float slimeSpeed;
-    ////[Range(0, 1)] 
-    //public float slimeTurnRate;
-    //public float slimeHealth;
-
     public NPCManager manager;
 
     public Toggle toggleShow;
@@ -160,7 +174,11 @@ public class CustomizeSlimeValues : MonoBehaviour
         values.slimeTurnRate = slimeTurnRate.value;
         values.slimeHealth = slimeHealth.value;
 
-        manager.slimeValues = values;
+
+        if (values.GetHashCode() != manager.slimeValues.GetHashCode())
+            manager.UpdateSlimeValues(values);
+
+        //manager.slimeValues = values;
 
 
     }
