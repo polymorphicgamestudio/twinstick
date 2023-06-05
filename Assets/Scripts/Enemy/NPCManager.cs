@@ -140,10 +140,16 @@ namespace ShepProject
         #endregion
 
 
-        public void StartRound()
+        private void RemoveCountdown()
         {
             currentCountdownToWave = 0;
 
+        }
+
+        private void StartRound()
+        {
+
+            startButton.onClick.RemoveListener(StartRound);
 
             for (int i = 0; i < choosableTargets.Length; i++)
             {
@@ -158,13 +164,14 @@ namespace ShepProject
         private void Awake()
         {
 
+            startButton.onClick.AddListener(RemoveCountdown);
             startButton.onClick.AddListener(StartRound);
 
             int targetCount = 100;
             genes = new GenesArray(maxEnemies, ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
 
-            slimePool = new EnemyObjectPool(slimePrefab, 
-                (ushort)(initialSlimeSpawnCount * 5), (ushort)initialSlimeSpawnCount);
+            slimePool = new EnemyObjectPool(slimePrefab, 750, 500);
+                //(ushort)(initialSlimeSpawnCount * 5), (ushort)initialSlimeSpawnCount);
 
             choosableTargets = new NativeList<ushort>(targetCount, Allocator.Persistent);
             targetIDs = new NativeArray<ushort>(maxEnemies, Allocator.Persistent);
@@ -175,7 +182,7 @@ namespace ShepProject
             headings = new NativeArray<float>(maxEnemies, Allocator.Persistent);
 
             burrows = new List<EnemyBurrow>();
-            quadTree = new QuadTree(maxEnemies, 35);
+            quadTree = new QuadTree(maxEnemies, 30);
 
             quadTree.npcManager = this;
 
