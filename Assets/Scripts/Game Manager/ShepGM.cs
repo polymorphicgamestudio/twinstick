@@ -62,9 +62,18 @@ namespace ShepProject {
 				inst = this;
 			}
 			else {
-				Debug.LogError("ShemGM Instance already exists!");
+				Debug.LogError("ShepGM Instance already exists!");
 			}
-			graphicRaycaster = canvas.GetComponent<GraphicRaycaster>();
+			if (canvas == null)
+			{
+				Debug.LogError("Canvas not set in ShepGM, needed for towers and shooting!");
+
+			}
+			else
+			{
+				graphicRaycaster = canvas.GetComponent<GraphicRaycaster>();
+
+			}
 		}
 
 		public void GameOverEventTrigger() {
