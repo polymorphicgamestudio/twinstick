@@ -1,6 +1,6 @@
-Shader "Landon/Toon/RampAOFresTEST" {
+Shader "Landon/Toon/RampTintFres" {
 	Properties {
-		[MainTexture] _MainTex ("Main R, Mouth G, Teeth B, AO A", 2D) = "white" {}
+		[MainTexture][NoScaleOffset] _MainTex ("Main R, Mouth G, Teeth B, AO A", 2D) = "white" {}
 		[NoScaleOffset] _Ramp ("Toon Ramp RGB", 2D) = "gray" {}
 		[MainColor] _Color ("Main Color RGB", Color) = (0.5,0.5,0.5,1.0)
 		_ColorFres ("Fres Color RGB, Fres Glow A", Color) = (0.5,0.5,0.5,1.0)
