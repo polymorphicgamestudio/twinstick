@@ -221,19 +221,6 @@ namespace ShepProject
         }
     }
 
-    public struct FindPathsJob : IJobParallelFor
-    {
-
-        public NativeArray<SquareNode> nodes;
-
-
-        public void Execute(int index)
-        {
-
-        }
-
-    }
-
     public struct GenerateVectorFieldJob : IJob
     {
 
@@ -279,91 +266,108 @@ namespace ShepProject
             bool allFilledIn = true;
             do
             {
-                pathLength = 0;
-                FindPath(startNodeIndex, endNodeIndex);
-
-                //read from finalPathIndices and update data
-
-
-                for (int i = 0; i < pathLength; i++)
-                {
-                    //starts with end node, so for both directions on the path
-                    //need to set every node in the chain of that path
-                    //ex node 5 of path needs to have all nodes, 1,2,3,4,6,7,8,9 all set
-
-                    //ends up being n^2 operations :(
-                    for (int j = 0; j < pathLength; j++)
-                    {
-                        //if the node that is being set is the same node
-                        //that we're setting for
-                        if (i == j)
-                        {
-
-                            //set it to a value that signifies that there is no direction
-                            vectorField[i * (columns * rows) + finalPathIndices[j].index] = (int)NodeDirection.NoMovement;
-                            continue;
-
-
-                        }
-
-
-
-                        //vectorField[i * (columns * rows) + finalPathIndices[j].index] = finalPathIndices[i + 1].direction;
-
-                        if (j < i)
-                        {
-
-                            //if its before it in the path, it needs the direction reversed
-                            //which just needs to be direction - 4 to get opposite for enum
-
-                            vectorField[i * (columns * rows) + finalPathIndices[j].index]
-                                = (byte)(finalPathIndices[i - 1].direction - 4);
-
-                        }
-                        else
-                        {
-
-                            //this is for after in the path
-                            vectorField[i * (columns * rows) + finalPathIndices[j].index] = finalPathIndices[i + 1].direction;
-                        }
-                    }
-
-
-
-                }
-
-
 
                 //after this need to check which ones don't have paths and then queue up a new path
                 //try and get furthest ones away first
 
+
+                #region Setup New Path
+
                 allFilledIn = true;
-                for (int i = 0; i < nodes.Length; i++)
+                for (int k = 0; k < nodes.Length; k++)
                 {
+
+
+
+                    pathLength = 0;
+                    FindPath(startNodeIndex, endNodeIndex);
+
+                    //read from finalPathIndices and update data
+
+
+                    #region Set Data From Path
+
+
+                    for (int i = 0; i < pathLength; i++)
+                    {
+                        //starts with end node, so for both directions on the path
+                        //need to set every node in the chain of that path
+                        //ex node 5 of path needs to have all nodes, 1,2,3,4,6,7,8,9 all set
+
+                        //ends up being n^2 operations :(
+                        for (int j = 0; j < pathLength; j++)
+                        {
+                            //if the node that is being set is the same node
+                            //that we're setting for
+                            if (i == j)
+                            {
+
+                                //set it to a value that signifies that there is no direction
+                                vectorField[i * (columns * rows) + finalPathIndices[j].index] = (int)NodeDirection.NoMovement;
+                                continue;
+
+
+                            }
+
+
+
+                            //vectorField[i * (columns * rows) + finalPathIndices[j].index] = finalPathIndices[i + 1].direction;
+
+                            if (j < i)
+                            {
+
+                                //if its before it in the path, it needs the direction reversed
+                                //which just needs to be direction - 4 to get opposite for enum
+
+                                vectorField[i * (columns * rows) + finalPathIndices[j].index]
+                                    = (byte)(finalPathIndices[i - 1].direction - 4);
+
+                            }
+                            else
+                            {
+
+                                //this is for after in the path
+                                vectorField[i * (columns * rows) + finalPathIndices[j].index] = finalPathIndices[i + 1].direction;
+                            }
+                        }
+
+
+
+                    }
+
+
+                    #endregion
+
+
                     //first one found that doesn't have everything filled in
 
                     // check its "full" variable which is after every single actual field,
                     // will be 255 to show that it has no empty spots
-                    if (AllPathsFilledIn(i))
+                    if (AllPathsFilledIn(k))
                     {
+
+                        openNodeDifficulties.Clear();
+                        closedNodes.Clear();
+                        openNodeKeys.Clear();
+                        fCostKeys.Clear();
 
                         continue;
 
                     }
 
-                    startNodeIndex = i;
+                    startNodeIndex = k;
                     allFilledIn = false;
 
                     for (int j = nodes.Length - 1; j >= 0; j--)
                     {
-                        //most closest one to the end that doesn't have this current node filled in
+                        //most closest one to the end of nodes array that doesn't have this current node filled in
 
                         //then set start and end node paths and rerun the loop
 
                         //then this will continue until all nodes have all paths
 
                         //
-                        if (CurrentNodeFilledIn(i, j))
+                        if (CurrentNodeFilledIn(k, j))
                         {
                             continue;
                         }
@@ -372,7 +376,7 @@ namespace ShepProject
 
                         if (startNodeIndex == endNodeIndex)
                         {
-                            Debug.LogError("StartNodeIndex and EndNodeIndex are the same.");
+                            Debug.LogError("Start and End Nodes are the same: " + startNodeIndex);
                         }
 
 
@@ -381,16 +385,17 @@ namespace ShepProject
 
                     }
 
-                    break;
+                    openNodeDifficulties.Clear();
+                    closedNodes.Clear();
+                    openNodeKeys.Clear();
+                    fCostKeys.Clear();
 
 
                 }
 
+                #endregion
+                allFilledIn = true;
 
-                openNodeDifficulties.Clear();
-                closedNodes.Clear();
-                openNodeKeys.Clear();
-                fCostKeys.Clear();
 
                 //trace that back
             } while (!allFilledIn);
@@ -583,80 +588,82 @@ namespace ShepProject
 
 
 
-            Profiler.BeginSample("Draw Closed Nodes");
+            //Profiler.BeginSample("Draw Closed Nodes");
 
-            NativeArray<PathNode> searchedNodes = closedNodes.GetValueArray(Allocator.Temp);
+            //NativeArray<PathNode> searchedNodes = closedNodes.GetValueArray(Allocator.Temp);
 
-            float3 position = new float3();
-            for (int k = 0; k < searchedNodes.Length; k++)
-            {
+            //float3 position = new float3();
+            //for (int k = 0; k < searchedNodes.Length; k++)
+            //{
 
-                if (finalPathIndices.Contains(searchedNodes[k]))
-                    continue;
+            //    if (finalPathIndices.Contains(searchedNodes[k]))
+            //        continue;
 
-                position.x = nodes[searchedNodes[k].index].position.x;
-                position.z = nodes[searchedNodes[k].index].position.y;
-                position += origin;
+            //    position.x = nodes[searchedNodes[k].index].position.x;
+            //    position.z = nodes[searchedNodes[k].index].position.y;
+            //    position += origin;
 
-                builder.SolidPlane(position, new float3(0, 1, 0),
-                    new float2(nodeLength), Color.red);
+            //    builder.SolidPlane(position, new float3(0, 1, 0),
+            //        new float2(nodeLength), Color.red);
 
-            }
-
-
-
-
-            searchedNodes.Dispose();
-
-            Profiler.EndSample();
-
-            Profiler.BeginSample("Draw Open Nodes");
-
-            NativeArray<PathNode> openSearched = openNodeDifficulties.GetValueArray(Allocator.Temp);
-
-            position = new float3();
-            for (int k = 0; k < openSearched.Length; k++)
-            {
-
-                //if (finalPathIndices.Contains(openSearched[k].index))
-                //    continue;
-
-                position.x = nodes[openSearched[k].index].position.x;
-                position.z = nodes[openSearched[k].index].position.y;
-                position += origin;
-
-                builder.SolidPlane(position, new float3(0, 1, 0),
-                    new float2(nodeLength), Color.green);
-
-            }
+            //}
 
 
 
 
-            openSearched.Dispose();
+            //searchedNodes.Dispose();
 
-            Profiler.EndSample();
+            //Profiler.EndSample();
 
-            //draw final path
 
-            #region Draw Final Path
 
-            Profiler.BeginSample("Draw Final Path");
+            //Profiler.BeginSample("Draw Open Nodes");
 
-            float3 pos = new float3();
-            for (int k = 0; k < pathLength; k++)
-            {
-                pos.x = nodes[finalPathIndices[k].index].position.x;
-                pos.z = nodes[finalPathIndices[k].index].position.y;
-                pos += origin;
+            //NativeArray<PathNode> openSearched = openNodeDifficulties.GetValueArray(Allocator.Temp);
 
-                builder.SolidPlane(pos, new float3(0, 1, 0), new float2(nodeLength), Color.cyan);
+            //position = new float3();
+            //for (int k = 0; k < openSearched.Length; k++)
+            //{
 
-            }
+            //    //if (finalPathIndices.Contains(openSearched[k].index))
+            //    //    continue;
 
-            Profiler.EndSample();
+            //    position.x = nodes[openSearched[k].index].position.x;
+            //    position.z = nodes[openSearched[k].index].position.y;
+            //    position += origin;
 
-            #endregion
+            //    builder.SolidPlane(position, new float3(0, 1, 0),
+            //        new float2(nodeLength), Color.green);
+
+            //}
+
+
+
+
+            //openSearched.Dispose();
+
+            //Profiler.EndSample();
+
+
+
+            //#region Draw Final Path
+
+            //Profiler.BeginSample("Draw Final Path");
+
+            //float3 pos = new float3();
+            //for (int k = 0; k < pathLength; k++)
+            //{
+            //    pos.x = nodes[finalPathIndices[k].index].position.x;
+            //    pos.z = nodes[finalPathIndices[k].index].position.y;
+            //    pos += origin;
+
+            //    builder.SolidPlane(pos, new float3(0, 1, 0), new float2(nodeLength), Color.cyan);
+
+            //}
+
+            //Profiler.EndSample();
+
+            //#endregion
 
 
 
@@ -762,6 +769,11 @@ namespace ShepProject
         bool AllPathsFilledIn(int nodeIndex)
         {
 
+            if (!nodes[nodeIndex].walkable)
+            {
+                return true;
+            }
+
             if (vectorPathsFilled[nodeIndex])
             {
                 return true;
@@ -790,6 +802,12 @@ namespace ShepProject
             {
                 return true;
             }
+
+            if (nodeIndex == nodeCheckIndex)
+                return true;
+
+            if (!nodes[nodeCheckIndex].walkable)
+                return true;
 
             if (vectorField[nodeIndex * (columns * rows) + nodeCheckIndex] != 0)
                 return true;
