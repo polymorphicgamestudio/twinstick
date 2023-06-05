@@ -12,9 +12,7 @@ public class FireTowerController : BaseTower
 
     public override void ShootTurret()
     {
-
-        Instantiate(bombPrefab, barrel.position, Quaternion.identity)
-            .GetComponent<Rigidbody>().velocity = barrel.forward * bombSpeed;
-    
+		Rigidbody fireball = Instantiate(bombPrefab, barrel.position, barrel.rotation).GetComponent<Rigidbody>();
+		fireball.velocity = fireball.transform.forward * bombSpeed;
     }
 }

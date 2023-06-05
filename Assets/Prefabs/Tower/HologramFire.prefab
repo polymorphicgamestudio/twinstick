@@ -183,7 +183,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 1536
   viewDistance: 15
 --- !u!1 &5207303185038724969
 GameObject:
