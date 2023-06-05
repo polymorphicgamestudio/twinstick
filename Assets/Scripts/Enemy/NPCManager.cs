@@ -412,7 +412,7 @@ namespace ShepProject
             {
                 handles[i].Complete();
                 gfjs[i].idsToCheck.Dispose();
-                gfjs[i].builder.Dispose();
+                gfjs[i].builder.DiscardAndDispose();
             }
 
             handles.Dispose();
@@ -534,8 +534,10 @@ namespace ShepProject
                 else if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Slime)
                 {
 
-                    quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
-                        = (quadTree.Transforms[quadTree.objectIDs[i]].forward * genes.GetSpeed(quadTree.objectIDs[i]));
+                    enemyPhysicsMethods[quadTree.objectIDs[i]]
+                        .SetVelocity(quadTree.Transforms[quadTree.objectIDs[i]].forward * genes.GetSpeed(quadTree.objectIDs[i]));
+                    //quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
+                        //= (quadTree.Transforms[quadTree.objectIDs[i]].forward * genes.GetSpeed(quadTree.objectIDs[i]));
 
                 }
 

@@ -53,7 +53,7 @@ MonoBehaviour:
   maxEnemies: 2000
   TreeObjectCount: 0
   waveNumber: 0
-  countdownToWave: 0
+  countdownToWave: 10000
   currentCountdownToWave: 0
   initialSlimeSpawnCount: 100
   startButton: {fileID: 0}
