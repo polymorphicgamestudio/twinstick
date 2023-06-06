@@ -50,7 +50,7 @@ MonoBehaviour:
   slimePrefab: {fileID: 27624417778204221, guid: d3835c63c2cab04448df5a6b0161012f, type: 3}
   burrowCount: 30
   sheepCount: 25
-  maxTreeObjects: 2000
+  maxTreeObjects: 1500
   TreeObjectCount: 0
   waveNumber: 0
   countdownToWave: 10000
@@ -61,7 +61,7 @@ MonoBehaviour:
   idChecks: 
   burrowLocations: []
   slimeValues:
-    slimeCount: 1500
+    slimeCount: 700
     sheepAttraction: 1
     towerAttraction: -1
     slimeAttraction: 0.2
