@@ -31,7 +31,14 @@ namespace ShepProject {
 		[SerializeField]
 		private PathfindingManager pathfinding;
 
+
+        [SerializeField]
+        private InputManager input;
+
+
 		public NPCManager NPCS => npcs;
+		public InputManager Input => input;
+
 
 		public event EventTrigger gameOver;
 
@@ -76,7 +83,15 @@ namespace ShepProject {
 			}
 		}
 
-		public void GameOverEventTrigger() {
+        private void OnDestroy()
+        {
+
+            actions.Dispose();
+
+
+        }
+
+        public void GameOverEventTrigger() {
 			gameOver.Invoke();
 		}
 		public bool MouseOverHUD() {
