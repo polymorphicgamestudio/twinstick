@@ -544,7 +544,7 @@ namespace ShepProject
 
             //then from all those, assign the values here, then return another bool5 or w/e
             current.key = parentKey;
-            //current.ContainsTypes = contains;
+
             quads[parentKey] = current;
 
             return current.ContainsTypes;
@@ -555,8 +555,6 @@ namespace ShepProject
         {
             Quad current = quads[key];
             current.containsTypes = new ContainsTypes();
-
-            //ContainsTypes contains = new ContainsTypes();
             
             for (int i = quads[key].startIndex; i <= quads[key].endIndex; i++)
             {
@@ -564,7 +562,6 @@ namespace ShepProject
 
             }
 
-            //current.ContainsTypes = contains;
             quads[key] = current;
 
             return current.containsTypes;

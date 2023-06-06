@@ -170,7 +170,7 @@ namespace ShepProject
             int targetCount = 100;
             genes = new GenesArray(maxTreeObjects, ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
 
-            slimePool = new EnemyObjectPool(slimePrefab, 750, 500);
+            slimePool = new EnemyObjectPool(slimePrefab, (ushort)maxTreeObjects, 500);
                 //(ushort)(initialSlimeSpawnCount * 5), (ushort)initialSlimeSpawnCount);
 
             choosableTargets = new NativeList<ushort>(targetCount, Allocator.Persistent);
