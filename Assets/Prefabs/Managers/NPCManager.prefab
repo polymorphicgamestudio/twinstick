@@ -48,9 +48,9 @@ MonoBehaviour:
   sheepPrefab: {fileID: 8759591037758108741, guid: 717e80078cde2704f99bd475bd0ff376, type: 3}
   endOfWaveCanvasParent: {fileID: 0}
   slimePrefab: {fileID: 27624417778204221, guid: d3835c63c2cab04448df5a6b0161012f, type: 3}
-  burrowCount: 8
+  burrowCount: 30
   sheepCount: 25
-  maxEnemies: 2000
+  maxTreeObjects: 2000
   TreeObjectCount: 0
   waveNumber: 0
   countdownToWave: 10000
@@ -61,10 +61,10 @@ MonoBehaviour:
   idChecks: 
   burrowLocations: []
   slimeValues:
-    slimeCount: 200
+    slimeCount: 1500
     sheepAttraction: 1
     towerAttraction: -1
-    slimeAttraction: -0.5
+    slimeAttraction: 0.2
     wallAttraction: -1
     towerViewRange: 15
     slimeViewRange: 8

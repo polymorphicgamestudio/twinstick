@@ -511,14 +511,10 @@ namespace ShepProject {
 
 		public QuadKey key;
 
-        public QuadKey topLeft;
-        public QuadKey topRight;
-        public QuadKey bottomLeft;
-        public QuadKey bottomRight;
-
 		public float2 position;
 		public float halfLength;
-        private ContainsTypes containsTypes;
+
+        public ContainsTypes containsTypes;
         public ContainsTypes ContainsTypes 
         {
             get => containsTypes;
@@ -574,12 +570,6 @@ namespace ShepProject {
 			halfLength = 0;
             this.key = key;
             containsTypes = new ContainsTypes();
-
-
-            topLeft = new QuadKey();
-            topRight = new QuadKey();
-            bottomLeft = new QuadKey();
-            bottomRight = new QuadKey();
 
 		}
 
@@ -641,7 +631,11 @@ namespace ShepProject {
         public override int GetHashCode()
         {
 
-            return (int)(position.x * 1000 + position.y * 1000 + startIndex * 5345 + endIndex * 1461 );
+            return 
+                (int)(position.x * 1000 
+                + position.y * 1000
+                + startIndex * 5345 
+                + endIndex * 1461);
         }
 
         public override string ToString() {

@@ -514,54 +514,60 @@ namespace ShepProject
                 return SearchQuadForTypes(parentKey);
             }
 
-            ContainsTypes contains = new ContainsTypes();
-            QuadKey checkKey = parentKey;
+            Quad current = quads[parentKey];
+            current.ContainsTypes = new ContainsTypes();
+            
+
+            //ContainsTypes contains = new ContainsTypes();
+            //QuadKey checkKey = parentKey;
 
             //top left quad
-            checkKey = parentKey;
-            checkKey.LeftBranch();
-            checkKey.RightBranch();
-            contains |= TraverseDownTree(quads[checkKey].key);
+            current.key = parentKey;
+            current.key.LeftBranch();
+            current.key.RightBranch();
+            current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
 
-            checkKey = parentKey;
-            checkKey.LeftBranch();
-            checkKey.LeftBranch();
-            contains |= TraverseDownTree(quads[checkKey].key);
+            current.key = parentKey;
+            current.key.LeftBranch();
+            current.key.LeftBranch();
+            current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
 
-            checkKey = parentKey;
-            checkKey.RightBranch();
-            checkKey.LeftBranch();
-            contains |= TraverseDownTree(quads[checkKey].key);
+            current.key = parentKey;
+            current.key.RightBranch();
+            current.key.LeftBranch();
+            current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
 
-            checkKey = parentKey;
-            checkKey.RightBranch();
-            checkKey.RightBranch();
-            contains |= TraverseDownTree(quads[checkKey].key);
+            current.key = parentKey;
+            current.key.RightBranch();
+            current.key.RightBranch();
+            current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
 
             //then from all those, assign the values here, then return another bool5 or w/e
-            Quad current = quads[parentKey];
-            current.ContainsTypes = contains;
+            current.key = parentKey;
+            //current.ContainsTypes = contains;
             quads[parentKey] = current;
 
-            return contains;
+            return current.ContainsTypes;
         }
 
 
         private ContainsTypes SearchQuadForTypes(QuadKey key)
         {
             Quad current = quads[key];
-            ContainsTypes contains = new ContainsTypes();
+            current.containsTypes = new ContainsTypes();
 
+            //ContainsTypes contains = new ContainsTypes();
+            
             for (int i = quads[key].startIndex; i <= quads[key].endIndex; i++)
             {
-                contains[genes.GetObjectType(objectIDs[i])] = true;
+                current.containsTypes[genes.GetObjectType(objectIDs[i])] = true;
 
             }
 
-            current.ContainsTypes = contains;
+            //current.ContainsTypes = contains;
             quads[key] = current;
 
-            return contains;
+            return current.containsTypes;
 
         }
 

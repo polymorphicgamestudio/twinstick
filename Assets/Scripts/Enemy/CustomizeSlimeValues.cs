@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public struct InitialSlimeValues
 {
 
-    [Range(100, 5000)]
+    [Range(0, 1500)]
     public int slimeCount;
 
     [Range(0, 1)]

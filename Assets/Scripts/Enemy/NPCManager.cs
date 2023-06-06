@@ -33,7 +33,7 @@ namespace ShepProject
 
         public int burrowCount;
         public int sheepCount;
-        public int maxEnemies;
+        public int maxTreeObjects;
 
         [ReadOnly]
         public int TreeObjectCount;
@@ -168,27 +168,27 @@ namespace ShepProject
             startButton.onClick.AddListener(StartRound);
 
             int targetCount = 100;
-            genes = new GenesArray(maxEnemies, ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
+            genes = new GenesArray(maxTreeObjects, ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
 
             slimePool = new EnemyObjectPool(slimePrefab, 750, 500);
                 //(ushort)(initialSlimeSpawnCount * 5), (ushort)initialSlimeSpawnCount);
 
             choosableTargets = new NativeList<ushort>(targetCount, Allocator.Persistent);
-            targetIDs = new NativeArray<ushort>(maxEnemies, Allocator.Persistent);
+            targetIDs = new NativeArray<ushort>(maxTreeObjects, Allocator.Persistent);
             sheepDistancesToSlimes = new NativeArray<float>(targetCount * (int)ObjectType.Count, Allocator.Persistent);
 
-            objectForces = new NativeArray<float2>(maxEnemies * (int)ObjectType.Count, Allocator.Persistent);
+            objectForces = new NativeArray<float2>(maxTreeObjects * (int)ObjectType.Count, Allocator.Persistent);
 
-            headings = new NativeArray<float>(maxEnemies, Allocator.Persistent);
+            headings = new NativeArray<float>(maxTreeObjects, Allocator.Persistent);
 
             burrows = new List<EnemyBurrow>();
-            quadTree = new QuadTree(maxEnemies, 30);
+            quadTree = new QuadTree(maxTreeObjects, 60);
 
             quadTree.npcManager = this;
 
             currentCountdownToWave = countdownToWave;
 
-            enemyPhysicsMethods = new Dictionary<int, EnemyPhysicsMethods>(maxEnemies);
+            enemyPhysicsMethods = new Dictionary<int, EnemyPhysicsMethods>(maxTreeObjects);
 
             for (int i = 0; i < targetIDs.Length; i++)
                 targetIDs[i] = ushort.MaxValue;
@@ -398,9 +398,9 @@ namespace ShepProject
                 gfj.objectForces = objectForces;
                 gfj.quads = quadTree.quads;
                 gfj.targetType = (ObjectType)i;
-                gfj.idsToCheck = new NativeArray<int>(idChecks, Allocator.TempJob);
+                //gfj.idsToCheck = new NativeArray<int>(idChecks, Allocator.TempJob);
                 gfj.sheepDistancesToSlime = sheepDistancesToSlimes;
-                gfj.builder = Drawing.DrawingManager.GetBuilder();
+                //gfj.builder = Drawing.DrawingManager.GetBuilder();
 
                 gfjs[i] = gfj;
                 //gfj.Run((quadTree.positionCount + 1));
@@ -411,8 +411,8 @@ namespace ShepProject
             for (int i = 0; i < handles.Length; i++)
             {
                 handles[i].Complete();
-                gfjs[i].idsToCheck.Dispose();
-                gfjs[i].builder.DiscardAndDispose();
+                //gfjs[i].idsToCheck.Dispose();
+                //gfjs[i].builder.DiscardAndDispose();
             }
 
             handles.Dispose();
@@ -431,7 +431,7 @@ namespace ShepProject
             chj.deltaTime = Time.deltaTime;
             chj.builder = DrawingManager.GetBuilder();
             chj.positions = quadTree.positions;
-            chj.idsToCheck = idsToCheck;
+            //chj.idsToCheck = idsToCheck;
             //chj.Run(QuadTree.positionCount + 1);
             chj.Schedule(QuadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
@@ -701,8 +701,8 @@ namespace ShepProject
         {
 
 
-            int min = 30;
-            int max = 40;
+            int min = 25;
+            int max = 50;
 
             for (int i = 0; i < count; i++)
             {
@@ -732,7 +732,7 @@ namespace ShepProject
             RemoveObjectFromTree(id);
 
             slimePool.ReturnObject(enemyPhysicsMethods[id]);
-
+            
             genes.ResetIDGenes(id);
             enemyPhysicsMethods.Remove(id);
 

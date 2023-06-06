@@ -33,9 +33,9 @@ namespace ShepProject {
 		//public NativeArray<Quad> quadsList;
 
 
-        public int maxNeighborQuads;
-        public NativeArray<byte> neighborCounts;
-        public NativeArray<QuadKey> objectNeighbors;
+        //public int maxNeighborQuads;
+        //public NativeArray<byte> neighborCounts;
+        //public NativeArray<QuadKey> objectNeighbors;
 
 
         private NativeArray<Quad> XQuads;
@@ -166,21 +166,21 @@ namespace ShepProject {
 			transformAccess = new TransformAccessArray(positionCount);
 
 
-			maxNeighborQuads = 10;
-			neighborCounts = new NativeArray<byte>(positionCount, Allocator.Persistent);
-			objectNeighbors = new NativeArray<QuadKey>(positionCount * maxNeighborQuads, Allocator.Persistent);
+			//maxNeighborQuads = 10;
+			//neighborCounts = new NativeArray<byte>(positionCount, Allocator.Persistent);
+			//objectNeighbors = new NativeArray<QuadKey>(positionCount * maxNeighborQuads, Allocator.Persistent);
 
 
 			//quadsList = new NativeArray<Quad>(positionCount, Allocator.Persistent);
-			XQuads = new NativeArray<Quad>(positionCount, Allocator.Persistent);
-			ZQuads = new NativeArray<Quad>(positionCount, Allocator.Persistent);
-			quads = new NativeParallelHashMap<QuadKey, Quad>((int)((float)positionCount / bucketSize) * 4, Allocator.Persistent);
+			XQuads = new NativeArray<Quad>((positionCount / bucketSize), Allocator.Persistent);
+			ZQuads = new NativeArray<Quad>(XQuads.Length, Allocator.Persistent);
+			quads = new NativeParallelHashMap<QuadKey, Quad>((int)((float)positionCount / bucketSize) * 5, Allocator.Persistent);
 			
 			sorted = new NativeArray<bool>(1, Allocator.Persistent);
 
 			lengths = new NativeArray<int>(2, Allocator.Persistent);
 
-			halfLength = 100;
+			halfLength = 90;
 			
 			//start position count at -1 so it takes first slots
 			this.positionCount = -1;
@@ -270,6 +270,7 @@ namespace ShepProject {
 
 			}
 
+			
             AssignTypesJob asj = new AssignTypesJob();
             asj.objectIDs = objectIDs;
             asj.genes = npcManager.Genes;
@@ -318,11 +319,11 @@ namespace ShepProject {
 			sorted[0] = false;
 			quads.Clear();
 
-			for (int i = 0; i < neighborCounts.Length; i++)
-			{
-				neighborCounts[i] = 0;
+			//for (int i = 0; i < neighborCounts.Length; i++)
+			//{
+			//	neighborCounts[i] = 0;
 
-			}
+			//}
 
 
 			for (int i = 0; i < XQuads.Length; i++) {
@@ -536,7 +537,7 @@ namespace ShepProject {
 
 
 			Transform inactive = transforms[objectID];
-			inactive.gameObject.SetActive(false);
+			//inactive.gameObject.SetActive(false);
 			transforms[objectID] = null;
 
 
@@ -587,8 +588,8 @@ namespace ShepProject {
 			deletions.Dispose();
 
 
-            neighborCounts.Dispose();
-			objectNeighbors.Dispose();
+   //         neighborCounts.Dispose();
+			//objectNeighbors.Dispose();
 
 
 

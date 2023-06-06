@@ -96,11 +96,11 @@ namespace ShepProject
 
 		public ObjectType targetType;
 
-        [ReadOnly]
-        public NativeArray<int> idsToCheck;
+        //[ReadOnly]
+        //public NativeArray<int> idsToCheck;
 
 
-        public CommandBuilder builder;
+        //public CommandBuilder builder;
 
         #endregion
 
@@ -127,16 +127,16 @@ namespace ShepProject
                     = math.normalize(positions[targetIDs[objectID]] - positions[objectID])
                     * genes.GetAttraction(objectID, ObjectType.Sheep);
 
-                float3 pos = new float3();
-                pos.x = positions[objectID].x;
-                pos.y = 0;
-                pos.z = positions[objectID].y;
+                //float3 pos = new float3();
+                //pos.x = positions[objectID].x;
+                //pos.y = 0;
+                //pos.z = positions[objectID].y;
 
-                float3 dir = new float3();
-                dir.x = objectForces[(objectID * (int)ObjectType.Count) + (int)targetType].x;
-                dir.z = objectForces[(objectID * (int)ObjectType.Count) + (int)targetType].y;
-                dir.y = 0;
-                builder.Ray(pos,dir, Color.green);
+                //float3 dir = new float3();
+                //dir.x = objectForces[(objectID * (int)ObjectType.Count) + (int)targetType].x;
+                //dir.z = objectForces[(objectID * (int)ObjectType.Count) + (int)targetType].y;
+                //dir.y = 0;
+                //builder.Ray(pos,dir, Color.green);
 
             }
             else if (objType == ObjectType.Sheep && targetType == ObjectType.Slime)
@@ -152,10 +152,10 @@ namespace ShepProject
             //will only be the bucket 
 
 
-            if (idsToCheck.Contains(objectID) && targetType == ObjectType.Slime)
-            {
-                int test = 0;
-            }
+            //if (idsToCheck.Contains(objectID) && targetType == ObjectType.Slime)
+            //{
+            //    int test = 0;
+            //}
 
             SearchChildrenForForce(quads[new QuadKey()].key, objectID, objType);
 
@@ -325,14 +325,14 @@ namespace ShepProject
 
             float2 moveTowards = new float2();
 
-            Quad current = new Quad();
-            current = quads[key];
+            //Quad current = new Quad();
+            //current = quads[key];
 
 
-            if (current.startIndex < 0)
+            if (quads[key].startIndex < 0)
                 return moveTowards;
 
-            for (int i = current.startIndex; i <= current.endIndex; i++)
+            for (int i = quads[key].startIndex; i <= quads[key].endIndex; i++)
             {
 
                 //to ignore itself in all calculations
@@ -354,12 +354,12 @@ namespace ShepProject
 
 
                 //for debugging rays only
-                Vector3 pos = new Vector3();
-                pos.x = positions[objectID].x;
-                pos.y = 1;
-                pos.z = positions[objectID].y;
+                //Vector3 pos = new Vector3();
+                //pos.x = positions[objectID].x;
+                //pos.y = 1;
+                //pos.z = positions[objectID].y;
 
-                Vector3 local = new Vector3();
+                //Vector3 local = new Vector3();
 
 
                 //if greater than this distance, ignore and continue on
@@ -419,13 +419,13 @@ namespace ShepProject
                              * 
                              */
 
-                            if (idsToCheck.Contains(objectID))
-                            {
-                                int test = 0;
-                            }
+                            //if (idsToCheck.Contains(objectID))
+                            //{
+                            //    int test = 0;
+                            //}
 
                             float magnitude = MathUtil.Magnitude(localPosition);
-                            float2 normalized = localPosition / magnitude;
+                            //float2 normalized = localPosition / magnitude;
 
                             float slimeForce = ((2 * magnitude)
                                 / genes.GetViewRange(objectID, ViewRange.Slime));
@@ -435,19 +435,19 @@ namespace ShepProject
 
                             slimeForce = math.clamp(slimeForce, -1, 1);
 
-                            moveTowards += (normalized * slimeForce);
+                            moveTowards += ((localPosition / magnitude) * slimeForce);
 
-                            local.x = (normalized * slimeForce).x;
-                            local.z = (normalized * slimeForce).y;
-                            local.y = 0;
-                            //local *= -1;
+                            //local.x = (normalized * slimeForce).x;
+                            //local.z = (normalized * slimeForce).y;
+                            //local.y = 0;
+                            ////local *= -1;
                             
-                            if (slimeForce < 0)
-                                builder.Ray(pos, local, Color.red);
-                            else
-                            {
-                                builder.Ray(pos, local, Color.green);
-                            }
+                            //if (slimeForce < 0)
+                            //    builder.Ray(pos, local, Color.red);
+                            //else
+                            //{
+                            //    builder.Ray(pos, local, Color.green);
+                            //}
 
                         }
                         else
@@ -455,12 +455,12 @@ namespace ShepProject
                             moveTowards -= one * genes.GetAttraction(objectID, ObjectType.Slime);
 
 
-                            local.x = one.x;
-                            local.z = one.y;
-                            local.y = 0;
-                            local *= -1;
+                            //local.x = one.x;
+                            //local.z = one.y;
+                            //local.y = 0;
+                            //local *= -1;
 
-                            Debug.DrawRay(pos, local, Color.red);
+                            //Debug.DrawRay(pos, local, Color.red);
 
                         }
                         break;
@@ -550,7 +550,7 @@ namespace ShepProject
         public NativeArray<float> headings;
         public GenesArray genes;
 
-        public NativeArray<int> idsToCheck;
+        //public NativeArray<int> idsToCheck;
 
         public CommandBuilder builder;
 
@@ -570,18 +570,18 @@ namespace ShepProject
 
             float2 moveTowards = new float2();
 
-            if (idsToCheck.Contains(objectID))
-            {
-                int test = 0;
-            }
+            //if (idsToCheck.Contains(objectID))
+            //{
+            //    int test = 0;
+            //}
 
 
-            float3 pos = new float3();
-            pos.x = positions[objectID].x;
-            pos.y = .7f;
-            pos.z = positions[objectID].y;
+            //float3 pos = new float3();
+            //pos.x = positions[objectID].x;
+            //pos.y = .7f;
+            //pos.z = positions[objectID].y;
 
-            float3 dir = new float3();
+            //float3 dir = new float3();
 
             float maxMagnitude = 0;
             float tempMagnitude = 0;
@@ -610,14 +610,14 @@ namespace ShepProject
 
                 moveTowards += objectForces[(objectID * (int)ObjectType.Count) + i];
 
-                dir.x = objectForces[(objectID * (int)ObjectType.Count) + i].x;
-                dir.y = 0;
-                dir.z = objectForces[(objectID * (int)ObjectType.Count) + i].y;
+                //dir.x = objectForces[(objectID * (int)ObjectType.Count) + i].x;
+                //dir.y = 0;
+                //dir.z = objectForces[(objectID * (int)ObjectType.Count) + i].y;
 
 
-                builder.Label2D(pos + (math.normalize(dir) / 2), ((ObjectType)i).ToString(), 12);
+                //builder.Label2D(pos + (math.normalize(dir) / 2), ((ObjectType)i).ToString(), 12);
 
-                builder.Ray(pos, dir, Color.cyan);
+                //builder.Ray(pos, dir, Color.cyan);
 
 
 
@@ -633,27 +633,27 @@ namespace ShepProject
             }
 
             moveTowards += MathUtil.ClampMagnitude(objectForces[(objectID * (int)ObjectType.Count) + (int)(ObjectType.Sheep)], maxMagnitude);
-            pos.y = .5f;
+            //pos.y = .5f;
 
-            dir.x = objectForces[(objectID * (int)ObjectType.Count) + (int)ObjectType.Sheep].x;
-            dir.y = 0;
-            dir.z = objectForces[(objectID * (int)ObjectType.Count) + (int)ObjectType.Sheep].y;
+            //dir.x = objectForces[(objectID * (int)ObjectType.Count) + (int)ObjectType.Sheep].x;
+            //dir.y = 0;
+            //dir.z = objectForces[(objectID * (int)ObjectType.Count) + (int)ObjectType.Sheep].y;
 
-            builder.Label2D(pos + (math.normalize(dir) / 2), ObjectType.Sheep.ToString(), 12);
+            //builder.Label2D(pos + (math.normalize(dir) / 2), ObjectType.Sheep.ToString(), 12);
 
-            builder.Ray(pos, dir, Color.cyan);
+            //builder.Ray(pos, dir, Color.cyan);
 
 
-            dir.x = moveTowards.x;
-            dir.y = 0;
-            dir.z = moveTowards.y;
+            //dir.x = moveTowards.x;
+            //dir.y = 0;
+            //dir.z = moveTowards.y;
 
-            builder.Ray(pos, dir, Color.yellow);
+            //builder.Ray(pos, dir, Color.yellow);
 
             float headingCalculation = math.atan2(moveTowards.x, moveTowards.y);
-            pos.y = .25f;
+            //pos.y = .25f;
 
-            builder.Ray(pos, math.forward(quaternion.Euler(new float3(0, headingCalculation, 0))), Color.magenta);
+            //builder.Ray(pos, math.forward(quaternion.Euler(new float3(0, headingCalculation, 0))), Color.magenta);
 
             if (headingCalculation < 0)
             {
