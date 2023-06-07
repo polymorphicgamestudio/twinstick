@@ -11,6 +11,42 @@ public struct ContainsTypes
 
     public bool this[ObjectType index]
     {
+        get
+        {
+
+            switch (index)
+            {
+
+                case ObjectType.Slime:
+                {
+                    return ContainsSlimes;
+                }
+                case ObjectType.Tower:
+                {
+                    return ContainsTowers;
+                }
+                case ObjectType.Sheep:
+                {
+                    return ContainsSheep;
+                }
+                case ObjectType.Player:
+                {
+                    return ContainsPlayer;
+                }
+                case ObjectType.Wall:
+                {
+                    return ContainsWalls;
+
+                }
+                default:
+                {
+                    throw new System.Exception( "Invalid choice " + index + " for ContainsTypes.");
+                }
+            }
+
+        }
+
+
         set
         {
 

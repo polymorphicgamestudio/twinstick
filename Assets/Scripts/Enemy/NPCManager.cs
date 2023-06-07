@@ -33,12 +33,11 @@ namespace ShepProject
 
         public int burrowCount;
         public int sheepCount;
-        public int maxTreeObjects;
 
-        [ReadOnly]
-        public int TreeObjectCount;
+        //[ReadOnly]
+        //public int TreeObjectCount;
 
-        [SerializeField]
+        //[SerializeField]
         private int waveNumber;
         private bool duringWave;
         private bool updateInitialize;
@@ -51,8 +50,10 @@ namespace ShepProject
         public float CurrentCountdownToWave => currentCountdownToWave;
 
 
-        [SerializeField]
-        private int initialSlimeSpawnCount;
+
+        public int MaxTreeObjects => slimeValues.slimeCount + 750;
+        //[SerializeField]
+        //private int initialSlimeSpawnCount;
         private int enemiesLeftToSpawn;
 
         private int enemiesLeftToKill;
@@ -63,11 +64,12 @@ namespace ShepProject
         [SerializeField]
         private bool spawningEnemies;
 
-        public int[] idChecks;
+        [SerializeField]
+        private int[] idChecks;
 
         private Dictionary<int, EnemyPhysicsMethods> enemyPhysicsMethods;
 
-        public Transform[] burrowLocations;
+        //public Transform[] burrowLocations;
 
         private List<EnemyBurrow> burrows;
 
@@ -131,8 +133,6 @@ namespace ShepProject
 
         private void OnDrawGizmos()
         {
-            if (quadTree != null)
-                quadTree.OnDrawGizmos();
 
 
         }
@@ -168,27 +168,27 @@ namespace ShepProject
             startButton.onClick.AddListener(StartRound);
 
             int targetCount = 100;
-            genes = new GenesArray(maxTreeObjects, ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
+            genes = new GenesArray(MaxTreeObjects, ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
 
-            slimePool = new EnemyObjectPool(slimePrefab, (ushort)maxTreeObjects, 500);
+            slimePool = new EnemyObjectPool(slimePrefab, (ushort)MaxTreeObjects, 1000);
                 //(ushort)(initialSlimeSpawnCount * 5), (ushort)initialSlimeSpawnCount);
 
             choosableTargets = new NativeList<ushort>(targetCount, Allocator.Persistent);
-            targetIDs = new NativeArray<ushort>(maxTreeObjects, Allocator.Persistent);
+            targetIDs = new NativeArray<ushort>(MaxTreeObjects, Allocator.Persistent);
             sheepDistancesToSlimes = new NativeArray<float>(targetCount * (int)ObjectType.Count, Allocator.Persistent);
 
-            objectForces = new NativeArray<float2>(maxTreeObjects * (int)ObjectType.Count, Allocator.Persistent);
+            objectForces = new NativeArray<float2>(MaxTreeObjects * (int)ObjectType.Count, Allocator.Persistent);
 
-            headings = new NativeArray<float>(maxTreeObjects, Allocator.Persistent);
+            headings = new NativeArray<float>(MaxTreeObjects, Allocator.Persistent);
 
             burrows = new List<EnemyBurrow>();
-            quadTree = new QuadTree(maxTreeObjects, 60);
+            quadTree = new QuadTree(MaxTreeObjects, 30);
 
             quadTree.npcManager = this;
 
             currentCountdownToWave = countdownToWave;
 
-            enemyPhysicsMethods = new Dictionary<int, EnemyPhysicsMethods>(maxTreeObjects);
+            enemyPhysicsMethods = new Dictionary<int, EnemyPhysicsMethods>(MaxTreeObjects);
 
             for (int i = 0; i < targetIDs.Length; i++)
                 targetIDs[i] = ushort.MaxValue;
@@ -232,7 +232,8 @@ namespace ShepProject
         void Update()
         {
 
-            initialSlimeSpawnCount = (ushort)slimeValues.slimeCount;
+
+            //initialSlimeSpawnCount = (ushort)slimeValues.slimeCount;
 
             if (!duringWave)
             {
@@ -309,8 +310,8 @@ namespace ShepProject
                 //spawn any additional required burrows
                 //then set the amount of enemies for them to each spawn
 
-                enemiesLeftToSpawn = initialSlimeSpawnCount;
-                int avg = initialSlimeSpawnCount / burrows.Count;
+                enemiesLeftToSpawn = slimeValues.slimeCount;
+                int avg = slimeValues.slimeCount / burrows.Count;
 
                 for (int i = 0; i < burrows.Count; i++)
                 {
@@ -334,8 +335,8 @@ namespace ShepProject
                 //all enemies have been assigned
                 //so now set the enemies left to spawn to the enemiesCountToSpawn
                 //in order to create a signal when all required enemies have been spawned
-                enemiesLeftToSpawn = initialSlimeSpawnCount;
-                enemiesLeftToKill = initialSlimeSpawnCount;
+                enemiesLeftToSpawn = slimeValues.slimeCount;
+                enemiesLeftToKill = slimeValues.slimeCount;
 
                 return;
 
@@ -362,7 +363,7 @@ namespace ShepProject
 
             }
 
-            TreeObjectCount = quadTree.positionCount;
+            //TreeObjectCount = quadTree.positionCount;
 
             quadTree.Update();
 

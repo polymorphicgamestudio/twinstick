@@ -382,6 +382,14 @@ namespace ShepProject {
 
         }
 
+        public void SetCurrentLevel(uint position)
+        {
+
+            key.Set((int)GetCount() - 2, (int)GetCount() - 1, position);
+            
+        }
+
+
         public void SetNextLevelPosition(int value)
         {
 
@@ -393,30 +401,30 @@ namespace ShepProject {
 
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="level"></param>
-        /// <param name="value">Range of 0-3, BL = 0 BR = 1 TL = 2 TR = 3</param>
-        public void SetLevelPosition(byte level, byte value)
-        {
-            key.Set(level - 1, level, value);
-            if (GetCount() < level)
-                IncreaseCount((byte)(level - GetCount()));
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="level"></param>
+        ///// <param name="value">Range of 0-3, BL = 0 BR = 1 TL = 2 TR = 3</param>
+        //public void SetLevelPosition(byte level, byte value)
+        //{
+        //    key.Set(level - 1, level, value);
+        //    if (GetCount() < level)
+        //        IncreaseCount((byte)(level - GetCount()));
 
-        }
+        //}
 
-        public void SetLevelPosition(byte level, bool2 value)
-        {
-            byte val = 0;
+        //public void SetLevelPosition(byte level, bool2 value)
+        //{
+        //    byte val = 0;
 
-            if (value.x)
-                val += 1;
-            if (value.y)
-                val += 2;
+        //    if (value.x)
+        //        val += 1;
+        //    if (value.y)
+        //        val += 2;
 
-            SetLevelPosition(level, val);
-        }
+        //    SetLevelPosition(level, val);
+        //}
 
 
 
@@ -555,7 +563,7 @@ namespace ShepProject {
 
 		public bool Empty => (startIndex == -1) && (endIndex == -1);
 
-		public short BucketSize => (short)((endIndex - startIndex) + 1);
+		public short BucketSize => (short)((endIndex - startIndex));
 
 		#endregion
 

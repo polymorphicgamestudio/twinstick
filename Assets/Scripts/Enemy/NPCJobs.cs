@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Profiling;
 using UnityEngine.UIElements;
 using static System.Collections.Specialized.BitVector32;
 
@@ -167,11 +168,11 @@ namespace ShepProject
             //this will search through all child quads for bottom level quads and then check if those quads 
             //have the required objects inside of them and a search of the bucket will be required
 
-            if (!quads[parentKey].ContainsObjectType(targetType))
-                return;
+            //if (!quads[parentKey].ContainsObjectType(targetType))
+            //    return;
 
             QuadKey checkKey = parentKey;
-            float maxDistance = genes.GetViewRange(objectID, ViewRange.Tower);
+            float maxDistance = genes.GetViewRange(objectID, (ViewRange)objType);
 
             //slime max distance
             if (8 > maxDistance) 
@@ -184,10 +185,14 @@ namespace ShepProject
             {
                 //check this quad for the required object
 
+                //Profiler.BeginSample("Gather Bucket Forces");
+
                 //need to update return type from float2 to objectForces
                 objectForces[(objectID * (int)ObjectType.Count) + (int)targetType] += 
                     //(objectForces[(objectID * (int)ObjectType.Count) + (int)targetType]
                     GatherBucketForces(objectID, objType, parentKey);
+
+                //Profiler.EndSample();
 
                 return;
 
@@ -296,8 +301,8 @@ namespace ShepProject
 
 			float minDist = 10000;
 
-			if (!quads[key].ContainsObjectType(targetType))
-                return minDist;
+			//if (!quads[key].ContainsObjectType(targetType))
+   //             return minDist;
 
             float tempMin = 0;
             for (int i = quads[key].startIndex; i <= quads[key].endIndex; i++) 

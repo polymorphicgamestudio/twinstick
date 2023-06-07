@@ -80,6 +80,8 @@ namespace ShepProject
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<ObjectType> objectTypes;
 
+        public NativeArray<ObjectType>.ReadOnly ObjectTypes => objectTypes.AsReadOnly();
+
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<ushort> geneIDs;
 

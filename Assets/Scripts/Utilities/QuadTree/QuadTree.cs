@@ -1,3 +1,4 @@
+using Drawing;
 using System;
 using System.Reflection;
 using Unity.Collections;
@@ -54,61 +55,66 @@ namespace ShepProject {
 
         #region Debugging
 
-        public void OnDrawGizmos()
+        public void DrawGizmos()
 		{
 
 
             //draw quads for debugging
             //issue with unity's code getting quads over certain amount, starts at about 150-160
             //might be from using 2021 instead of a newer version of unity, not sure
-            NativeArray<Quad> q = quads.GetValueArray(Allocator.Temp);
+            NativeArray<QuadKey> q = quads.GetKeyArray(Allocator.Temp);
+            Vector3 pos = new Vector3(0, 2, 0);
             for (int i = 0; i < q.Length; i++)
             {
 
-                DrawQuad(q[i], Color.white);
+                DrawQuad(quads[q[i]], Color.white);
+				//pos.x = quads[q[i]].position.x;
+				//pos.z = quads[q[i]].position.y;
 
 
-
-                //Handles.Label(pos, q[i].key.GetHeirarchyBinaryString());
+				//Draw.Label2D(pos + new Vector3(0, UnityEngine.Random.value * .5f, 0),
+    //                quads[q[i]].key.ToString() + " Bucket: " + quads[q[i]].BucketSize + " Pos: " + pos,
+				//	Color.red);
 
 
             }
             q.Dispose();
 
 
-            Vector3 pos = new Vector3(0, 1, 0);
+
             Vector3 scale = new Vector3(.5f, .5f, .5f);
 
 
 			//for debugging neighbors
 
 			//Quad quad = quadsList[objectQuadIDs[1]];
-   //         pos.x = quad.position.x;
-   //         pos.z = quad.position.y;
-   //         //DrawQuad();
-   //         Gizmos.DrawCube(pos, scale);
+			//         pos.x = quad.position.x;
+			//         pos.z = quad.position.y;
+			//         //DrawQuad();
+			//         Gizmos.DrawCube(pos, scale);
 
 
-   //         for (int i = maxNeighborQuads; i < maxNeighborQuads + neighborCounts[1]; i++)
-   //         {
-   //             quad = quads[objectNeighbors[i]];
+			//         for (int i = maxNeighborQuads; i < maxNeighborQuads + neighborCounts[1]; i++)
+			//         {
+			//             quad = quads[objectNeighbors[i]];
 
-   //             pos.x = quad.position.x;
+			//             pos.x = quad.position.x;
 			//	pos.y = 2;
-   //             pos.z = quad.position.y;
-   //             //DrawQuad();
-   //             Gizmos.DrawCube(pos, scale);
+			//             pos.z = quad.position.y;
+			//             //DrawQuad();
+			//             Gizmos.DrawCube(pos, scale);
 
-   //         }
+			//         }
 
 
 			//Vector3 position = new Vector3();
-			//for (int i = 0; i <= positionCount; i++) {
+			//for (int i = 0; i <= positionCount; i++)
+			//{
 
 			//	position.x = positions[i].x;
 			//	position.z = positions[i].y;
 
-			//	Handles.Label(position, i.ToString());
+			//	Drawing.Draw.Label2D(position, i.ToString());
 
 			//}
 
@@ -116,7 +122,7 @@ namespace ShepProject {
 
 
 
-        }
+		}
 
 		private void DrawQuad(Quad q, Color c)
 		{
@@ -148,7 +154,8 @@ namespace ShepProject {
         /// Create this with maximum number of positions that will be sorted for better performance.
         /// </summary>
         /// <param name="positionCount"></param>
-        public QuadTree(int positionCount, short bucketSize) {
+        public QuadTree(int positionCount, short bucketSize) 
+		{
 
 			objectIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
 			sortedObjectIDs = new NativeArray<ushort>(positionCount, Allocator.Persistent);
@@ -241,8 +248,12 @@ namespace ShepProject {
 				sij.bucketSize = bucketSize;
 				sij.zSort = false;
 				sij.quads = quads;
+
+				//sij.builder = DrawingManager.GetBuilder();
 				//sij.Run(xQuadsLength);
 				sij.Schedule(xQuadsLength, SystemInfo.processorCount).Complete();
+
+				//sij.builder.Dispose();
 
 				sij = new SortIterationJob();
 				sij.objectPositions = positions;
@@ -253,15 +264,18 @@ namespace ShepProject {
 				sij.bucketSize = bucketSize;
 				sij.zSort = true;
 				sij.quads = quads;
-				//sij.Run(xQuadsLength * 2);
-				sij.Schedule(xQuadsLength * 2, SystemInfo.processorCount).Complete();
+
+                //sij.builder = DrawingManager.GetBuilder();
+                //sij.Run(xQuadsLength * 2);
+                sij.Schedule(xQuadsLength * 2, SystemInfo.processorCount).Complete();
 
 
-				QuadFilteringJob fj = new QuadFilteringJob();
+                //sij.builder.Dispose();
+
+
+                QuadFilteringJob fj = new QuadFilteringJob();
 				fj.readFrom = XQuads;
-				//fj.quadsList = quadsList;
 				fj.objectIDs = objectIDs;
-				//fj.quadsID = objectQuadIDs;
 				fj.isSorted = sorted;
 				fj.lengths = lengths;
 				fj.bucketSize = bucketSize;	
@@ -270,60 +284,100 @@ namespace ShepProject {
 
 			}
 
-			
-            AssignTypesJob asj = new AssignTypesJob();
-            asj.objectIDs = objectIDs;
-            asj.genes = npcManager.Genes;
-            asj.quads = quads;
-			asj.size = assignTypesSize;
-            asj.Schedule(assignTypesSize, 1).Complete();
 
-			if (assignTypesSize > 1)
-			{
+   //         if (assignTypesSize > 1)
+			//{
 
-                Quad top = quads[new QuadKey()];
-                QuadKey key = new QuadKey();
-				key.LeftBranch();
-				key.RightBranch();
+			//	NativeArray<AssignTypesJob> jobs
+			//		= new NativeArray<AssignTypesJob>(assignTypesSize, Allocator.TempJob);
 
-				top.ContainsTypes = quads[key].ContainsTypes;
+			//	NativeArray<JobHandle> handles
+			//		= new NativeArray<JobHandle>(assignTypesSize, Allocator.TempJob);
 
-                key = new QuadKey();
-                key.LeftBranch();
-                key.LeftBranch();
+			//	for (byte i = 0; i < assignTypesSize; i++)
+			//	{
+			//		AssignTypesJob asj = new AssignTypesJob();
+			//		asj.objectIDs = objectIDs.Slice(0, positionCount + 1);
+			//		asj.objectTypes = npcManager.Genes.ObjectTypes;
+			//		asj.quads = quads;
+			//		asj.positionIndex = i;
+			//		asj.searchers = new NativeList<QuadKey>(200, Allocator.TempJob);
+			//		//asj.builder = DrawingManager.GetBuilder();
 
-                top.ContainsTypes |= quads[key].ContainsTypes;
+			//		jobs[i] = asj;
+			//		//asj.Run();
+			//		handles[i] = asj.Schedule();
+			//		//asj.Schedule(assignTypesSize, 1).Complete();
+			//	}
 
-                key = new QuadKey();
-                key.RightBranch();
-                key.RightBranch();
+			//	for (int i = 0; i < handles.Length; i++)
+			//	{
 
-                top.ContainsTypes |= quads[key].ContainsTypes;
-
-                key = new QuadKey();
-                key.RightBranch();
-                key.LeftBranch();
-
-                top.ContainsTypes |= quads[key].ContainsTypes;
-
-				quads[new QuadKey()] = top;
+			//		handles[i].Complete();
+			//		jobs[i].searchers.Dispose();
+			//		//jobs[i].builder.Dispose();
+			//	}
 
 
-            }
+			//	jobs.Dispose();
+			//	handles.Dispose();
 
+
+			//	Quad top = quads[new QuadKey()];
+			//	QuadKey key = new QuadKey();
+			//	key.LeftBranch();
+			//	key.RightBranch();
+
+			//	top.ContainsTypes = quads[key].ContainsTypes;
+
+			//	key = new QuadKey();
+			//	key.LeftBranch();
+			//	key.LeftBranch();
+
+			//	top.ContainsTypes |= quads[key].ContainsTypes;
+
+			//	key = new QuadKey();
+			//	key.RightBranch();
+			//	key.RightBranch();
+
+			//	top.ContainsTypes |= quads[key].ContainsTypes;
+
+			//	key = new QuadKey();
+			//	key.RightBranch();
+			//	key.LeftBranch();
+
+			//	top.ContainsTypes |= quads[key].ContainsTypes;
+
+			//	quads[new QuadKey()] = top;
+
+
+
+
+
+			//}
+			//else
+			//{
+			//	Quad quad = quads[new QuadKey()];
+
+   //             for (int i = quads[quad.key].startIndex; i <= quads[quad.key].endIndex; i++)
+   //             {
+   //                 quad.containsTypes[npcManager.Genes.ObjectTypes[objectIDs[i]]] = true;
+
+   //             }
+
+			//	quads[quad.key] = quad;
+
+   //         }
+
+            DrawGizmos();
 
         }
 
-		public void NewFrame() {
+		public void NewFrame() 
+		{
 			lengths[1] = 0;
 			sorted[0] = false;
 			quads.Clear();
-
-			//for (int i = 0; i < neighborCounts.Length; i++)
-			//{
-			//	neighborCounts[i] = 0;
-
-			//}
 
 
 			for (int i = 0; i < XQuads.Length; i++) {
@@ -332,23 +386,10 @@ namespace ShepProject {
 				ZQuads[i] = new Quad(-1, -1);
 			}
 
-			//for (int i = 0; i < quadsList.Length; i++) {
-
-			//	quadsList[i] = new Quad();
-
-			//}
-
-			//for (int i = 0; i < objectQuadIDs.Length; i++) {
-
-			//	objectQuadIDs[i] = ushort.MaxValue;
-
-			//}
-
-			//update the transform's positions
-			//NullChecks();
-
 		}
 
+
+        #region Object Searching
 
         private int SearchQuadForObjectType(int objectID, Quad current, ObjectType objectType, float minSquareDist = 0, float maxSquareDist = 10)
         {
@@ -496,7 +537,11 @@ namespace ShepProject {
 
         }
 
-		public void QueueDeletion(ushort objectID)
+        #endregion
+
+        #region Add/Remove Related
+
+        public void QueueDeletion(ushort objectID)
 		{
 			deletions.Add(objectID);
 
@@ -560,7 +605,10 @@ namespace ShepProject {
 
 		}
 
-		private void ReadTransformData() {
+        #endregion
+
+        private void ReadTransformData() 
+		{
 
 
 			transformAccess.SetTransforms(transforms);
@@ -572,7 +620,8 @@ namespace ShepProject {
 
 		}
 
-		public void Dispose() {
+		public void Dispose() 
+		{
 			objectIDs.Dispose();
 			sortedObjectIDs.Dispose();
 

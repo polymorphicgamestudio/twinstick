@@ -1,6 +1,8 @@
+using Drawing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -37,6 +39,9 @@ namespace ShepProject
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<Quad> writeTo;
 
+
+        //public CommandBuilder builder;
+
         public bool zSort;
         public int bucketSize;
 
@@ -60,7 +65,6 @@ namespace ShepProject
                 startIndex = -1;
                 endIndex = -1;
 
-
                 if (!zSort)
                 {
 
@@ -79,7 +83,6 @@ namespace ShepProject
                     rightQuad.key.RightBranch();
 
                 }
-
 
                 if (zSort)
                 {
@@ -105,15 +108,22 @@ namespace ShepProject
                     quads.Add(rightQuad.key, rightQuad);
 
 
+                    //Vector3 pos = new Vector3(0, 1, 0);
+                    //pos.x = leftQuad.position.x;
+                    //pos.z = leftQuad.position.y;
+
+                    //builder.Label2D(pos, leftQuad.key.ToString(), Color.white);
+
+
+                    //pos.x = rightQuad.position.x;
+                    //pos.z = rightQuad.position.y;
+
+                    //builder.Label2D(pos, rightQuad.key.ToString(), Color.white);
 
                 }
 
-
-
                 writeTo[index * 2] = leftQuad;
                 writeTo[index * 2 + 1] = rightQuad;
-
-
 
                 return;
 
@@ -282,8 +292,11 @@ namespace ShepProject
             if (zSort)
             {
 
-                leftQuad.position = new float2(readQuad.position.x, (readQuad.position.y) - (readQuad.halfLength / 2f));
-                rightQuad.position = new float2(readQuad.position.x, (readQuad.position.y) + (readQuad.halfLength / 2f));
+                leftQuad.position = new float2(readQuad.position.x,
+                    (readQuad.position.y) - (readQuad.halfLength / 2f));
+
+                rightQuad.position = new float2(readQuad.position.x, 
+                    (readQuad.position.y) + (readQuad.halfLength / 2f));
 
                 leftQuad.halfLength = readQuad.halfLength / 2f;
                 rightQuad.halfLength = readQuad.halfLength / 2f;
@@ -291,12 +304,29 @@ namespace ShepProject
 
                 quads.Add(leftQuad.key, leftQuad);
                 quads.Add(rightQuad.key, rightQuad);
+
+
+                //Vector3 pos = new Vector3(0, 1, 0);
+                //pos.x = leftQuad.position.x;
+                //pos.z = leftQuad.position.y;
+
+                //builder.Label2D(pos, leftQuad.key.ToString(), Color.blue);
+
+
+                //pos.x = rightQuad.position.x;
+                //pos.z = rightQuad.position.y;
+
+                //builder.Label2D(pos, rightQuad.key.ToString(), Color.blue);
+
+
             }
 
             else
             {
-                leftQuad.position = new float2((readQuad.position.x) - (readQuad.halfLength / 2f), readQuad.position.y);
-                rightQuad.position = new float2((readQuad.position.x) + (readQuad.halfLength / 2f), readQuad.position.y);
+                leftQuad.position = new float2((readQuad.position.x) - (readQuad.halfLength / 2f),
+                    readQuad.position.y);
+                rightQuad.position = new float2((readQuad.position.x) + (readQuad.halfLength / 2f),
+                    readQuad.position.y);
 
                 leftQuad.halfLength = readQuad.halfLength;
                 rightQuad.halfLength = readQuad.halfLength;
@@ -478,95 +508,270 @@ namespace ShepProject
 
     }
 
-    public struct AssignTypesJob : IJobParallelFor
+    public struct AssignTypesJob : IJob
     {
-        [NativeDisableContainerSafetyRestriction]
-        public NativeArray<ushort> objectIDs;
 
-        [NativeDisableContainerSafetyRestriction]
-        public GenesArray genes;
+
+        /*
+         * ways to cache quad info and whether they contain certain info
+         *      top down and then assign as it goes back up
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         */
+
+
+        [ReadOnly]
+        public NativeSlice<ushort> objectIDs;
+
+        [ReadOnly]
+        public NativeArray<ObjectType>.ReadOnly objectTypes;
+
+        public NativeList<QuadKey> searchers;
 
         [NativeDisableContainerSafetyRestriction]
         public NativeParallelHashMap<QuadKey, Quad> quads;
-        public int size;
+        public byte positionIndex;
 
+        //public CommandBuilder builder;
 
-        public void Execute(int index)
+        public void Execute()
         {
 
             QuadKey current = new QuadKey();
-            if (size > 1)
-                current.SetNextLevelPosition(index);
+            current.SetNextLevelPosition(positionIndex);
 
-            TraverseDownTree(quads[current].key);
+            searchers.AddNoResize(current);
+
+            TraverseDownTreeNew();
 
 
         }
 
-        private ContainsTypes TraverseDownTree(QuadKey parentKey)
+        private void TraverseDownTreeNew()
         {
 
-            if (!quads[parentKey].key.IsDivided)
-            {
-                if (quads[parentKey].startIndex < 0)
-                    return new ContainsTypes();
 
-                return SearchQuadForTypes(parentKey);
+            /*
+             * 
+             * traverse to bottom
+             * search that quad
+             * then search each of the quads in that level
+             * if a quad is divided, add it to a list to search
+             *      then skip searching it for now
+             * 
+             * then do entire level and then set higher level type contains
+             * 
+             * 
+             */
+
+            Quad quad = new Quad();
+            ContainsTypes types = new ContainsTypes();
+            //bool2 position = new bool2(false, false);
+            byte positionIndex = 0;
+
+            while (searchers.Length > 0)
+            {
+
+                positionIndex = 0;
+                quad = quads[searchers[0]];
+                searchers.RemoveAt(0);
+
+                //traversing to bottom of tree
+                while (quad.key.IsDivided)
+                {
+                    //go all the way down to the bottom left corner check that one
+
+                    quad.key.SetNextLevelPosition(positionIndex);
+                    quad = quads[quad.key];
+
+
+                }
+
+                //searching the quad to check which types it contains
+                //quad.containsTypes = new ContainsTypes();
+
+                if (quad.startIndex >= 0)
+                {
+
+                    for (int i = quad.startIndex; i <= quad.endIndex; i++)
+                    {
+                        quad.containsTypes[objectTypes[objectIDs[i]]] = true;
+
+                    }
+
+                    //float3 pos = new float3();
+                    //pos.x = quad.position.x;
+                    //pos.z = quad.position.y;
+                    //for (int i = 0; i < 5; i++)
+                    //{
+
+                    //    pos.z = quad.position.y - i;
+                    //    builder.Label2D(pos,
+                    //        (ObjectType)i + " " + quad.containsTypes[(ObjectType)i].ToString());
+
+                    //}
+
+                    //quad.position = quads[quad.key].position;
+                    quads[quad.key] = quad;
+                    types |= quad.containsTypes;
+
+                }
+
+
+                if (quad.key.GetCount() <= 2)
+                    continue;
+
+
+                while (positionIndex < 4)
+                {
+
+                    positionIndex++;
+
+                    quad.key.SetCurrentLevel(positionIndex);
+                    quad = quads[quad.key];
+
+                    if (quad.startIndex < 0)
+                        continue;
+
+                    if (quad.key.IsDivided)
+                    {
+                        searchers.AddNoResize(quad.key);
+
+                    }
+                    else
+                    {
+
+                        //searching the quad to check which types it contains
+                        //quad.containsTypes = new ContainsTypes();
+
+
+
+                        for (int i = quad.startIndex; i <= quad.endIndex; i++)
+                        {
+                            quad.containsTypes[objectTypes[objectIDs[i]]] = true;
+
+                        }
+
+
+                        //float3 pos = new float3();
+                        //pos.x = quad.position.x;
+                        //pos.z = quad.position.y;
+
+                        //for (int i = 0; i < 5; i++)
+                        //{
+
+                        //    pos.z = quad.position.y - (i / 2f);
+                        //    builder.Label2D(pos,
+                        //        (ObjectType)i + " " + quad.containsTypes[(ObjectType)i].ToString());
+
+                        //}
+
+
+                        //quad.position = quads[quad.key].position;
+                        quads[quad.key] = quad;
+                        types |= quad.containsTypes;
+
+                    }
+
+                }
+
+                //now traverse up to the top of the tree
+                //and assign all the types the quads contain
+                //TraverseToTop(quad.key, types);
+
+                while (quad.key.GetCount() > 2)
+                {
+                    quad = quads[quad.key.GetParentKey()];
+                    quad.containsTypes |= types;
+
+                    //quad.position = quads[quad.key].position;
+                    quads[quad.key] = quad;
+
+
+                }
+
+
             }
 
-            Quad current = quads[parentKey];
-            current.ContainsTypes = new ContainsTypes();
-            
 
-            //ContainsTypes contains = new ContainsTypes();
-            //QuadKey checkKey = parentKey;
 
-            //top left quad
-            current.key = parentKey;
-            current.key.LeftBranch();
-            current.key.RightBranch();
-            current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
-
-            current.key = parentKey;
-            current.key.LeftBranch();
-            current.key.LeftBranch();
-            current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
-
-            current.key = parentKey;
-            current.key.RightBranch();
-            current.key.LeftBranch();
-            current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
-
-            current.key = parentKey;
-            current.key.RightBranch();
-            current.key.RightBranch();
-            current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
-
-            //then from all those, assign the values here, then return another bool5 or w/e
-            current.key = parentKey;
-
-            quads[parentKey] = current;
-
-            return current.ContainsTypes;
         }
 
+        //private void TraverseToTop(QuadKey childKey, ContainsTypes contains)
+        //{
 
-        private ContainsTypes SearchQuadForTypes(QuadKey key)
-        {
-            Quad current = quads[key];
-            current.containsTypes = new ContainsTypes();
-            
-            for (int i = quads[key].startIndex; i <= quads[key].endIndex; i++)
-            {
-                current.containsTypes[genes.GetObjectType(objectIDs[i])] = true;
+        //    Quad current = quads[childKey];
 
-            }
 
-            quads[key] = current;
 
-            return current.containsTypes;
 
-        }
+        //}
+
+
+        //private ContainsTypes TraverseDownTree(QuadKey parentKey)
+        //{
+
+        //    if (!quads[parentKey].key.IsDivided)
+        //    {
+        //        if (quads[parentKey].startIndex < 0)
+        //            return new ContainsTypes();
+
+        //        return SearchQuadForTypes(parentKey);
+        //    }
+
+        //    Quad current = quads[parentKey];
+        //    current.ContainsTypes = new ContainsTypes();
+
+        //    //top left quad
+        //    current.key = parentKey;
+        //    current.key.LeftBranch();
+        //    current.key.RightBranch();
+        //    current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
+
+        //    current.key = parentKey;
+        //    current.key.LeftBranch();
+        //    current.key.LeftBranch();
+        //    current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
+
+        //    current.key = parentKey;
+        //    current.key.RightBranch();
+        //    current.key.LeftBranch();
+        //    current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
+
+        //    current.key = parentKey;
+        //    current.key.RightBranch();
+        //    current.key.RightBranch();
+        //    current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
+
+        //    //then from all those, assign the values here, then return another bool5 or w/e
+        //    current.key = parentKey;
+
+        //    quads[parentKey] = current;
+
+        //    return current.ContainsTypes;
+        //}
+
+
+        //private ContainsTypes SearchQuadForTypes(QuadKey key)
+        //{
+        //    Quad current = quads[key];
+        //    current.containsTypes = new ContainsTypes();
+
+        //    for (int i = quads[key].startIndex; i <= quads[key].endIndex; i++)
+        //    {
+        //        current.containsTypes[objectTypes[objectIDs[i]]] = true;
+
+        //    }
+
+        //    quads[key] = current;
+
+        //    return current.containsTypes;
+
+        //}
 
 
     }
