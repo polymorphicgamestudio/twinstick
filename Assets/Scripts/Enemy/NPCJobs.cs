@@ -74,19 +74,22 @@ namespace ShepProject
 		 */
         #region Variables
 
-        [NativeDisableContainerSafetyRestriction]
+        [ReadOnly]
         public NativeArray<ushort> objectIDs;
 
-        [NativeDisableContainerSafetyRestriction]
+        //[NativeDisableContainerSafetyRestriction]
+        [ReadOnly]
         public NativeArray<ushort> targetIDs;
 
-        [NativeDisableContainerSafetyRestriction]
+        //[NativeDisableContainerSafetyRestriction]
+        [ReadOnly]
         public NativeArray<float2> positions;
 
         [NativeDisableContainerSafetyRestriction]
         public GenesArray genes;
 
-        [NativeDisableContainerSafetyRestriction]
+        //[NativeDisableContainerSafetyRestriction]
+        [ReadOnly]
         public NativeParallelHashMap<QuadKey, Quad> quads;
          
         [NativeDisableContainerSafetyRestriction]
@@ -168,8 +171,8 @@ namespace ShepProject
             //this will search through all child quads for bottom level quads and then check if those quads 
             //have the required objects inside of them and a search of the bucket will be required
 
-            //if (!quads[parentKey].ContainsObjectType(targetType))
-            //    return;
+            if (!quads[parentKey].ContainsObjectType(targetType))
+                return;
 
             QuadKey checkKey = parentKey;
             float maxDistance = genes.GetViewRange(objectID, (ViewRange)objType);
@@ -179,6 +182,24 @@ namespace ShepProject
             {
                 maxDistance = 8;
             }
+
+            /* 
+             * 
+             * traverse to bottom
+             * search that quad
+             * then search each of the quads in that level
+             * 
+             * 
+             * if a quad is divided 
+             *      go down to the bottom of that level, and store the level where the quad was divided
+             *      
+             *      then search all of those 
+             * 
+             * then do entire level and then set higher level type contains
+             * 
+             * 
+             */
+
 
 
             if (!quads[parentKey].key.IsDivided)
@@ -198,6 +219,7 @@ namespace ShepProject
 
             }
             //else only check children
+
 
             //top left quad
 			checkKey = parentKey;
@@ -236,6 +258,10 @@ namespace ShepProject
 
         private float SearchChildrenForClosestObjectDistance(QuadKey parentKey, int objectID, ObjectType objType, float maxDistance) 
         {
+
+
+            if (!quads[parentKey].ContainsObjectType(targetType))
+                return 10000;
 
             //top down for searching for this object
             QuadKey checkKey = parentKey;
@@ -301,8 +327,8 @@ namespace ShepProject
 
 			float minDist = 10000;
 
-			//if (!quads[key].ContainsObjectType(targetType))
-   //             return minDist;
+            if (!quads[key].ContainsObjectType(targetType))
+                return minDist;
 
             float tempMin = 0;
             for (int i = quads[key].startIndex; i <= quads[key].endIndex; i++) 
@@ -319,7 +345,6 @@ namespace ShepProject
 
             return minDist;
         }
-
 
 		private float2 GatherBucketForces(int objectID, ObjectType objType, QuadKey key)
         {
@@ -557,7 +582,7 @@ namespace ShepProject
 
         //public NativeArray<int> idsToCheck;
 
-        public CommandBuilder builder;
+        //public CommandBuilder builder;
 
         public float deltaTime;
 

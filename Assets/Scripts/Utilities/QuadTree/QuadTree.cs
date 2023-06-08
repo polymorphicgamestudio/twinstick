@@ -55,6 +55,7 @@ namespace ShepProject {
 
         #region Debugging
 
+
         public void DrawGizmos()
 		{
 
@@ -68,16 +69,17 @@ namespace ShepProject {
             {
 
                 DrawQuad(quads[q[i]], Color.white);
-				//pos.x = quads[q[i]].position.x;
-				//pos.z = quads[q[i]].position.y;
+				pos.x = quads[q[i]].position.x;
+				pos.z = quads[q[i]].position.y;
+
+				if (!q[i].IsDivided)
+
+					Draw.Label2D(pos + new Vector3(0, UnityEngine.Random.value * .5f, 0),
+						quads[q[i]].key.ToString(), 10,// + " Bucket: " + quads[q[i]].BucketSize + " Pos: " + pos,
+						Color.cyan);
 
 
-				//Draw.Label2D(pos + new Vector3(0, UnityEngine.Random.value * .5f, 0),
-    //                quads[q[i]].key.ToString() + " Bucket: " + quads[q[i]].BucketSize + " Pos: " + pos,
-				//	Color.red);
-
-
-            }
+			}
             q.Dispose();
 
 
@@ -247,11 +249,12 @@ namespace ShepProject {
 				sij.writeTo = ZQuads;
 				sij.bucketSize = bucketSize;
 				sij.zSort = false;
+				sij.zSort = false;
 				sij.quads = quads;
 
 				//sij.builder = DrawingManager.GetBuilder();
-				//sij.Run(xQuadsLength);
-				sij.Schedule(xQuadsLength, SystemInfo.processorCount).Complete();
+				sij.Run(xQuadsLength);
+				//sij.Schedule(xQuadsLength, SystemInfo.processorCount).Complete();
 
 				//sij.builder.Dispose();
 
@@ -266,8 +269,8 @@ namespace ShepProject {
 				sij.quads = quads;
 
                 //sij.builder = DrawingManager.GetBuilder();
-                //sij.Run(xQuadsLength * 2);
-                sij.Schedule(xQuadsLength * 2, SystemInfo.processorCount).Complete();
+                sij.Run(xQuadsLength * 2);
+                //sij.Schedule(xQuadsLength * 2, SystemInfo.processorCount).Complete();
 
 
                 //sij.builder.Dispose();
@@ -285,91 +288,91 @@ namespace ShepProject {
 			}
 
 
-   //         if (assignTypesSize > 1)
-			//{
+			if (assignTypesSize > 1)
+			{
 
-			//	NativeArray<AssignTypesJob> jobs
-			//		= new NativeArray<AssignTypesJob>(assignTypesSize, Allocator.TempJob);
+				NativeArray<AssignTypesJob> jobs
+					= new NativeArray<AssignTypesJob>(assignTypesSize, Allocator.TempJob);
 
-			//	NativeArray<JobHandle> handles
-			//		= new NativeArray<JobHandle>(assignTypesSize, Allocator.TempJob);
+				NativeArray<JobHandle> handles
+					= new NativeArray<JobHandle>(assignTypesSize, Allocator.TempJob);
 
-			//	for (byte i = 0; i < assignTypesSize; i++)
-			//	{
-			//		AssignTypesJob asj = new AssignTypesJob();
-			//		asj.objectIDs = objectIDs.Slice(0, positionCount + 1);
-			//		asj.objectTypes = npcManager.Genes.ObjectTypes;
-			//		asj.quads = quads;
-			//		asj.positionIndex = i;
-			//		asj.searchers = new NativeList<QuadKey>(200, Allocator.TempJob);
-			//		//asj.builder = DrawingManager.GetBuilder();
+				for (byte i = 0; i < assignTypesSize; i++)
+				{
+					AssignTypesJob asj = new AssignTypesJob();
+					asj.objectIDs = objectIDs.Slice(0, positionCount + 1);
+					asj.objectTypes = npcManager.Genes.ObjectTypes;
+					asj.quads = quads;
+					asj.positionIndex = i;
+					asj.searchers = new NativeList<QuadKey>(200, Allocator.TempJob);
+					//asj.builder = DrawingManager.GetBuilder();
 
-			//		jobs[i] = asj;
-			//		//asj.Run();
-			//		handles[i] = asj.Schedule();
-			//		//asj.Schedule(assignTypesSize, 1).Complete();
-			//	}
+					jobs[i] = asj;
+					//asj.Run();
+					handles[i] = asj.Schedule();
+					//asj.Schedule(assignTypesSize, 1).Complete();
+				}
 
-			//	for (int i = 0; i < handles.Length; i++)
-			//	{
+				for (int i = 0; i < handles.Length; i++)
+				{
 
-			//		handles[i].Complete();
-			//		jobs[i].searchers.Dispose();
-			//		//jobs[i].builder.Dispose();
-			//	}
-
-
-			//	jobs.Dispose();
-			//	handles.Dispose();
+					handles[i].Complete();
+					jobs[i].searchers.Dispose();
+					//jobs[i].builder.Dispose();
+				}
 
 
-			//	Quad top = quads[new QuadKey()];
-			//	QuadKey key = new QuadKey();
-			//	key.LeftBranch();
-			//	key.RightBranch();
-
-			//	top.ContainsTypes = quads[key].ContainsTypes;
-
-			//	key = new QuadKey();
-			//	key.LeftBranch();
-			//	key.LeftBranch();
-
-			//	top.ContainsTypes |= quads[key].ContainsTypes;
-
-			//	key = new QuadKey();
-			//	key.RightBranch();
-			//	key.RightBranch();
-
-			//	top.ContainsTypes |= quads[key].ContainsTypes;
-
-			//	key = new QuadKey();
-			//	key.RightBranch();
-			//	key.LeftBranch();
-
-			//	top.ContainsTypes |= quads[key].ContainsTypes;
-
-			//	quads[new QuadKey()] = top;
+				jobs.Dispose();
+				handles.Dispose();
 
 
+				Quad top = quads[new QuadKey()];
+				QuadKey key = new QuadKey();
+				key.LeftBranch();
+				key.RightBranch();
+
+				top.ContainsTypes = quads[key].ContainsTypes;
+
+				key = new QuadKey();
+				key.LeftBranch();
+				key.LeftBranch();
+
+				top.ContainsTypes |= quads[key].ContainsTypes;
+
+				key = new QuadKey();
+				key.RightBranch();
+				key.RightBranch();
+
+				top.ContainsTypes |= quads[key].ContainsTypes;
+
+				key = new QuadKey();
+				key.RightBranch();
+				key.LeftBranch();
+
+				top.ContainsTypes |= quads[key].ContainsTypes;
+
+				quads[new QuadKey()] = top;
 
 
 
-			//}
-			//else
-			//{
-			//	Quad quad = quads[new QuadKey()];
 
-   //             for (int i = quads[quad.key].startIndex; i <= quads[quad.key].endIndex; i++)
-   //             {
-   //                 quad.containsTypes[npcManager.Genes.ObjectTypes[objectIDs[i]]] = true;
 
-   //             }
+			}
+			else
+			{
+				Quad quad = quads[new QuadKey()];
 
-			//	quads[quad.key] = quad;
+				for (int i = quads[quad.key].startIndex; i <= quads[quad.key].endIndex; i++)
+				{
+					quad.containsTypes[npcManager.Genes.ObjectTypes[objectIDs[i]]] = true;
 
-   //         }
+				}
 
-            DrawGizmos();
+				quads[quad.key] = quad;
+
+			}
+
+			//DrawGizmos();
 
         }
 
@@ -554,7 +557,7 @@ namespace ShepProject {
 			for (int i = deletions.Length - 1; i >= 0 ; i--)
 			{
 
-				RemoveTransform(deletions[i]);
+				RemoveTransform(deletions[i]).gameObject.SetActive(false);
 
 			}
 

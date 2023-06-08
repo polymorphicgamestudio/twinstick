@@ -452,9 +452,7 @@ namespace ShepProject {
 
         public override int GetHashCode()
         {
-            return
-                GetCount().GetHashCode() *
-                GetQuadHeirarchy().GetHashCode();
+            return (int)(GetCount() + GetQuadHeirarchy()) * 1084965;
         }
 
 
@@ -474,7 +472,7 @@ namespace ShepProject {
             string s = GetHeirarchyBinaryString().PadLeft((int)(GetCount() - len), '+');
 
             return "IsDiv: " + IsDivided + " Lvl: " + GetCount() + /*" " + Convert.ToString(GetCount(), 2) +*/
-                " Branch: " + s;
+                "\nLocation: " + s;
         }
 
         public string CountBinaryString()

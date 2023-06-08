@@ -1,4 +1,5 @@
 using Drawing;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -342,14 +343,21 @@ namespace ShepProject
 
             }
 
-
+            Profiler.BeginSample("Reset Object Forces");
             ResetNativeArrayJob<float2> resetJob = new ResetNativeArrayJob<float2>();
             resetJob.array = objectForces;
             JobHandle resetJobHandle
                 = resetJob.Schedule(objectForces.Length, SystemInfo.processorCount);
 
+
+            Profiler.EndSample();
+
+
+            Profiler.BeginSample("QT New Frame");
+
             quadTree.NewFrame();
 
+            Profiler.EndSample();
             //spawn enemies
 
             if (enemiesLeftToSpawn > 0)
@@ -365,7 +373,11 @@ namespace ShepProject
 
             //TreeObjectCount = quadTree.positionCount;
 
+            Profiler.BeginSample("QT Update");
+
             quadTree.Update();
+
+            Profiler.EndSample();
 
             resetJobHandle.Complete();
 
@@ -374,6 +386,8 @@ namespace ShepProject
 
             //get targets before updating movement
 
+            Profiler.BeginSample("Choose Target Job");
+
             ChooseTargetJob ctj = new ChooseTargetJob();
             ctj.choosableTargets = choosableTargets;
             ctj.positions = quadTree.positions;
@@ -381,6 +395,10 @@ namespace ShepProject
             ctj.targetIDs = targetIDs;
             ctj.Schedule(quadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
+
+            Profiler.EndSample();
+
+            Profiler.BeginSample("Gather Forces Jobs");
 
             NativeArray<JobHandle> handles = new NativeArray<JobHandle>((int)ObjectType.Count, Allocator.TempJob);
             NativeArray<GatherForcesWithinRangeJob> gfjs
@@ -419,10 +437,14 @@ namespace ShepProject
             handles.Dispose();
             gfjs.Dispose();
 
+            Profiler.EndSample();
+
             //now need to add forces and convert them to a heading
             //only does one index per object
 
-            NativeArray<int> idsToCheck = new NativeArray<int>(idChecks, Allocator.TempJob);
+            //NativeArray<int> idsToCheck = new NativeArray<int>(idChecks, Allocator.TempJob);
+
+            Profiler.BeginSample("Calculate Heading Job");
 
             CalculateHeadingJob chj = new CalculateHeadingJob();
             chj.objectIDs = quadTree.objectIDs;
@@ -430,22 +452,28 @@ namespace ShepProject
             chj.genes = genes;
             chj.headings = headings;
             chj.deltaTime = Time.deltaTime;
-            chj.builder = DrawingManager.GetBuilder();
+            //chj.builder = DrawingManager.GetBuilder();
             chj.positions = quadTree.positions;
             //chj.idsToCheck = idsToCheck;
             //chj.Run(QuadTree.positionCount + 1);
             chj.Schedule(QuadTree.positionCount + 1, SystemInfo.processorCount).Complete();
 
-            chj.builder.Dispose();
-            idsToCheck.Dispose();
+            //chj.builder.Dispose();
+            //idsToCheck.Dispose();
+
+            Profiler.EndSample();
 
             //after movement, write the information back to the transforms
+
+            Profiler.BeginSample("Write Transforms Job");
 
             WriteTransformsJob wtj = new WriteTransformsJob();
             wtj.positions = quadTree.positions;
             wtj.genes = genes;
             wtj.rotation = headings;
             wtj.Schedule(quadTree.TransformAccess);
+
+            Profiler.EndSample();
 
             Profiler.BeginSample("Writing Velocities");
 
@@ -454,7 +482,7 @@ namespace ShepProject
 
                 if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Sheep)
                 {
-
+                    Profiler.BeginSample("Sheep Velocity");
                     //if being chased, set velocity, otherwise don't
                     int ID = quadTree.objectIDs[i];
 
@@ -531,15 +559,22 @@ namespace ShepProject
                         }
 
                     }
+
+                    Profiler.EndSample();
+
                 }
                 else if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Slime)
                 {
 
-                    enemyPhysicsMethods[quadTree.objectIDs[i]]
-                        .SetVelocity(quadTree.Transforms[quadTree.objectIDs[i]].forward * genes.GetSpeed(quadTree.objectIDs[i]));
-                    //quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
-                        //= (quadTree.Transforms[quadTree.objectIDs[i]].forward * genes.GetSpeed(quadTree.objectIDs[i]));
+                    Profiler.BeginSample("Enemy Velocity");
 
+                    enemyPhysicsMethods[quadTree.objectIDs[i]].SetVelocity(
+                        quadTree.Transforms[quadTree.objectIDs[i]].forward 
+                        * genes.GetSpeed(quadTree.objectIDs[i]));
+                    //quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
+                    //= (quadTree.Transforms[quadTree.objectIDs[i]].forward * genes.GetSpeed(quadTree.objectIDs[i]));
+
+                    Profiler.EndSample();
                 }
 
 
@@ -548,19 +583,6 @@ namespace ShepProject
             Profiler.EndSample();
 
             quadTree.ProcessDeletions();
-
-
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="objectID"></param>
-        /// <param name="replacementOldID"></param>
-        private void RemoveObjectFromTree(ushort objectID)
-        {
-
-            quadTree.RemoveTransform(objectID);
 
 
         }
@@ -730,7 +752,7 @@ namespace ShepProject
         public void OnEnemyDeath(ushort id)
         {
 
-            RemoveObjectFromTree(id);
+            quadTree.RemoveTransform(id);
 
             slimePool.ReturnObject(enemyPhysicsMethods[id]);
             

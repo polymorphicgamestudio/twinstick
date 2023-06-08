@@ -104,6 +104,7 @@ namespace ShepProject
                     leftQuad.key.SetDivided(false);
                     rightQuad.key.SetDivided(false);
 
+
                     quads.Add(leftQuad.key, leftQuad);
                     quads.Add(rightQuad.key, rightQuad);
 
@@ -302,21 +303,26 @@ namespace ShepProject
                 rightQuad.halfLength = readQuad.halfLength / 2f;
 
 
-                quads.Add(leftQuad.key, leftQuad);
-                quads.Add(rightQuad.key, rightQuad);
-
+                quads.TryAdd(leftQuad.key, leftQuad);
+                quads.TryAdd(rightQuad.key, rightQuad);
 
                 //Vector3 pos = new Vector3(0, 1, 0);
                 //pos.x = leftQuad.position.x;
                 //pos.z = leftQuad.position.y;
 
-                //builder.Label2D(pos, leftQuad.key.ToString(), Color.blue);
+
+                //if (!leftQuad.key.IsDivided)
+
+                //    builder.Label2D(pos, leftQuad.key.ToString(), Color.blue);
 
 
                 //pos.x = rightQuad.position.x;
                 //pos.z = rightQuad.position.y;
 
-                //builder.Label2D(pos, rightQuad.key.ToString(), Color.blue);
+
+                //if (!rightQuad.key.IsDivided)
+
+                //    builder.Label2D(pos, rightQuad.key.ToString(), Color.blue);
 
 
             }
@@ -374,7 +380,6 @@ namespace ShepProject
 
 
     }
-
 
     public struct QuadFilteringJob : IJob
     {
@@ -546,160 +551,160 @@ namespace ShepProject
 
             searchers.AddNoResize(current);
 
-            TraverseDownTreeNew();
+            TraverseDownTree(quads[current].key);
 
 
         }
 
-        private void TraverseDownTreeNew()
-        {
+        //private void TraverseDownTreeNew()
+        //{
 
 
-            /*
-             * 
-             * traverse to bottom
-             * search that quad
-             * then search each of the quads in that level
-             * if a quad is divided, add it to a list to search
-             *      then skip searching it for now
-             * 
-             * then do entire level and then set higher level type contains
-             * 
-             * 
-             */
+        //    /*
+        //     * 
+        //     * traverse to bottom
+        //     * search that quad
+        //     * then search each of the quads in that level
+        //     * if a quad is divided, add it to a list to search
+        //     *      then skip searching it for now
+        //     * 
+        //     * then do entire level and then set higher level type contains
+        //     * 
+        //     * 
+        //     */
 
-            Quad quad = new Quad();
-            ContainsTypes types = new ContainsTypes();
-            //bool2 position = new bool2(false, false);
-            byte positionIndex = 0;
+        //    Quad quad = new Quad();
+        //    ContainsTypes types = new ContainsTypes();
+        //    //bool2 position = new bool2(false, false);
+        //    byte positionIndex = 0;
 
-            while (searchers.Length > 0)
-            {
+        //    while (searchers.Length > 0)
+        //    {
 
-                positionIndex = 0;
-                quad = quads[searchers[0]];
-                searchers.RemoveAt(0);
+        //        positionIndex = 0;
+        //        quad = quads[searchers[0]];
+        //        searchers.RemoveAt(0);
 
-                //traversing to bottom of tree
-                while (quad.key.IsDivided)
-                {
-                    //go all the way down to the bottom left corner check that one
+        //        //traversing to bottom of tree
+        //        while (quad.key.IsDivided)
+        //        {
+        //            //go all the way down to the bottom left corner check that one
 
-                    quad.key.SetNextLevelPosition(positionIndex);
-                    quad = quads[quad.key];
-
-
-                }
-
-                //searching the quad to check which types it contains
-                //quad.containsTypes = new ContainsTypes();
-
-                if (quad.startIndex >= 0)
-                {
-
-                    for (int i = quad.startIndex; i <= quad.endIndex; i++)
-                    {
-                        quad.containsTypes[objectTypes[objectIDs[i]]] = true;
-
-                    }
-
-                    //float3 pos = new float3();
-                    //pos.x = quad.position.x;
-                    //pos.z = quad.position.y;
-                    //for (int i = 0; i < 5; i++)
-                    //{
-
-                    //    pos.z = quad.position.y - i;
-                    //    builder.Label2D(pos,
-                    //        (ObjectType)i + " " + quad.containsTypes[(ObjectType)i].ToString());
-
-                    //}
-
-                    //quad.position = quads[quad.key].position;
-                    quads[quad.key] = quad;
-                    types |= quad.containsTypes;
-
-                }
+        //            quad.key.SetNextLevelPosition(positionIndex);
+        //            quad = quads[quad.key];
 
 
-                if (quad.key.GetCount() <= 2)
-                    continue;
+        //        }
+
+        //        //searching the quad to check which types it contains
+        //        //quad.containsTypes = new ContainsTypes();
+
+        //        if (quad.startIndex >= 0)
+        //        {
+
+        //            for (int i = quad.startIndex; i <= quad.endIndex; i++)
+        //            {
+        //                quad.containsTypes[objectTypes[objectIDs[i]]] = true;
+
+        //            }
+
+        //            //float3 pos = new float3();
+        //            //pos.x = quad.position.x;
+        //            //pos.z = quad.position.y;
+        //            //for (int i = 0; i < 5; i++)
+        //            //{
+
+        //            //    pos.z = quad.position.y - i;
+        //            //    builder.Label2D(pos,
+        //            //        (ObjectType)i + " " + quad.containsTypes[(ObjectType)i].ToString());
+
+        //            //}
+
+        //            //quad.position = quads[quad.key].position;
+        //            quads[quad.key] = quad;
+        //            types |= quad.containsTypes;
+
+        //        }
 
 
-                while (positionIndex < 4)
-                {
-
-                    positionIndex++;
-
-                    quad.key.SetCurrentLevel(positionIndex);
-                    quad = quads[quad.key];
-
-                    if (quad.startIndex < 0)
-                        continue;
-
-                    if (quad.key.IsDivided)
-                    {
-                        searchers.AddNoResize(quad.key);
-
-                    }
-                    else
-                    {
-
-                        //searching the quad to check which types it contains
-                        //quad.containsTypes = new ContainsTypes();
+        //        if (quad.key.GetCount() <= 2)
+        //            continue;
 
 
+        //        while (positionIndex < 4)
+        //        {
 
-                        for (int i = quad.startIndex; i <= quad.endIndex; i++)
-                        {
-                            quad.containsTypes[objectTypes[objectIDs[i]]] = true;
+        //            positionIndex++;
 
-                        }
+        //            quad.key.SetCurrentLevel(positionIndex);
+        //            quad = quads[quad.key];
 
+        //            if (quad.startIndex < 0)
+        //                continue;
 
-                        //float3 pos = new float3();
-                        //pos.x = quad.position.x;
-                        //pos.z = quad.position.y;
+        //            if (quad.key.IsDivided)
+        //            {
+        //                searchers.AddNoResize(quad.key);
 
-                        //for (int i = 0; i < 5; i++)
-                        //{
+        //            }
+        //            else
+        //            {
 
-                        //    pos.z = quad.position.y - (i / 2f);
-                        //    builder.Label2D(pos,
-                        //        (ObjectType)i + " " + quad.containsTypes[(ObjectType)i].ToString());
-
-                        //}
-
-
-                        //quad.position = quads[quad.key].position;
-                        quads[quad.key] = quad;
-                        types |= quad.containsTypes;
-
-                    }
-
-                }
-
-                //now traverse up to the top of the tree
-                //and assign all the types the quads contain
-                //TraverseToTop(quad.key, types);
-
-                while (quad.key.GetCount() > 2)
-                {
-                    quad = quads[quad.key.GetParentKey()];
-                    quad.containsTypes |= types;
-
-                    //quad.position = quads[quad.key].position;
-                    quads[quad.key] = quad;
-
-
-                }
-
-
-            }
+        //                //searching the quad to check which types it contains
+        //                //quad.containsTypes = new ContainsTypes();
 
 
 
-        }
+        //                for (int i = quad.startIndex; i <= quad.endIndex; i++)
+        //                {
+        //                    quad.containsTypes[objectTypes[objectIDs[i]]] = true;
+
+        //                }
+
+
+        //                //float3 pos = new float3();
+        //                //pos.x = quad.position.x;
+        //                //pos.z = quad.position.y;
+
+        //                //for (int i = 0; i < 5; i++)
+        //                //{
+
+        //                //    pos.z = quad.position.y - (i / 2f);
+        //                //    builder.Label2D(pos,
+        //                //        (ObjectType)i + " " + quad.containsTypes[(ObjectType)i].ToString());
+
+        //                //}
+
+
+        //                //quad.position = quads[quad.key].position;
+        //                quads[quad.key] = quad;
+        //                types |= quad.containsTypes;
+
+        //            }
+
+        //        }
+
+        //        //now traverse up to the top of the tree
+        //        //and assign all the types the quads contain
+        //        //TraverseToTop(quad.key, types);
+
+        //        while (quad.key.GetCount() > 2)
+        //        {
+        //            quad = quads[quad.key.GetParentKey()];
+        //            quad.containsTypes |= types;
+
+        //            //quad.position = quads[quad.key].position;
+        //            quads[quad.key] = quad;
+
+
+        //        }
+
+
+        //    }
+
+
+
+        //}
 
         //private void TraverseToTop(QuadKey childKey, ContainsTypes contains)
         //{
@@ -712,66 +717,66 @@ namespace ShepProject
         //}
 
 
-        //private ContainsTypes TraverseDownTree(QuadKey parentKey)
-        //{
+        private ContainsTypes TraverseDownTree(QuadKey parentKey)
+        {
 
-        //    if (!quads[parentKey].key.IsDivided)
-        //    {
-        //        if (quads[parentKey].startIndex < 0)
-        //            return new ContainsTypes();
+            if (!quads[parentKey].key.IsDivided)
+            {
+                if (quads[parentKey].startIndex < 0)
+                    return new ContainsTypes();
 
-        //        return SearchQuadForTypes(parentKey);
-        //    }
+                return SearchQuadForTypes(parentKey);
+            }
 
-        //    Quad current = quads[parentKey];
-        //    current.ContainsTypes = new ContainsTypes();
+            Quad current = quads[parentKey];
+            current.ContainsTypes = new ContainsTypes();
 
-        //    //top left quad
-        //    current.key = parentKey;
-        //    current.key.LeftBranch();
-        //    current.key.RightBranch();
-        //    current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
+            //top left quad
+            current.key = parentKey;
+            current.key.LeftBranch();
+            current.key.RightBranch();
+            current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
 
-        //    current.key = parentKey;
-        //    current.key.LeftBranch();
-        //    current.key.LeftBranch();
-        //    current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
+            current.key = parentKey;
+            current.key.LeftBranch();
+            current.key.LeftBranch();
+            current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
 
-        //    current.key = parentKey;
-        //    current.key.RightBranch();
-        //    current.key.LeftBranch();
-        //    current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
+            current.key = parentKey;
+            current.key.RightBranch();
+            current.key.LeftBranch();
+            current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
 
-        //    current.key = parentKey;
-        //    current.key.RightBranch();
-        //    current.key.RightBranch();
-        //    current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
+            current.key = parentKey;
+            current.key.RightBranch();
+            current.key.RightBranch();
+            current.ContainsTypes |= TraverseDownTree(quads[current.key].key);
 
-        //    //then from all those, assign the values here, then return another bool5 or w/e
-        //    current.key = parentKey;
+            //then from all those, assign the values here, then return another bool5 or w/e
+            current.key = parentKey;
 
-        //    quads[parentKey] = current;
+            quads[parentKey] = current;
 
-        //    return current.ContainsTypes;
-        //}
+            return current.ContainsTypes;
+        }
 
 
-        //private ContainsTypes SearchQuadForTypes(QuadKey key)
-        //{
-        //    Quad current = quads[key];
-        //    current.containsTypes = new ContainsTypes();
+        private ContainsTypes SearchQuadForTypes(QuadKey key)
+        {
+            Quad current = quads[key];
+            current.containsTypes = new ContainsTypes();
 
-        //    for (int i = quads[key].startIndex; i <= quads[key].endIndex; i++)
-        //    {
-        //        current.containsTypes[objectTypes[objectIDs[i]]] = true;
+            for (int i = quads[key].startIndex; i <= quads[key].endIndex; i++)
+            {
+                current.containsTypes[objectTypes[objectIDs[i]]] = true;
 
-        //    }
+            }
 
-        //    quads[key] = current;
+            quads[key] = current;
 
-        //    return current.containsTypes;
+            return current.containsTypes;
 
-        //}
+        }
 
 
     }
