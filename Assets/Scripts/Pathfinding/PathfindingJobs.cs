@@ -79,8 +79,7 @@ namespace ShepProject
         public void Execute(int index)
         {
 
-            float3 position =
-            setupData.origin + new float3(nodes[index].position.x, 0, nodes[index].position.y);
+            float3 position = new float3(nodes[index].position.x, 0, nodes[index].position.y);
             float3 up = new float3(0, 1, 0);
 
             if (!nodes[index].walkable)
@@ -123,6 +122,7 @@ namespace ShepProject
         public float nodeLength;
         public int columns;
         public int rows;
+        public float2 origin;
 
         public void Execute(int index)
         {
@@ -132,7 +132,8 @@ namespace ShepProject
             for (int i = 0; i < columns; i++)
             {
                 node.position.x = (nodeLength * i) + nodeLength / 2f;
-                node.position.y = (nodeLength * index) + nodeLength / 2f; 
+                node.position.y = (nodeLength * index) + nodeLength / 2f;
+                node.position += origin;
                 nodes[(columns * index) + i] = node;
 
             }
@@ -148,6 +149,7 @@ namespace ShepProject
         public float nodeLength;
         public int columns;
         public int rows;
+        public float2 origin;
 
         public void Execute(int index)
         {
@@ -157,6 +159,7 @@ namespace ShepProject
             {
                 node.position.x = (nodeLength * i) + nodeLength / 2f;
                 node.position.y = (nodeLength * index) + nodeLength / 2f;
+                node.position += origin;
                 nodes[(columns * index) + i] = node;
 
             }
@@ -183,7 +186,7 @@ namespace ShepProject
             command.queryParameters.layerMask = mask;
             command.queryParameters.hitTriggers = QueryTriggerInteraction.Collide;
             command.halfExtents = new Vector3(halfNodeLength, halfNodeLength, halfNodeLength);
-            command.center = origin + new Vector3(nodes[index].position.x, 0, nodes[index].position.y);
+            command.center = new Vector3(nodes[index].position.x, 0, nodes[index].position.y);
 
             commands[index] = command;
 
@@ -200,12 +203,21 @@ namespace ShepProject
         public NativeArray<SquareNode> nodes;
         public NativeArray<ColliderHit> overlapResults;
 
+        //private Vector3 vect;
+        //private Vector3 local;
+
         public void Execute(int index)
         {
             SquareNode node = nodes[index];
 
             if (overlapResults[index].instanceID != 0)
             {
+                //vect.x = nodes[index].position.x;
+                //vect.z = nodes[index].position.y;
+                //local = overlapResults[index].collider.ClosestPointOnBounds(vect);
+                //local -= vect;
+
+
                 //if collider is to the right, then set right connection
                 //if collider continue top right, 
 

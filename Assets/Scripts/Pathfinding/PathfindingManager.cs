@@ -2,12 +2,14 @@ using Drawing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Profiling;
+using UnityEngine.SocialPlatforms;
 using UnityEngine.UIElements;
 
 namespace ShepProject
@@ -161,11 +163,11 @@ namespace ShepProject
             //whenever something is placed on grid or removed, need to update the walkable nodes
             UpdateWalkableNodes();
 
-            Profiler.BeginSample("Setup Vector Field");
+            //Profiler.BeginSample("Setup Vector Field");
 
-            SetupVectorField();
+            //SetupVectorField();
 
-            Profiler.EndSample();
+            //Profiler.EndSample();
 
             //}
             //draw grid every function if gizmos are enabled
@@ -241,6 +243,8 @@ namespace ShepProject
             cnj.nodeLength = setupData.nodeLength;
             cnj.columns = setupData.columns;
             cnj.rows = setupData.rows;
+            cnj.origin = new float2(gridOrigin.position.x, gridOrigin.position.z);
+
             cnj.Schedule(setupData.rows, SystemInfo.processorCount).Complete();
 
 
@@ -257,6 +261,7 @@ namespace ShepProject
             uni.nodeLength = setupData.nodeLength;
             uni.columns = setupData.columns;
             uni.rows = setupData.rows;
+            uni.origin = new float2(gridOrigin.position.x, gridOrigin.position.z);
             uni.Schedule(setupData.rows, SystemInfo.processorCount).Complete();
 
 
@@ -277,13 +282,69 @@ namespace ShepProject
             coc.Schedule(currentRows * currentColumns, SystemInfo.processorCount).Complete();
 
             OverlapBoxCommand.ScheduleBatch
-                (overlapCommands, overlapResults, SystemInfo.processorCount, 1).Complete();
+                (overlapCommands, overlapResults, SystemInfo.processorCount, 3).Complete();
+
+            Vector3 vect = new Vector3();
+            Vector3 local = new Vector3();
 
 
-            UpdateWalkableNodesJob uwn = new UpdateWalkableNodesJob();
-            uwn.nodes = nodes;
-            uwn.overlapResults = overlapResults;
-            uwn.Schedule(setupData.rows * setupData.columns, SystemInfo.processorCount).Complete();
+            for (int index = 0; index < overlapResults.Length; index++)
+            {
+                SquareNode node = nodes[index];
+
+                if (overlapResults[index].instanceID != 0)
+                {
+                    vect.x = nodes[index].position.x;
+                    vect.z = nodes[index].position.y;
+                    local = overlapResults[index].collider.ClosestPointOnBounds(vect);
+                    local -= vect;// + gridOrigin.position);
+
+                    Draw.Label2D(vect, local.ToString());
+
+                    //depending on the direction it goes
+                    //update the connection in that direction
+                    //ex. above, below, left, right
+
+                    if (local.x < 0)
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+
+                    if (local.z < 0)
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+
+
+                    //node.walkable = false;
+                }
+                else
+                {
+
+                    //all connections are good to use
+
+                    //node.walkable = true;
+                }
+
+                node.walkable = true;
+                nodes[index] = node;
+
+            }
+
+
+            //UpdateWalkableNodesJob uwn = new UpdateWalkableNodesJob();
+            //uwn.nodes = nodes;
+            //uwn.overlapResults = overlapResults;
+            //uwn.Run(setupData.rows * setupData.columns);
+            ////uwn.Schedule(setupData.rows * setupData.columns, SystemInfo.processorCount).Complete();
 
 
 
