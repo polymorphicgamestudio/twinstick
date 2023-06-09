@@ -21,6 +21,64 @@ namespace ShepProject
         public float2 position;
         public bool walkable;
 
+        private bool4x2 obstructions;
+
+        public void ResetObstructions()
+        {
+
+            obstructions = default;
+
+        }
+
+        public bool LeftObstructed
+        {
+            get => obstructions.c0.w;
+            set => obstructions.c0.w = value;
+        }
+
+        public bool TopLeftObstructed
+        {
+            get => obstructions.c0.x;
+            set => obstructions.c0.x = value;
+        }
+
+        public bool TopObstructed
+        {
+            get => obstructions.c0.y;
+            set => obstructions.c0.y = value;
+        }
+
+        public bool TopRightObstructed
+        {
+            get => obstructions.c0.z;
+            set => obstructions.c0.z = value;
+        }
+
+        public bool RightObstructed
+        {
+            get => obstructions.c1.w;
+            set => obstructions.c1.w = value;
+        }
+
+        public bool BottomRightObstructed
+        {
+            get => obstructions.c1.x;
+            set => obstructions.c1.x = value;
+        }
+
+        public bool BottomObstructed
+        {
+            get => obstructions.c1.y;
+            set => obstructions.c1.y = value;
+        }
+
+        public bool BottomLeftObstructed
+        {
+            get => obstructions.c1.z;
+            set => obstructions.c1.z = value;
+        }
+
+
     }
 
     public enum NodeDirection
@@ -85,39 +143,5 @@ namespace ShepProject
         public Color unwalkableColor;
 
     }
-
-	//will be used for queueing a job
-	//then this info will be used inside the job, not the float3s
-    public struct PathStartInfo
-    {
-        public int startNodeIndex;
-        public int endNodeIndex;
-
-
-    }
-
-
-    public struct PathData
-    {
-
-        /*
-         * a pointer to the array which stores the indices of which nodes are in the path
-         *      - int 
-         * length of the path
-         *      - ushort
-         * 
-         * paths will need to have a max length to which allocates the node index arrays
-         * 
-         * 
-         */
-
-
-        public int pathStartIndex;
-        public ushort pathLength;
-
-
-    }
-
-
 
 }

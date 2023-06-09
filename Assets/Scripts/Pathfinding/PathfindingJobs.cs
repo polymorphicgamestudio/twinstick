@@ -196,43 +196,6 @@ namespace ShepProject
 
     }
 
-
-    public struct UpdateWalkableNodesJob : IJobParallelFor
-    {
-
-        public NativeArray<SquareNode> nodes;
-        public NativeArray<ColliderHit> overlapResults;
-
-        //private Vector3 vect;
-        //private Vector3 local;
-
-        public void Execute(int index)
-        {
-            SquareNode node = nodes[index];
-
-            if (overlapResults[index].instanceID != 0)
-            {
-                //vect.x = nodes[index].position.x;
-                //vect.z = nodes[index].position.y;
-                //local = overlapResults[index].collider.ClosestPointOnBounds(vect);
-                //local -= vect;
-
-
-                //if collider is to the right, then set right connection
-                //if collider continue top right, 
-
-                node.walkable = false;
-            }
-            else
-            {
-                node.walkable = true;
-            }
-
-            nodes[index] = node;
-
-        }
-    }
-
     public struct GenerateVectorFieldJob : IJob
     {
 
@@ -267,8 +230,6 @@ namespace ShepProject
         public void Execute()
         {
 
-            //int startNodeIndex = 0;
-            //int endNodeIndex = nodes.Length - 1;
 
             //FindPath(startNodeIndex, endNodeIndex);
 
@@ -281,6 +242,8 @@ namespace ShepProject
 
                 //after this need to check which ones don't have paths and then queue up a new path
                 //try and get furthest ones away first
+
+
 
 
                 #region Setup New Path
@@ -427,7 +390,7 @@ namespace ShepProject
             currentNode.hCost = math.distance(nodes[startNodeIndex].position, nodes[endNodeIndex].position);
 
             float orthagonalCost = nodeLength;
-            float diagonalCost = math.sqrt(8);
+            float diagonalCost = nodeLength * math.SQRT2;// math.sqrt();
 
             //need to change this to just choose a correct node in a corner
             openNodeDifficulties.Add((int)(currentNode.FCost * scalar), currentNode);
@@ -510,22 +473,28 @@ namespace ShepProject
 
                 if (currentNode.index % columns > 0)
                 {
-                    //check left node
-                    CheckNeighborNode(currentNode.index - 1, 
-                        ref currentNode, orthagonalCost, (byte)NodeDirection.Left);
+                    //left node
+
+                    if (!nodes[currentNode.index].LeftObstructed)
+                        CheckNeighborNode(currentNode.index - 1, 
+                            ref currentNode, orthagonalCost, (byte)NodeDirection.Left);
 
                     if (currentNode.index + columns - 1 < nodes.Length)
                     {
                         //top left
-                        CheckNeighborNode((currentNode.index + columns - 1),
-                            ref currentNode, diagonalCost, (byte)NodeDirection.TopLeft);
+                        if (!nodes[currentNode.index].TopLeftObstructed)
+
+                            CheckNeighborNode((currentNode.index + columns - 1),
+                                ref currentNode, diagonalCost, (byte)NodeDirection.TopLeft);
                     }
 
                     if ((currentNode.index - columns) - 1 >= 0)
                     {
+
                         //bottom left
-                        CheckNeighborNode(((currentNode.index - columns) - 1), 
-                            ref currentNode, diagonalCost, (byte)NodeDirection.BottomLeft);
+                        if (!nodes[currentNode.index].BottomLeftObstructed)
+                            CheckNeighborNode(((currentNode.index - columns) - 1), 
+                                ref currentNode, diagonalCost, (byte)NodeDirection.BottomLeft);
 
                     }
 
@@ -533,22 +502,25 @@ namespace ShepProject
                 if (currentNode.index % (columns) != columns - 1 && currentNode.index != endNodeIndex)
                 {
                     //check right node
-                    CheckNeighborNode(currentNode.index + 1, 
-                        ref currentNode, orthagonalCost, (byte)NodeDirection.Right);
+                    if (!nodes[currentNode.index].RightObstructed)
+                        CheckNeighborNode(currentNode.index + 1, 
+                            ref currentNode, orthagonalCost, (byte)NodeDirection.Right);
 
                     if (currentNode.index + columns + 1 < nodes.Length)
                     {
                         //top right
-                        CheckNeighborNode((currentNode.index + columns + 1), 
-                            ref currentNode, diagonalCost, (byte)NodeDirection.TopRight);
+                        if (!nodes[currentNode.index].TopRightObstructed)
+                            CheckNeighborNode((currentNode.index + columns + 1), 
+                                ref currentNode, diagonalCost, (byte)NodeDirection.TopRight);
 
                     }
 
                     if ((currentNode.index - columns) + 1 >= 0)
                     {
                         //bottom right
-                        CheckNeighborNode(((currentNode.index - columns) + 1),
-                            ref currentNode, diagonalCost, (byte)NodeDirection.BottomRight);
+                        if (!nodes[currentNode.index].BottomRightObstructed)
+                            CheckNeighborNode(((currentNode.index - columns) + 1),
+                                ref currentNode, diagonalCost, (byte)NodeDirection.BottomRight);
 
                     }
 
@@ -558,15 +530,17 @@ namespace ShepProject
                 if ((currentNode.index + columns) < (rows * (columns)) && currentNode.index != endNodeIndex)
                 {
                     //check node above
-                    CheckNeighborNode(currentNode.index + columns, 
-                        ref currentNode, orthagonalCost, (byte)NodeDirection.Top);
-                }
 
+                    if (!nodes[currentNode.index].TopObstructed)
+                        CheckNeighborNode(currentNode.index + columns, 
+                            ref currentNode, orthagonalCost, (byte)NodeDirection.Top);
+                }
                 if ((currentNode.index - columns) >= 0 && currentNode.index != endNodeIndex)
                 {
                     //check node below
-                    CheckNeighborNode(currentNode.index - columns, 
-                        ref currentNode, orthagonalCost, (byte)NodeDirection.Bottom);
+                    if (!nodes[currentNode.index].BottomObstructed)
+                        CheckNeighborNode(currentNode.index - columns, 
+                            ref currentNode, orthagonalCost, (byte)NodeDirection.Bottom);
                 }
 
 
@@ -599,6 +573,8 @@ namespace ShepProject
             //Profiler.EndSample();
 
 
+            #region Drawing
+
 
             //Profiler.BeginSample("Draw Closed Nodes");
 
@@ -613,7 +589,6 @@ namespace ShepProject
 
             //    position.x = nodes[searchedNodes[k].index].position.x;
             //    position.z = nodes[searchedNodes[k].index].position.y;
-            //    position += origin;
 
             //    builder.SolidPlane(position, new float3(0, 1, 0),
             //        new float2(nodeLength), Color.red);
@@ -642,7 +617,6 @@ namespace ShepProject
 
             //    position.x = nodes[openSearched[k].index].position.x;
             //    position.z = nodes[openSearched[k].index].position.y;
-            //    position += origin;
 
             //    builder.SolidPlane(position, new float3(0, 1, 0),
             //        new float2(nodeLength), Color.green);
@@ -658,28 +632,26 @@ namespace ShepProject
 
 
 
-            //#region Draw Final Path
+            #region Draw Final Path
 
-            //Profiler.BeginSample("Draw Final Path");
+            Profiler.BeginSample("Draw Final Path");
 
-            //float3 pos = new float3();
-            //for (int k = 0; k < pathLength; k++)
-            //{
-            //    pos.x = nodes[finalPathIndices[k].index].position.x;
-            //    pos.z = nodes[finalPathIndices[k].index].position.y;
-            //    pos += origin;
+            float3 pos = new float3();
+            for (int k = 0; k < pathLength; k++)
+            {
+                pos.x = nodes[finalPathIndices[k].index].position.x;
+                pos.z = nodes[finalPathIndices[k].index].position.y;
 
-            //    builder.SolidPlane(pos, new float3(0, 1, 0), new float2(nodeLength), Color.cyan);
+                builder.SolidPlane(pos, new float3(0, 1, 0), new float2(nodeLength), Color.cyan);
 
-            //}
+            }
 
-            //Profiler.EndSample();
+            Profiler.EndSample();
 
-            //#endregion
-
+            #endregion
 
 
-
+            #endregion
 
 
 
