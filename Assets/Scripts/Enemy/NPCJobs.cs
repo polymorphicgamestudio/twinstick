@@ -98,6 +98,9 @@ namespace ShepProject
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<float2> objectForces;
 
+        //public PathQueryStructure pathQueries;
+
+
 		public ObjectType targetType;
 
         //[ReadOnly]
@@ -127,9 +130,20 @@ namespace ShepProject
             if (objType == ObjectType.Slime && targetType == ObjectType.Sheep)
             {
 
-                objectForces[(objectID * (int)ObjectType.Count) + (int)targetType]
-                    = math.normalize(positions[targetIDs[objectID]] - positions[objectID])
-                    * genes.GetAttraction(objectID, ObjectType.Sheep);
+                //if (pathQueries.InsideSameNode(positions[objectID], positions[targetIDs[objectID]]))
+                //{
+
+                    objectForces[(objectID * (int)ObjectType.Count) + (int)targetType] =
+                        math.normalize(positions[targetIDs[objectID]] - positions[objectID])
+                        * genes.GetAttraction(objectID, ObjectType.Sheep);
+
+                //}
+                //else
+                //{
+                    //objectForces[(objectID * (int)ObjectType.Count) + (int)targetType] =
+                    //    pathQueries.GetHeadingToDestination(positions[objectID], positions[targetIDs[objectID]]);
+
+                //}
 
                 //float3 pos = new float3();
                 //pos.x = positions[objectID].x;

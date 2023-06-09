@@ -37,6 +37,7 @@ namespace ShepProject {
 
 
 		public NPCManager NPCS => npcs;
+		public PathfindingManager Pathfinding => pathfinding;
 		public InputManager Input => input;
 
 

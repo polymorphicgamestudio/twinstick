@@ -1,8 +1,12 @@
+using Drawing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace ShepProject
 {
@@ -10,12 +14,6 @@ namespace ShepProject
     [System.Serializable]
     public struct SquareNode
     {
-
-        /*
-         * only 2 states, walkable and unwalkable
-         * 
-         * 
-         */
 
         
         public float2 position;
@@ -129,6 +127,88 @@ namespace ShepProject
 
     }
 
+    public struct PathQueryStructure
+    {
+
+        [ReadOnly]
+        private NativeArray<byte> vectorField;
+        [ReadOnly]
+        private NativeArray<float2> directions;
+        
+        public SquareGridSetupData setupData;
+
+
+        public PathQueryStructure(NativeArray<byte> vectorField, NativeArray<float2> directions, SquareGridSetupData setupData)
+        {
+
+            this.vectorField = vectorField;
+            this.directions = directions;
+
+            this.setupData = setupData;
+
+
+
+        }
+
+        public bool InsideSameNode(float2 position, float2 destination)
+        {
+            return GetNodeIndexFromPosition(position) == GetNodeIndexFromPosition(destination);
+
+        }
+
+        public float2 GetHeadingToDestination(float2 position, float2 destination)
+        {
+
+            int posNode = GetNodeIndexFromPosition(position);
+            int destNode = GetNodeIndexFromPosition(destination);
+
+            return directions[vectorField[(posNode * setupData.columns) + destNode] - 1];
+
+        }
+
+        private bool ContainsInGrid(float2 position)
+        {
+            if (position.x > (setupData.origin.x + (setupData.nodeLength * setupData.columns)) ||
+                position.x < setupData.origin.x)
+            {
+                return false;
+
+            }
+
+            if (position.y > (setupData.origin.z + ((setupData.nodeLength) * setupData.rows)) ||
+                position.y < setupData.origin.z)
+            {
+                return false;
+
+            }
+
+
+            return true;
+
+
+        }
+
+        private int GetNodeIndexFromPosition(float2 position)
+        {
+
+            if (!ContainsInGrid(position))
+            {
+
+                Debug.LogError("Position not contained within grid.");
+
+                return -1;
+
+            }
+
+            float2 localPosition = (position - setupData.originfloat2);
+
+            return (int)(localPosition.x / setupData.nodeLength)
+                + (int)(localPosition.y / setupData.nodeLength) * setupData.columns;
+
+        }
+
+    }
+
 
     [System.Serializable]
     public struct SquareGridSetupData
@@ -138,7 +218,9 @@ namespace ShepProject
         public int rows;
         public int columns;
         public float nodeLength;
+        [HideInInspector]
         public float3 origin;
+        public float2 originfloat2;
         public Color walkableColor;
         public Color unwalkableColor;
 

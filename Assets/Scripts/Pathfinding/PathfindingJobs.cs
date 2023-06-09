@@ -236,144 +236,158 @@ namespace ShepProject
 
             #region Vector Field Setup
 
-            bool allFilledIn = true;
-            do
+            //bool allFilledIn = true;
+            int k = 0;
+
+            #region Setup New Path
+
+            //allFilledIn = true;
+            while (!vectorPathsFilled[k] && k < nodes.Length)
             {
 
-                //after this need to check which ones don't have paths and then queue up a new path
-                //try and get furthest ones away first
+                pathLength = 0;
+                FindPath(startNodeIndex, endNodeIndex);
+
+                //read from finalPathIndices and update data
 
 
+                #region Set Data From Path
 
 
-                #region Setup New Path
-
-                allFilledIn = true;
-                for (int k = 0; k < nodes.Length; k++)
+                for (int i = 0; i < pathLength; i++)
                 {
+                    //starts with end node, so for both directions on the path
+                    //need to set every node in the chain of that path
+                    //ex node 5 of path needs to have all nodes, 1,2,3,4,6,7,8,9 all set
 
-
-
-                    pathLength = 0;
-                    FindPath(startNodeIndex, endNodeIndex);
-
-                    //read from finalPathIndices and update data
-
-
-                    #region Set Data From Path
-
-
-                    for (int i = 0; i < pathLength; i++)
+                    //ends up being n^2 operations :(
+                    for (int j = 0; j < pathLength; j++)
                     {
-                        //starts with end node, so for both directions on the path
-                        //need to set every node in the chain of that path
-                        //ex node 5 of path needs to have all nodes, 1,2,3,4,6,7,8,9 all set
-
-                        //ends up being n^2 operations :(
-                        for (int j = 0; j < pathLength; j++)
+                        //if the node that is being set is the same node
+                        //that we're setting for
+                        if (i == j)
                         {
-                            //if the node that is being set is the same node
-                            //that we're setting for
-                            if (i == j)
+
+                            //set it to a value that signifies that there is no direction
+                            vectorField[finalPathIndices[i].index * (columns * rows) + finalPathIndices[j].index] = (int)NodeDirection.NoMovement;
+                            continue;
+
+
+                        }
+
+                        //vectorField[i * (columns * rows) + finalPathIndices[j].index] = finalPathIndices[i + 1].direction;
+
+                        if (j < i)
+                        {
+
+                            //if its before it in the path, it needs the direction reversed
+                            //which just needs to be direction - 4 to get opposite for enum
+
+                            vectorField[finalPathIndices[i].index * (columns * rows) + finalPathIndices[j].index]
+                                = finalPathIndices[i - 1].direction > 4 ?
+                                (byte)(finalPathIndices[i - 1].direction - 4) :
+                                (byte)(finalPathIndices[i - 1].direction + 4);
+
+                            if (vectorField[finalPathIndices[i].index * (columns * rows) + finalPathIndices[j].index] == 0)
                             {
-
-                                //set it to a value that signifies that there is no direction
-                                vectorField[i * (columns * rows) + finalPathIndices[j].index] = (int)NodeDirection.NoMovement;
-                                continue;
-
-
+                                int test = 0;
                             }
 
+                        }
+                        else
+                        {
 
 
-                            //vectorField[i * (columns * rows) + finalPathIndices[j].index] = finalPathIndices[i + 1].direction;
-
-                            if (j < i)
+                            if (i < pathLength - 2)
                             {
 
-                                //if its before it in the path, it needs the direction reversed
-                                //which just needs to be direction - 4 to get opposite for enum
+                                if (finalPathIndices[i + 1].direction == 0)
+                                {
+                                    int test = 0;
+                                }
 
-                                vectorField[i * (columns * rows) + finalPathIndices[j].index]
-                                    = (byte)(finalPathIndices[i - 1].direction - 4);
-
-                            }
-                            else
-                            {
 
                                 //this is for after in the path
-                                vectorField[i * (columns * rows) + finalPathIndices[j].index] = finalPathIndices[i + 1].direction;
+                                vectorField[finalPathIndices[i].index * (columns * rows) + finalPathIndices[j].index] =
+                                    finalPathIndices[i + 1].direction;
+
                             }
                         }
-
-
-
                     }
 
 
-                    #endregion
+
+                }
 
 
-                    //first one found that doesn't have everything filled in
-
-                    // check its "full" variable which is after every single actual field,
-                    // will be 255 to show that it has no empty spots
-                    if (AllPathsFilledIn(k))
-                    {
-
-                        openNodeDifficulties.Clear();
-                        closedNodes.Clear();
-                        openNodeKeys.Clear();
-                        fCostKeys.Clear();
-
-                        continue;
-
-                    }
-
-                    startNodeIndex = k;
-                    allFilledIn = false;
-
-                    for (int j = nodes.Length - 1; j >= 0; j--)
-                    {
-                        //most closest one to the end of nodes array that doesn't have this current node filled in
-
-                        //then set start and end node paths and rerun the loop
-
-                        //then this will continue until all nodes have all paths
-
-                        //
-                        if (CurrentNodeFilledIn(k, j))
-                        {
-                            continue;
-                        }
-
-                        endNodeIndex = j;
-
-                        if (startNodeIndex == endNodeIndex)
-                        {
-                            Debug.LogError("Start and End Nodes are the same: " + startNodeIndex);
-                        }
+                #endregion
 
 
+                //first one found that doesn't have everything filled in
 
-                        break;
-
-                    }
+                // check its "full" variable which is after every single actual field,
+                // will be 255 to show that it has no empty spots
+                if (AllPathsFilledIn(k))
+                {
 
                     openNodeDifficulties.Clear();
                     closedNodes.Clear();
                     openNodeKeys.Clear();
                     fCostKeys.Clear();
 
+                    k++;
+
+                    if (k == nodes.Length)
+                        break;
+                    continue;
 
                 }
 
-                #endregion
-                allFilledIn = true;
+                startNodeIndex = k;
+                //allFilledIn = false;
+
+                for (int j = nodes.Length - 1; j >= 0; j--)
+                {
+                    //most closest one to the end of nodes array that doesn't have this current node filled in
+
+                    //then set start and end node paths and rerun the loop
+
+                    //then this will continue until all nodes have all paths
+
+                    //
+                    if (CurrentNodeFilledIn(k, j))
+                    {
+                        continue;
+                    }
+
+                    endNodeIndex = j;
+
+                    if (startNodeIndex == endNodeIndex)
+                    {
+                        Debug.LogError("Start and End Nodes are the same: " + startNodeIndex);
+                    }
+
+                    break;
+
+                }
+
+                openNodeDifficulties.Clear();
+                closedNodes.Clear();
+                openNodeKeys.Clear();
+                fCostKeys.Clear();
 
 
-                //trace that back
-            } while (!allFilledIn);
+                    
+
+
+
+
+            }
+            //for (int k = 0; k < nodes.Length; k++)
+
+            #endregion
+            //allFilledIn = true;
+
 
             #endregion
 
@@ -478,14 +492,26 @@ namespace ShepProject
                     if (!nodes[currentNode.index].LeftObstructed)
                         CheckNeighborNode(currentNode.index - 1, 
                             ref currentNode, orthagonalCost, (byte)NodeDirection.Left);
+                    else
+                    {
+                        vectorField[(currentNode.index * (rows * columns)) + (currentNode.index - 1)]
+                            = (byte)NodeDirection.NoMovement;
+
+                    }
 
                     if (currentNode.index + columns - 1 < nodes.Length)
                     {
                         //top left
                         if (!nodes[currentNode.index].TopLeftObstructed)
-
                             CheckNeighborNode((currentNode.index + columns - 1),
                                 ref currentNode, diagonalCost, (byte)NodeDirection.TopLeft);
+
+                        else
+                        {
+                            vectorField[(currentNode.index * (rows * columns)) + (currentNode.index + columns - 1)]
+                                = (byte)NodeDirection.NoMovement;
+
+                        }
                     }
 
                     if ((currentNode.index - columns) - 1 >= 0)
@@ -495,7 +521,12 @@ namespace ShepProject
                         if (!nodes[currentNode.index].BottomLeftObstructed)
                             CheckNeighborNode(((currentNode.index - columns) - 1), 
                                 ref currentNode, diagonalCost, (byte)NodeDirection.BottomLeft);
-
+                        else
+                        {
+                            vectorField[(currentNode.index * (rows * columns)) + ((currentNode.index - columns) - 1)]
+                                = (byte)NodeDirection.NoMovement;
+                            
+                        }
                     }
 
                 }
@@ -505,6 +536,12 @@ namespace ShepProject
                     if (!nodes[currentNode.index].RightObstructed)
                         CheckNeighborNode(currentNode.index + 1, 
                             ref currentNode, orthagonalCost, (byte)NodeDirection.Right);
+                    else
+                    {
+                        vectorField[(currentNode.index * (rows * columns)) + (currentNode.index + 1)]
+                            = (byte)NodeDirection.NoMovement;
+
+                    }
 
                     if (currentNode.index + columns + 1 < nodes.Length)
                     {
@@ -512,7 +549,12 @@ namespace ShepProject
                         if (!nodes[currentNode.index].TopRightObstructed)
                             CheckNeighborNode((currentNode.index + columns + 1), 
                                 ref currentNode, diagonalCost, (byte)NodeDirection.TopRight);
+                        else
+                        {
+                            vectorField[(currentNode.index * (rows * columns)) + (currentNode.index + columns + 1)]
+                                = (byte)NodeDirection.NoMovement;
 
+                        }
                     }
 
                     if ((currentNode.index - columns) + 1 >= 0)
@@ -521,7 +563,12 @@ namespace ShepProject
                         if (!nodes[currentNode.index].BottomRightObstructed)
                             CheckNeighborNode(((currentNode.index - columns) + 1),
                                 ref currentNode, diagonalCost, (byte)NodeDirection.BottomRight);
+                        else
+                        {
+                            vectorField[(currentNode.index * (rows * columns)) + ((currentNode.index - columns) + 1)]
+                                = (byte)NodeDirection.NoMovement;
 
+                        }
                     }
 
 
@@ -534,6 +581,13 @@ namespace ShepProject
                     if (!nodes[currentNode.index].TopObstructed)
                         CheckNeighborNode(currentNode.index + columns, 
                             ref currentNode, orthagonalCost, (byte)NodeDirection.Top);
+                    else
+                    {
+                        vectorField[(currentNode.index * (rows * columns)) + (currentNode.index + columns)]
+                            = (byte)NodeDirection.NoMovement;
+
+                    }
+
                 }
                 if ((currentNode.index - columns) >= 0 && currentNode.index != endNodeIndex)
                 {
@@ -541,6 +595,13 @@ namespace ShepProject
                     if (!nodes[currentNode.index].BottomObstructed)
                         CheckNeighborNode(currentNode.index - columns, 
                             ref currentNode, orthagonalCost, (byte)NodeDirection.Bottom);
+                    else
+                    {
+                        vectorField[(currentNode.index * (rows * columns)) + (currentNode.index - columns)]
+                            = (byte)NodeDirection.NoMovement;
+
+                    }
+
                 }
 
 
@@ -634,19 +695,19 @@ namespace ShepProject
 
             #region Draw Final Path
 
-            Profiler.BeginSample("Draw Final Path");
+            //Profiler.BeginSample("Draw Final Path");
 
-            float3 pos = new float3();
-            for (int k = 0; k < pathLength; k++)
-            {
-                pos.x = nodes[finalPathIndices[k].index].position.x;
-                pos.z = nodes[finalPathIndices[k].index].position.y;
+            //float3 pos = new float3();
+            //for (int k = 0; k < pathLength; k++)
+            //{
+            //    pos.x = nodes[finalPathIndices[k].index].position.x;
+            //    pos.z = nodes[finalPathIndices[k].index].position.y;
 
-                builder.SolidPlane(pos, new float3(0, 1, 0), new float2(nodeLength), Color.cyan);
+            //    builder.SolidPlane(pos, new float3(0, 1, 0), new float2(nodeLength), Color.cyan);
 
-            }
+            //}
 
-            Profiler.EndSample();
+            //Profiler.EndSample();
 
             #endregion
 
@@ -765,6 +826,9 @@ namespace ShepProject
 
             for (int i = 0; i < (columns * rows); i++)
             {
+
+                if (nodeIndex == i)
+                    continue;
 
                 if (vectorField[(nodeIndex * (columns * rows)) + i] == 0)
                 {

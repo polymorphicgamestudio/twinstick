@@ -49,8 +49,8 @@ namespace ShepProject
 
         #region Variables
 
-        public Transform gridOrigin;
-        public Transform testPosition;
+        //public Transform gridOrigin;
+        //public Transform testPosition;
 
         public Collider playableArea;
 
@@ -61,6 +61,7 @@ namespace ShepProject
         public NativeArray<OverlapBoxCommand> overlapCommands;
         public NativeArray<ColliderHit> overlapResults;
         public NativeArray<SquareNode> nodes;
+        private NativeArray<float2> directions;
 
         public NativeParallelMultiHashMap<int, PathNode> openNodeDifficulties;
         public NativeParallelHashMap<int, PathNode> closedNodes;
@@ -74,6 +75,7 @@ namespace ShepProject
         [Space(20)]
         public SquareGridSetupData setupData;
 
+        private bool vectorFieldNeedsUpdate;
         private int currentRows;
         private int currentColumns;
         private float currentNodeLength;
@@ -102,7 +104,7 @@ namespace ShepProject
             {
 
 
-                setupData.origin = gridOrigin.position;
+                setupData.origin = transform.position;
                 DrawGridJobNotPlaying drawGrid = new DrawGridJobNotPlaying();
                 drawGrid.setupData = setupData;
                 drawGrid.builder = DrawingManager.GetBuilder();
@@ -127,14 +129,27 @@ namespace ShepProject
 
         private void Awake()
         {
-            setupData.origin = gridOrigin.position;
+            setupData.origin = transform.position;
+            setupData.originfloat2 = new float2(transform.position.x, transform.position.z);
 
             openNodeDifficulties = new NativeParallelMultiHashMap<int, PathNode>(10000, Allocator.Persistent);
             closedNodes = new NativeParallelHashMap<int, PathNode>(10000, Allocator.Persistent);
             openNodeKeys = new NativeParallelHashMap<int, int>(10000, Allocator.Persistent);
             fCostKeys = new NativeList<int>(10000, Allocator.Persistent);
             finalPathIndices = new NativeArray<PathNode>(1000, Allocator.Persistent);
-            CreateNodes();
+            //CreateNodes();
+
+            directions = new NativeArray<float2>(8, Allocator.Persistent);
+            directions[0] = new float2(-1, 0);        // math.PI; 
+            directions[1] = new float2(-1f, 1f);    //math.radians(135);
+            directions[2] = new float2(0, 1);    //math.PI / 2f;
+            directions[3] = new float2(1, 1);    //math.radians(45);
+            directions[4] = new float2(1, 0);    //0;
+            directions[5] = new float2(-1, 1);    //math.radians(315);
+            directions[6] = new float2(0, -1);    //3 * math.PI / 2f;
+            directions[7] = new float2(-1, -1);    //math.radians(225);
+
+
 
 
         }
@@ -143,33 +158,67 @@ namespace ShepProject
         void Update()
         {
 
-            setupData.origin = gridOrigin.position;
+            setupData.origin = transform.position;
             if (currentRows != setupData.rows || currentColumns != setupData.columns)
             {
                 CreateNodes();
-
+                vectorFieldNeedsUpdate = true;
             }
 
-            if (currentNodeLength != setupData.nodeLength)
+            else if (currentNodeLength != setupData.nodeLength)
             {
 
                 UpdateNodeInfo();
-
+                vectorFieldNeedsUpdate = true;
             }
 
 
             //GetNodeIndexFromPosition(testPosition.position);
 
-            //whenever something is placed on grid or removed, need to update the walkable nodes
-            UpdateWalkableNodes();
+            if (vectorFieldNeedsUpdate)
+            {
+                vectorFieldNeedsUpdate = false;
 
-            Profiler.BeginSample("Setup Vector Field");
+                //whenever something is placed on grid or removed, need to update the walkable nodes
+                UpdateWalkableNodes();
 
-            SetupVectorField();
+                Profiler.BeginSample("Setup Vector Field");
 
-            Profiler.EndSample();
+                SetupVectorField();
 
-            //}
+                Profiler.EndSample();
+
+
+            }
+
+
+            int toNode = GetNodeIndexFromPosition(StartPosition.position);
+            float3 dir = new float3();
+            float3 pos = new float3();
+
+            for (int i = 0; i < nodes.Length; i++)
+            {
+                if (toNode == i)
+                    continue;
+
+                pos.x = nodes[i].position.x;
+                pos.z = nodes[i].position.y;
+
+                if (vectorField[i * (currentColumns * currentRows) + toNode] == 0)
+                {
+                    int test = 0;
+                }
+
+                dir.x = directions[vectorField[i * (currentColumns * currentRows) + toNode] - 1].x;
+                dir.z = directions[vectorField[i * (currentColumns * currentRows) + toNode] - 1].y;
+
+                Draw.Arrow(pos, pos + dir);
+                
+
+            }
+
+
+            
             //draw grid every function if gizmos are enabled
             DrawGridJobPlaying drawGrid = new DrawGridJobPlaying();
             drawGrid.setupData = setupData;
@@ -188,6 +237,8 @@ namespace ShepProject
         {
             if (nodes.IsCreated)
                 nodes.Dispose();
+
+            directions.Dispose();
 
             if (overlapCommands.IsCreated)
             {
@@ -243,7 +294,7 @@ namespace ShepProject
             cnj.nodeLength = setupData.nodeLength;
             cnj.columns = setupData.columns;
             cnj.rows = setupData.rows;
-            cnj.origin = new float2(gridOrigin.position.x, gridOrigin.position.z);
+            cnj.origin = new float2(transform.position.x, transform.position.z);
 
             cnj.Schedule(setupData.rows, SystemInfo.processorCount).Complete();
 
@@ -261,7 +312,7 @@ namespace ShepProject
             uni.nodeLength = setupData.nodeLength;
             uni.columns = setupData.columns;
             uni.rows = setupData.rows;
-            uni.origin = new float2(gridOrigin.position.x, gridOrigin.position.z);
+            uni.origin = new float2(transform.position.x, transform.position.z);
             uni.Schedule(setupData.rows, SystemInfo.processorCount).Complete();
 
 
@@ -660,7 +711,12 @@ namespace ShepProject
 
         #endregion
 
+        public PathQueryStructure GetQueryingStructure()
+        {
 
+            return new PathQueryStructure(vectorField, directions, setupData);
+
+        }
 
     }
 
