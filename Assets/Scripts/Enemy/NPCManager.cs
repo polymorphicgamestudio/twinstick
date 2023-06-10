@@ -412,7 +412,7 @@ namespace ShepProject
                 GatherForcesWithinRangeJob gfj = new GatherForcesWithinRangeJob();
                 gfj.positions = quadTree.positions;
                 gfj.objectIDs = quadTree.objectIDs;
-                //gfj.pathQueries = Inst.Pathfinding.GetQueryingStructure();
+                gfj.pathQueries = Inst.Pathfinding.GetQueryingStructure();
                 gfj.targetIDs = targetIDs;
                 gfj.genes = genes;
                 gfj.objectForces = objectForces;

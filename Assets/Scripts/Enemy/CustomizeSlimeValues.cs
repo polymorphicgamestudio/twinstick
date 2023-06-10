@@ -6,38 +6,38 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [System.Serializable]
-public struct InitialSlimeValues
+public class InitialSlimeValues
 {
 
-    [Range(0, 5000)]
+    //[Range(0, 5000)]
     public int slimeCount;
 
-    [Range(0, 1)]
+    //[Range(0, 1)]
     public float sheepAttraction;
-    [Range(-1, 1)]
+    //[Range(-1, 1)]
     public float towerAttraction;
-    [Range(-1, 1)]
+    //[Range(-1, 1)]
     public float slimeAttraction;
-    [Range(-1, 1)]
+    //[Range(-1, 1)]
     public float wallAttraction;
 
-    [Range(0, 50)]
+    //[Range(0, 50)]
     public float towerViewRange;
-    [Range(0, 50)]
+    //[Range(0, 50)]
     public float slimeViewRange;
-    [Range(0, 50)]
+    //[Range(0, 50)]
     public float playerViewRange;
-    [Range(0, 50)]
+    //[Range(0, 50)]
     public float wallViewRange;
 
-    [Range(-1, 1)]
+    //[Range(-1, 1)]
     public float slimeOptimalDistance;
 
-    [Range(.1f, 100)]
+    //[Range(.1f, 100)]
     public float slimeSpeed;
-    [Range(0, 1)]
+    //[Range(0, 1)]
     public float slimeTurnRate;
-    [Range(1, 1000)]
+    //[Range(1, 1000)]
     public float slimeHealth;
 
     public override bool Equals(object obj)

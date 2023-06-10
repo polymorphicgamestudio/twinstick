@@ -696,7 +696,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4359101195869325803, guid: 7fa7252ba737b9c47ba8e8a5c28f18d1, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4900837904466321246, guid: 7fa7252ba737b9c47ba8e8a5c28f18d1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -724,7 +724,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9093419373934137398, guid: 7fa7252ba737b9c47ba8e8a5c28f18d1, type: 3}
       propertyPath: drawIndexLabels
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9093419373934137398, guid: 7fa7252ba737b9c47ba8e8a5c28f18d1, type: 3}
       propertyPath: setupData.columns

@@ -468,6 +468,8 @@ namespace ShepProject {
 
 			}
 
+			Inst.Pathfinding.QueueVectorFieldUpdate();
+
 			int previous = currentBuildingIndex;
 			currentBuildingIndex = -1;
 

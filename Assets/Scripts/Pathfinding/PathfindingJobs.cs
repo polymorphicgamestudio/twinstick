@@ -6,6 +6,7 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -79,6 +80,12 @@ namespace ShepProject
         public void Execute(int index)
         {
 
+            float currentNodeLength = setupData.nodeLength;
+            SquareNode node = nodes[index];
+
+            float3 startPos = new float3();
+            float3 endPos = new float3();
+
             float3 position = new float3(nodes[index].position.x, 0, nodes[index].position.y);
             float3 up = new float3(0, 1, 0);
 
@@ -108,7 +115,88 @@ namespace ShepProject
                 builder.Label2D(position - new float3(halfNodeLength / 2f, 0, 0),
                     index.ToString());
 
-                    //"(" + position.x + " , " + position.z + ")");
+            //"(" + position.x + " , " + position.z + ")");
+
+
+            #region Connection Line Drawing
+
+            //left line
+            startPos.x = node.position.x - (currentNodeLength * .25f);
+            startPos.z = node.position.y;
+
+            endPos.x = node.position.x - (currentNodeLength / 2f);
+            endPos.z = node.position.y;
+            builder.Line(startPos, endPos, node.LeftObstructed ? setupData.unwalkableColor : setupData.walkableColor);
+
+            //left above line
+            startPos.x = node.position.x - (currentNodeLength * .375f);
+            startPos.z = node.position.y + (currentNodeLength * .375f);
+
+            endPos.x = node.position.x - (currentNodeLength / 2f);
+            endPos.z = node.position.y + (currentNodeLength / 2f);
+            builder.Line(startPos, endPos, node.TopLeftObstructed ? setupData.unwalkableColor : setupData.walkableColor);
+
+
+            //left below line
+            startPos.x = node.position.x - (currentNodeLength * .375f);
+            startPos.z = node.position.y - (currentNodeLength * .375f);
+
+            endPos.x = node.position.x - (currentNodeLength / 2f);
+            endPos.z = node.position.y - (currentNodeLength / 2f);
+            builder.Line(startPos, endPos, node.BottomLeftObstructed ? setupData.unwalkableColor : setupData.walkableColor);
+
+
+
+
+
+            //right line
+            startPos.x = node.position.x + (currentNodeLength * .25f);
+            startPos.z = node.position.y;
+
+            endPos.x = node.position.x + (currentNodeLength / 2f);
+            endPos.z = node.position.y;
+            builder.Line(startPos, endPos, node.RightObstructed ? setupData.unwalkableColor : setupData.walkableColor);
+
+            //right above line
+            startPos.x = node.position.x + (currentNodeLength * .375f);
+            startPos.z = node.position.y + (currentNodeLength * .375f);
+
+            endPos.x = node.position.x + (currentNodeLength / 2f);
+            endPos.z = node.position.y + (currentNodeLength / 2f);
+            builder.Line(startPos, endPos, node.TopRightObstructed ? setupData.unwalkableColor : setupData.walkableColor);
+
+
+            //right below line
+            startPos.x = node.position.x + (currentNodeLength * .375f);
+            startPos.z = node.position.y - (currentNodeLength * .375f);
+
+            endPos.x = node.position.x + (currentNodeLength / 2f);
+            endPos.z = node.position.y - (currentNodeLength / 2f);
+            builder.Line(startPos, endPos, node.BottomRightObstructed ? setupData.unwalkableColor : setupData.walkableColor);
+
+
+
+            //bottom line
+            startPos.x = node.position.x;
+            startPos.z = node.position.y - (currentNodeLength * .25f);
+
+            endPos.x = node.position.x;
+            endPos.z = node.position.y - (currentNodeLength / 2f);
+            builder.Line(startPos, endPos, node.BottomObstructed ? setupData.unwalkableColor : setupData.walkableColor);
+
+
+            //top line
+            startPos.x = node.position.x;
+            startPos.z = node.position.y + (currentNodeLength * .25f);
+
+            endPos.x = node.position.x;
+            endPos.z = node.position.y + (currentNodeLength / 2f);
+            builder.Line(startPos, endPos, node.TopObstructed ? setupData.unwalkableColor : setupData.walkableColor);
+
+
+
+            #endregion
+
 
         }
 
@@ -199,6 +287,8 @@ namespace ShepProject
     public struct GenerateVectorFieldJob : IJob
     {
 
+        #region Variables
+
         public NativeArray<SquareNode> nodes;
 
         public NativeParallelMultiHashMap<int, PathNode> openNodeDifficulties;
@@ -227,6 +317,8 @@ namespace ShepProject
         int searched;
         int pathLength;
 
+        #endregion
+
         public void Execute()
         {
 
@@ -238,8 +330,8 @@ namespace ShepProject
 
             //bool allFilledIn = true;
             int k = 0;
-
-            #region Setup New Path
+            int fieldIndex = 0;
+            #region Fill Vector Field
 
             //allFilledIn = true;
             while (!vectorPathsFilled[k] && k < nodes.Length)
@@ -263,13 +355,19 @@ namespace ShepProject
                     //ends up being n^2 operations :(
                     for (int j = 0; j < pathLength; j++)
                     {
+
+                        fieldIndex = (finalPathIndices[i].index * (columns * rows)) + finalPathIndices[j].index;
+
+                        //if (vectorField[finalPathIndices[i].index * (columns * rows) + finalPathIndices[j].index] != 0)
+                        //    continue;
+
                         //if the node that is being set is the same node
                         //that we're setting for
                         if (i == j)
                         {
 
                             //set it to a value that signifies that there is no direction
-                            vectorField[finalPathIndices[i].index * (columns * rows) + finalPathIndices[j].index] = (int)NodeDirection.NoMovement;
+                            vectorField[fieldIndex] = (int)NodeDirection.NoMovement;
                             continue;
 
 
@@ -280,18 +378,8 @@ namespace ShepProject
                         if (j < i)
                         {
 
-                            //if its before it in the path, it needs the direction reversed
-                            //which just needs to be direction - 4 to get opposite for enum
+                            vectorField[fieldIndex] = finalPathIndices[i - 1].direction;
 
-                            vectorField[finalPathIndices[i].index * (columns * rows) + finalPathIndices[j].index]
-                                = finalPathIndices[i - 1].direction > 4 ?
-                                (byte)(finalPathIndices[i - 1].direction - 4) :
-                                (byte)(finalPathIndices[i - 1].direction + 4);
-
-                            if (vectorField[finalPathIndices[i].index * (columns * rows) + finalPathIndices[j].index] == 0)
-                            {
-                                int test = 0;
-                            }
 
                         }
                         else
@@ -301,18 +389,19 @@ namespace ShepProject
                             if (i < pathLength - 2)
                             {
 
-                                if (finalPathIndices[i + 1].direction == 0)
-                                {
-                                    int test = 0;
-                                }
+                                
+                                vectorField[fieldIndex] =
+
+                                finalPathIndices[i].direction > 4 ?
+                                (byte)(finalPathIndices[i].direction - 4) :
+                                (byte)(finalPathIndices[i].direction + 4);
 
 
-                                //this is for after in the path
-                                vectorField[finalPathIndices[i].index * (columns * rows) + finalPathIndices[j].index] =
-                                    finalPathIndices[i + 1].direction;
 
                             }
                         }
+
+
                     }
 
 
@@ -387,6 +476,14 @@ namespace ShepProject
 
             #endregion
             //allFilledIn = true;
+
+            for (int i = 0; i < vectorField.Length; i++)
+            {
+
+                if (vectorField[i] < (byte)NodeDirection.NoMovement)
+                    vectorField[i]--;
+
+            }
 
 
             #endregion

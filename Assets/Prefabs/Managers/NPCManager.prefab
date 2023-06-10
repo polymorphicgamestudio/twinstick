@@ -30,7 +30,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7182491602775243239
 MonoBehaviour:
@@ -47,21 +47,16 @@ MonoBehaviour:
   burrowPrefab: {fileID: 3911888185303433699, guid: a62055d6a4268a940a9c1bae779f32fd, type: 3}
   sheepPrefab: {fileID: 8759591037758108741, guid: 717e80078cde2704f99bd475bd0ff376, type: 3}
   endOfWaveCanvasParent: {fileID: 0}
-  slimePrefab: {fileID: 27624417778204221, guid: d3835c63c2cab04448df5a6b0161012f, type: 3}
+  slimePrefab: {fileID: 3180250549467891622, guid: d3835c63c2cab04448df5a6b0161012f, type: 3}
   burrowCount: 30
-  sheepCount: 25
-  maxTreeObjects: 1500
-  TreeObjectCount: 0
-  waveNumber: 0
+  sheepCount: 10
   countdownToWave: 10000
   currentCountdownToWave: 0
-  initialSlimeSpawnCount: 100
   startButton: {fileID: 0}
   spawningEnemies: 0
   idChecks: 
-  burrowLocations: []
   slimeValues:
-    slimeCount: 700
+    slimeCount: 30
     sheepAttraction: 1
     towerAttraction: -1
     slimeAttraction: 0.2

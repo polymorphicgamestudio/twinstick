@@ -75,6 +75,8 @@ namespace ShepProject
         [Space(20)]
         public SquareGridSetupData setupData;
 
+        [Space(20)]
+        [SerializeField]
         private bool vectorFieldNeedsUpdate;
         private int currentRows;
         private int currentColumns;
@@ -145,7 +147,7 @@ namespace ShepProject
             directions[2] = new float2(0, 1);    //math.PI / 2f;
             directions[3] = new float2(1, 1);    //math.radians(45);
             directions[4] = new float2(1, 0);    //0;
-            directions[5] = new float2(-1, 1);    //math.radians(315);
+            directions[5] = new float2(1, -1);    //math.radians(315);
             directions[6] = new float2(0, -1);    //3 * math.PI / 2f;
             directions[7] = new float2(-1, -1);    //math.radians(225);
 
@@ -191,31 +193,34 @@ namespace ShepProject
 
             }
 
+            //int toNode = GetNodeIndexFromPosition(StartPosition.position);
+            //float3 dir = new float3();
+            //float3 pos = new float3();
 
-            int toNode = GetNodeIndexFromPosition(StartPosition.position);
-            float3 dir = new float3();
-            float3 pos = new float3();
+            //for (int i = 0; i < nodes.Length; i++)
+            //{
+            //    if (toNode == i)
+            //        continue;
 
-            for (int i = 0; i < nodes.Length; i++)
-            {
-                if (toNode == i)
-                    continue;
+            //    pos.x = nodes[i].position.x;
+            //    pos.z = nodes[i].position.y;
 
-                pos.x = nodes[i].position.x;
-                pos.z = nodes[i].position.y;
+            //    int vectorFieldIndex = i * (currentColumns * currentRows) + toNode;
+            //    int direction = vectorField[vectorFieldIndex];
 
-                if (vectorField[i * (currentColumns * currentRows) + toNode] == 0)
-                {
-                    int test = 0;
-                }
+            //    if (direction >= 8)
+            //    {
+            //        int test = 0;
+            //        continue;
+            //    }
 
-                dir.x = directions[vectorField[i * (currentColumns * currentRows) + toNode] - 1].x;
-                dir.z = directions[vectorField[i * (currentColumns * currentRows) + toNode] - 1].y;
+            //    dir.x = directions[direction].x;
+            //    dir.z = directions[direction].y;
 
-                Draw.Arrow(pos, pos + dir);
+            //    Draw.Arrow(pos, pos + dir);
                 
 
-            }
+            //}
 
 
             
@@ -243,7 +248,7 @@ namespace ShepProject
             if (overlapCommands.IsCreated)
             {
                 overlapCommands.Dispose();
-                overlapResults.Dispose();
+
             }
 
             openNodeDifficulties.Dispose();
@@ -252,6 +257,14 @@ namespace ShepProject
             fCostKeys.Dispose();
             finalPathIndices.Dispose();
             vectorField.Dispose();
+        }
+
+
+        public void QueueVectorFieldUpdate()
+        {
+
+            vectorFieldNeedsUpdate = true;
+
         }
 
         #region Setting Up Grid
@@ -285,7 +298,7 @@ namespace ShepProject
             vectorPathsFilled = new NativeArray<bool>(currentColumns * currentRows, Allocator.Persistent);
 
             overlapCommands = new NativeArray<OverlapBoxCommand>(setupData.rows * setupData.columns, Allocator.Persistent);
-            overlapResults = new NativeArray<ColliderHit>(setupData.rows * setupData.columns * 3, Allocator.Persistent);
+            //overlapResults = new NativeArray<ColliderHit>(setupData.rows * setupData.columns * 3, Allocator.Persistent);
 
 
 
@@ -323,7 +336,7 @@ namespace ShepProject
         {
 
             CreateOverlapCommandsJob coc = new CreateOverlapCommandsJob();
-            coc.mask = LayerMask.GetMask("Wall") | LayerMask.GetMask("Tower");
+            coc.mask = LayerMask.GetMask("Wall");// | LayerMask.GetMask("Tower");
             coc.commands = overlapCommands;
             coc.nodes = nodes;
             coc.rows = currentRows;
@@ -332,6 +345,8 @@ namespace ShepProject
             coc.halfNodeLength = setupData.nodeLength / 2f;
             coc.Schedule(currentRows * currentColumns, SystemInfo.processorCount).Complete();
 
+            overlapResults = new NativeArray<ColliderHit>(currentRows * currentColumns * 3, Allocator.TempJob);
+
             OverlapBoxCommand.ScheduleBatch
                 (overlapCommands, overlapResults, SystemInfo.processorCount, 3).Complete();
 
@@ -339,11 +354,8 @@ namespace ShepProject
 
             #region Update Node Connections
 
-            //Vector3 vect = new Vector3();
+            Vector3 vect = new Vector3();
             Vector3 local = new Vector3();
-
-            float3 startPos = new float3();
-            float3 endPos = new float3();
 
             for (int i = 0; i < overlapCommands.Length; i++)
             {
@@ -355,6 +367,9 @@ namespace ShepProject
                 local.y = 0;
                 local.z = nodes[i].position.y;
 
+                vect.x = nodes[i].position.x;
+                vect.y = 0;
+                vect.z = nodes[i].position.y;
 
                 float x = 0;
                 float z = 0;
@@ -366,11 +381,12 @@ namespace ShepProject
                     if (overlapResults[index].instanceID != 0)
                     {
 
-                        local = overlapResults[index].collider.ClosestPointOnBounds(local) - local;
+                        local = overlapResults[index].collider.ClosestPointOnBounds(vect);
+                        local -= vect;
 
                         x = math.abs(local.x);
                         z = math.abs(local.z);
-
+                        
                         Draw.Label2D(new Vector3(nodes[i].position.x, 0, nodes[i].position.y), local.ToString());
 
                         if (x > 0)
@@ -503,87 +519,6 @@ namespace ShepProject
 
                 }
 
-
-                #region Connection Line Drawing
-
-                //left line
-                startPos.x = node.position.x - (currentNodeLength * .25f);
-                startPos.z = node.position.y;
-
-                endPos.x = node.position.x - (currentNodeLength / 2f);
-                endPos.z = node.position.y;
-                Draw.Line(startPos, endPos, node.LeftObstructed ? setupData.unwalkableColor : setupData.walkableColor);
-
-                //left above line
-                startPos.x = node.position.x - (currentNodeLength * .375f);
-                startPos.z = node.position.y + (currentNodeLength * .375f);
-
-                endPos.x = node.position.x - (currentNodeLength / 2f);
-                endPos.z = node.position.y + (currentNodeLength / 2f);
-                Draw.Line(startPos, endPos, node.TopLeftObstructed ? setupData.unwalkableColor : setupData.walkableColor);
-
-
-                //left below line
-                startPos.x = node.position.x - (currentNodeLength * .375f);
-                startPos.z = node.position.y - (currentNodeLength * .375f);
-
-                endPos.x = node.position.x - (currentNodeLength / 2f);
-                endPos.z = node.position.y - (currentNodeLength / 2f);
-                Draw.Line(startPos, endPos, node.BottomLeftObstructed ? setupData.unwalkableColor : setupData.walkableColor);
-
-
-
-
-
-                //right line
-                startPos.x = node.position.x + (currentNodeLength * .25f);
-                startPos.z = node.position.y;
-
-                endPos.x = node.position.x + (currentNodeLength / 2f);
-                endPos.z = node.position.y;
-                Draw.Line(startPos, endPos, node.RightObstructed ? setupData.unwalkableColor : setupData.walkableColor);
-
-                //right above line
-                startPos.x = node.position.x + (currentNodeLength * .375f);
-                startPos.z = node.position.y + (currentNodeLength * .375f);
-
-                endPos.x = node.position.x + (currentNodeLength / 2f);
-                endPos.z = node.position.y + (currentNodeLength / 2f);
-                Draw.Line(startPos, endPos, node.TopRightObstructed ? setupData.unwalkableColor : setupData.walkableColor);
-
-
-                //right below line
-                startPos.x = node.position.x + (currentNodeLength * .375f);
-                startPos.z = node.position.y - (currentNodeLength * .375f);
-
-                endPos.x = node.position.x + (currentNodeLength / 2f);
-                endPos.z = node.position.y - (currentNodeLength / 2f);
-                Draw.Line(startPos, endPos, node.BottomRightObstructed ? setupData.unwalkableColor : setupData.walkableColor);
-
-
-
-                //bottom line
-                startPos.x = node.position.x; 
-                startPos.z = node.position.y - (currentNodeLength * .25f);
-
-                endPos.x = node.position.x;
-                endPos.z = node.position.y - (currentNodeLength / 2f);
-                Draw.Line(startPos, endPos, node.BottomObstructed ? setupData.unwalkableColor : setupData.walkableColor);
-
-
-                //top line
-                startPos.x = node.position.x;
-                startPos.z = node.position.y + (currentNodeLength * .25f);
-
-                endPos.x = node.position.x;
-                endPos.z = node.position.y + (currentNodeLength / 2f);
-                Draw.Line(startPos, endPos, node.TopObstructed ? setupData.unwalkableColor : setupData.walkableColor);
-
-
-
-                #endregion
-
-
                 node.walkable = true;
                 nodes[i] = node;
 
@@ -591,6 +526,9 @@ namespace ShepProject
             }
 
 
+
+
+            overlapResults.Dispose();
 
             #endregion
 

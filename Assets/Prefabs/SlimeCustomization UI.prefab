@@ -275,7 +275,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 3454320946775549794}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 5000
+  m_MaxValue: 2500
   m_WholeNumbers: 1
   m_Value: 0
   m_OnValueChanged:
@@ -5815,6 +5815,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
