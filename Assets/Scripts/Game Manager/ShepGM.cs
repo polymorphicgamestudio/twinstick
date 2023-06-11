@@ -43,46 +43,45 @@ namespace ShepProject {
 
 		public event EventTrigger gameOver;
 
-		public Canvas canvas;
-		public EventSystem eventSystem;
-		GraphicRaycaster graphicRaycaster;
+		private void Awake() 
+		{
 
-		private void Awake() {
 			actions = new PlayerInputActions();
 			actions.Player.Enable();
 			actions.UI.Enable();
 			actions.Buildings.Enable();
 
-			if (npcs != null) {
-				npcs.Initialize(this);
-			}
+            if (npcs != null)
+            {
+                npcs.Initialize(this);
+            }
 
-			if (pathfinding != null) {
-				pathfinding.Initialize(this);
-			}
+            if (pathfinding != null)
+            {
+                pathfinding.Initialize(this);
+            }
 
-			if (buildings != null) {
-				buildings.Initialize(this);
-			}
+            if (buildings != null)
+            {
+                buildings.Initialize(this);
+            }
+
+            if (input != null)
+            {
+                input.Initialize(this);
+            }
 
 
-			if (inst == null) {
-				inst = this;
-			}
-			else {
-				Debug.LogError("ShepGM Instance already exists!");
-			}
-			if (canvas == null)
-			{
-				Debug.LogError("Canvas not set in ShepGM, needed for towers and shooting!");
+            if (inst == null)
+            {
+                inst = this;
+            }
+            else
+            {
+                Debug.LogError("ShepGM Instance already exists!");
+            }
 
-			}
-			else
-			{
-				graphicRaycaster = canvas.GetComponent<GraphicRaycaster>();
-
-			}
-		}
+        }
 
         private void OnDestroy()
         {
@@ -92,15 +91,10 @@ namespace ShepProject {
 
         }
 
-        public void GameOverEventTrigger() {
+        public void GameOverEventTrigger() 
+		{
 			gameOver.Invoke();
 		}
-		public bool MouseOverHUD() {
-			PointerEventData ped = new PointerEventData(eventSystem);
-			ped.position = actions.Player.MousePosition.ReadValue<Vector2>();
-			List<RaycastResult> results = new List<RaycastResult>();
-			graphicRaycaster.Raycast(ped,results);
-			return results.Count > 0;
-		}
+
 	}
 }

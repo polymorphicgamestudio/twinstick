@@ -35,81 +35,62 @@ namespace ShepProject
             Inst = ShepGM.inst;
             controller = GetComponent<RobotController>();
 
-            Inst.actions.Player.Action.started += Shoot;
-            Inst.actions.Player.Action.canceled += ShootCanceled;
+            Inst.Input.actionSelectionChanged += ActionSelectionChanged;
 
-            Inst.actions.Buildings.BuildingOne.performed += UnequipWeapon;
-            Inst.actions.Buildings.BuildingTwo.performed += UnequipWeapon;
-            Inst.actions.Buildings.BuildingThree.performed += UnequipWeapon;
-            Inst.actions.Buildings.BuildingFour.performed += UnequipWeapon;
-            Inst.actions.Buildings.BuildingFive.performed += UnequipWeapon;
-            Inst.actions.Buildings.BuildingSix.performed += UnequipWeapon;
-            Inst.actions.Buildings.BuildingSeven.performed += UnequipWeapon;
-
-
-
-            Inst.actions.Player.WeaponOne.performed += WeaponOne;
-            //inst.actions.Player.WeaponTwo.performed += WeaponTwo;
-            //inst.actions.Player.WeaponThree.performed += WeaponThree;
-
+            //Inst.actions.Player.Action.started += Shoot;
+            //Inst.actions.Player.Action.canceled += ShootCanceled;
         }
 
+        private void ActionSelectionChanged(int previousAction, int currentAction)
+        {
+            if (currentAction > 2)
+            {
+                currentWeapon = -1;
+                return;
+            }
+
+            if (previousAction != currentAction)
+            {
+
+                //just doing this for now since we only have first weapon setup
+                if (currentAction == 0)
+                {
+                    currentWeapon = currentAction;
+                    weapons[currentWeapon].EquipWeapon(bulletSpawn);
+
+                }
+                else
+                {
+                    currentWeapon = -1;
+                }
+            }
+
+
+
+
+        }
 
         private void Update()
         {
 
             if (currentWeapon == 0)
+            {
                 weapons[currentWeapon].Update();
 
+                if (!weapons[currentWeapon].shooting)
+                {
+
+                    if (Inst.Input.MouseOverHUD())
+                        return;
+                }
+
+                weapons[currentWeapon].shooting = Inst.Input.ActionSelected;
+
+            }
+
+
 
         }
-
-        private void UnequipWeapon(InputAction.CallbackContext obj)
-        {
-            currentWeapon = -1;
-        }
-
-        private void WeaponOne(InputAction.CallbackContext obj)
-        {
-            if (currentWeapon == 0)
-                return;
-
-            currentWeapon = 0;
-            weapons[currentWeapon].EquipWeapon(bulletSpawn);
-
-        }
-
-        //private void WeaponTwo(InputAction.CallbackContext obj)
-        //{
-        //    currentWeapon = 1;
-
-        //}
-
-        //private void WeaponThree(InputAction.CallbackContext obj)
-        //{
-        //    currentWeapon = 2;
-        //}
-
-        private void Shoot(InputAction.CallbackContext obj)
-        {
-            if (GetComponent<RobotModeController>().BuildMode)
-                return;
-
-            if (Inst.MouseOverHUD())
-                return;
-
-            if (currentWeapon == 0)
-                weapons[currentWeapon].shooting = true;
-
-        }
-
-        private void ShootCanceled(InputAction.CallbackContext obj)
-        {
-            if (currentWeapon == 0)
-                weapons[currentWeapon].shooting = false;
-
-        }
-
 
 
     }

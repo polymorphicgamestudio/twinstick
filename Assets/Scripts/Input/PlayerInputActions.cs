@@ -688,6 +688,96 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SlotOne"",
+                    ""type"": ""Button"",
+                    ""id"": ""2a60c797-3437-44de-a5e0-cc517f4159a5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SlotTwo"",
+                    ""type"": ""Button"",
+                    ""id"": ""1a076cb7-53e5-404d-84b2-c72fe8020f90"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SlotThree"",
+                    ""type"": ""Button"",
+                    ""id"": ""0d91155c-14cd-4cd9-bf00-1169619da85e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SlotFour"",
+                    ""type"": ""Button"",
+                    ""id"": ""b9627b65-9181-4bdc-83d1-5df169c973a0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SlotFive"",
+                    ""type"": ""Button"",
+                    ""id"": ""5c83c741-02d9-4c5f-bb5b-d430966a7b64"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SlotSix"",
+                    ""type"": ""Button"",
+                    ""id"": ""a3e085c3-ef03-4901-8c56-46c643276706"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SlotSeven"",
+                    ""type"": ""Button"",
+                    ""id"": ""e1dc7b42-c542-499a-93a1-cc72436f9c5b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SlotEight"",
+                    ""type"": ""Button"",
+                    ""id"": ""ec38bcd2-fbde-44ac-a1ce-91f5d0ab7e3b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SlotNine"",
+                    ""type"": ""Button"",
+                    ""id"": ""28a8588b-8361-4102-9c82-7b58ac1cc584"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SlotTen"",
+                    ""type"": ""Button"",
+                    ""id"": ""5218f405-8a6b-455e-9e13-309cca19717c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1042,6 +1132,116 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Pause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d5e1ca24-ed36-4a52-9219-7a0864cbdfd0"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SlotOne"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""629c5854-da84-4ceb-8e09-0f438c0d832f"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SlotTwo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dcebcb6f-c646-427b-8ef6-847136ef7bfa"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SlotThree"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3e966759-17bf-411a-a536-8218fc52faa2"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SlotFour"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""99178592-c64c-4a34-99fb-e563baf5f550"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SlotFive"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5e2720a9-ff6b-4a24-b4c3-967d7d6981db"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SlotSix"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0839ed5b-6fd4-4fca-9de7-d9521a989c36"",
+                    ""path"": ""<Keyboard>/7"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SlotSeven"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6bd2cb1f-e738-4107-a185-311d88d86182"",
+                    ""path"": ""<Keyboard>/8"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SlotEight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cc427882-2d1c-4e24-af24-dfb32ab10ee4"",
+                    ""path"": ""<Keyboard>/9"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SlotNine"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b5164481-8661-4a87-a812-a139b9e6de5f"",
+                    ""path"": ""<Keyboard>/0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SlotTen"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -1253,6 +1453,16 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
         m_UI_Pause = m_UI.FindAction("Pause", throwIfNotFound: true);
+        m_UI_SlotOne = m_UI.FindAction("SlotOne", throwIfNotFound: true);
+        m_UI_SlotTwo = m_UI.FindAction("SlotTwo", throwIfNotFound: true);
+        m_UI_SlotThree = m_UI.FindAction("SlotThree", throwIfNotFound: true);
+        m_UI_SlotFour = m_UI.FindAction("SlotFour", throwIfNotFound: true);
+        m_UI_SlotFive = m_UI.FindAction("SlotFive", throwIfNotFound: true);
+        m_UI_SlotSix = m_UI.FindAction("SlotSix", throwIfNotFound: true);
+        m_UI_SlotSeven = m_UI.FindAction("SlotSeven", throwIfNotFound: true);
+        m_UI_SlotEight = m_UI.FindAction("SlotEight", throwIfNotFound: true);
+        m_UI_SlotNine = m_UI.FindAction("SlotNine", throwIfNotFound: true);
+        m_UI_SlotTen = m_UI.FindAction("SlotTen", throwIfNotFound: true);
         // Buildings
         m_Buildings = asset.FindActionMap("Buildings", throwIfNotFound: true);
         m_Buildings_BuildingOne = m_Buildings.FindAction("BuildingOne", throwIfNotFound: true);
@@ -1484,6 +1694,16 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_TrackedDevicePosition;
     private readonly InputAction m_UI_TrackedDeviceOrientation;
     private readonly InputAction m_UI_Pause;
+    private readonly InputAction m_UI_SlotOne;
+    private readonly InputAction m_UI_SlotTwo;
+    private readonly InputAction m_UI_SlotThree;
+    private readonly InputAction m_UI_SlotFour;
+    private readonly InputAction m_UI_SlotFive;
+    private readonly InputAction m_UI_SlotSix;
+    private readonly InputAction m_UI_SlotSeven;
+    private readonly InputAction m_UI_SlotEight;
+    private readonly InputAction m_UI_SlotNine;
+    private readonly InputAction m_UI_SlotTen;
     public struct UIActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -1499,6 +1719,16 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @TrackedDevicePosition => m_Wrapper.m_UI_TrackedDevicePosition;
         public InputAction @TrackedDeviceOrientation => m_Wrapper.m_UI_TrackedDeviceOrientation;
         public InputAction @Pause => m_Wrapper.m_UI_Pause;
+        public InputAction @SlotOne => m_Wrapper.m_UI_SlotOne;
+        public InputAction @SlotTwo => m_Wrapper.m_UI_SlotTwo;
+        public InputAction @SlotThree => m_Wrapper.m_UI_SlotThree;
+        public InputAction @SlotFour => m_Wrapper.m_UI_SlotFour;
+        public InputAction @SlotFive => m_Wrapper.m_UI_SlotFive;
+        public InputAction @SlotSix => m_Wrapper.m_UI_SlotSix;
+        public InputAction @SlotSeven => m_Wrapper.m_UI_SlotSeven;
+        public InputAction @SlotEight => m_Wrapper.m_UI_SlotEight;
+        public InputAction @SlotNine => m_Wrapper.m_UI_SlotNine;
+        public InputAction @SlotTen => m_Wrapper.m_UI_SlotTen;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1541,6 +1771,36 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
+            @SlotOne.started += instance.OnSlotOne;
+            @SlotOne.performed += instance.OnSlotOne;
+            @SlotOne.canceled += instance.OnSlotOne;
+            @SlotTwo.started += instance.OnSlotTwo;
+            @SlotTwo.performed += instance.OnSlotTwo;
+            @SlotTwo.canceled += instance.OnSlotTwo;
+            @SlotThree.started += instance.OnSlotThree;
+            @SlotThree.performed += instance.OnSlotThree;
+            @SlotThree.canceled += instance.OnSlotThree;
+            @SlotFour.started += instance.OnSlotFour;
+            @SlotFour.performed += instance.OnSlotFour;
+            @SlotFour.canceled += instance.OnSlotFour;
+            @SlotFive.started += instance.OnSlotFive;
+            @SlotFive.performed += instance.OnSlotFive;
+            @SlotFive.canceled += instance.OnSlotFive;
+            @SlotSix.started += instance.OnSlotSix;
+            @SlotSix.performed += instance.OnSlotSix;
+            @SlotSix.canceled += instance.OnSlotSix;
+            @SlotSeven.started += instance.OnSlotSeven;
+            @SlotSeven.performed += instance.OnSlotSeven;
+            @SlotSeven.canceled += instance.OnSlotSeven;
+            @SlotEight.started += instance.OnSlotEight;
+            @SlotEight.performed += instance.OnSlotEight;
+            @SlotEight.canceled += instance.OnSlotEight;
+            @SlotNine.started += instance.OnSlotNine;
+            @SlotNine.performed += instance.OnSlotNine;
+            @SlotNine.canceled += instance.OnSlotNine;
+            @SlotTen.started += instance.OnSlotTen;
+            @SlotTen.performed += instance.OnSlotTen;
+            @SlotTen.canceled += instance.OnSlotTen;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -1578,6 +1838,36 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
+            @SlotOne.started -= instance.OnSlotOne;
+            @SlotOne.performed -= instance.OnSlotOne;
+            @SlotOne.canceled -= instance.OnSlotOne;
+            @SlotTwo.started -= instance.OnSlotTwo;
+            @SlotTwo.performed -= instance.OnSlotTwo;
+            @SlotTwo.canceled -= instance.OnSlotTwo;
+            @SlotThree.started -= instance.OnSlotThree;
+            @SlotThree.performed -= instance.OnSlotThree;
+            @SlotThree.canceled -= instance.OnSlotThree;
+            @SlotFour.started -= instance.OnSlotFour;
+            @SlotFour.performed -= instance.OnSlotFour;
+            @SlotFour.canceled -= instance.OnSlotFour;
+            @SlotFive.started -= instance.OnSlotFive;
+            @SlotFive.performed -= instance.OnSlotFive;
+            @SlotFive.canceled -= instance.OnSlotFive;
+            @SlotSix.started -= instance.OnSlotSix;
+            @SlotSix.performed -= instance.OnSlotSix;
+            @SlotSix.canceled -= instance.OnSlotSix;
+            @SlotSeven.started -= instance.OnSlotSeven;
+            @SlotSeven.performed -= instance.OnSlotSeven;
+            @SlotSeven.canceled -= instance.OnSlotSeven;
+            @SlotEight.started -= instance.OnSlotEight;
+            @SlotEight.performed -= instance.OnSlotEight;
+            @SlotEight.canceled -= instance.OnSlotEight;
+            @SlotNine.started -= instance.OnSlotNine;
+            @SlotNine.performed -= instance.OnSlotNine;
+            @SlotNine.canceled -= instance.OnSlotNine;
+            @SlotTen.started -= instance.OnSlotTen;
+            @SlotTen.performed -= instance.OnSlotTen;
+            @SlotTen.canceled -= instance.OnSlotTen;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -1737,6 +2027,16 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnTrackedDevicePosition(InputAction.CallbackContext context);
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
+        void OnSlotOne(InputAction.CallbackContext context);
+        void OnSlotTwo(InputAction.CallbackContext context);
+        void OnSlotThree(InputAction.CallbackContext context);
+        void OnSlotFour(InputAction.CallbackContext context);
+        void OnSlotFive(InputAction.CallbackContext context);
+        void OnSlotSix(InputAction.CallbackContext context);
+        void OnSlotSeven(InputAction.CallbackContext context);
+        void OnSlotEight(InputAction.CallbackContext context);
+        void OnSlotNine(InputAction.CallbackContext context);
+        void OnSlotTen(InputAction.CallbackContext context);
     }
     public interface IBuildingsActions
     {
