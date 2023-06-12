@@ -81,6 +81,7 @@ namespace ShepProject
         [ReadOnly]
         public NativeArray<float2> positions;
 
+        [NativeDisableContainerSafetyRestriction]
         [ReadOnly]
         public NativeArray<ObjectType> objTypes;
 
@@ -129,20 +130,20 @@ namespace ShepProject
             if (objType == ObjectType.Slime && targetType == ObjectType.Sheep)
             {
 
-                if (pathQueries.InsideSameNode(positions[objectID], positions[targetIDs[objectID]]))
-                {
+                //if (pathQueries.InsideSameNode(positions[objectID], positions[targetIDs[objectID]]))
+                //{
 
                     objectForces[(objectID * (int)ObjectType.Count) + (int)targetType] =
                         math.normalize(positions[targetIDs[objectID]] - positions[objectID])
                         * genes.GetAttraction(objectID, ObjectType.Sheep);
 
-                }
-                else
-                {
-                    objectForces[(objectID * (int)ObjectType.Count) + (int)targetType] =
-                        pathQueries.GetHeadingToDestination(positions[objectID], positions[targetIDs[objectID]]);
+                //}
+                //else
+                //{
+                //    objectForces[(objectID * (int)ObjectType.Count) + (int)targetType] =
+                //        pathQueries.GetHeadingToDestination(positions[objectID], positions[targetIDs[objectID]]);
 
-                }
+                //}
 
                 //float3 pos = new float3();
                 //pos.x = positions[objectID].x;

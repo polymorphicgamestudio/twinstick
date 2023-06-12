@@ -12,8 +12,8 @@ namespace ShepProject
     {
 
         MainType,
-        SecondaryType,
-        StatStartIndex = 2 // Main Type and Secondary Type
+        //SecondaryType,
+        StatStartIndex = 1 // Main Type and Secondary Type
             + (int)ObjectType.Count //for all the possible attractions an object can have
             + (int)ViewRange.Count
             + (int)DamageType.Count

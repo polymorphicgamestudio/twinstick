@@ -479,6 +479,8 @@ namespace ShepProject
     {
 
         public GenesArray genes;
+
+        [NativeDisableContainerSafetyRestriction]
         [ReadOnly]
         public NativeArray<ObjectType> objTypes;
 

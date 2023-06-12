@@ -474,7 +474,7 @@ namespace ShepProject
             wtj.genes = genes;
             wtj.objTypes = quadTree.objTypes;
             wtj.rotation = headings;
-            wtj.Schedule(quadTree.TransformAccess);
+            JobHandle handle = wtj.Schedule(quadTree.TransformAccess);//.Complete();
 
             Profiler.EndSample();
 
@@ -587,6 +587,9 @@ namespace ShepProject
 
             quadTree.ProcessDeletions();
 
+
+            //making sure that writing transforms finishes before end of frame
+            handle.Complete();
 
         }
 

@@ -612,7 +612,7 @@ namespace ShepProject
 
             objectIDs[sorted] = overwrite;
             objectIDs[positionCount] = objectID;
-            objTypes[objectIDs[sorted]] = ObjectType.None;
+            //objTypes[objectIDs[sorted]] = ObjectType.None;
             //need to update the sortedIDs as well to make sure there are no errors
 
 
