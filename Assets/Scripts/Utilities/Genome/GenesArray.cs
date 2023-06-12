@@ -9,67 +9,7 @@ namespace ShepProject
 {
 
 
-    public enum GeneGroups
-    {
-
-        Type,
-        StatStartIndex = 1 // object type
-            + (int)ObjectType.Count //for all the possible attractions an object can have
-            + (int)ViewRange.Count
-            + (int)DamageType.Count
-            + (int)OptimalDistance.Count,
-        Speed,
-        TurnRate,
-        Health,
-        TotalGeneCount
-
-    }
-
-    #region Same ordering needed for these enums
-
-    public enum ViewRange
-    {
-        Slime,
-        Tower,
-        Player,
-        Wall,
-        Count
-    }
-
-    public enum ObjectType
-    {
-        None = -1,
-        Slime,
-        Tower,
-        Player,
-        Wall,
-        Sheep,
-        Count
-
-    }
-
-    #endregion
-
-    public enum OptimalDistance
-    {
-        Slime,
-        Count
-    }
-
-
-    public enum DamageType
-    {
-
-        Player,
-        Blaster,
-        Fire,
-        Acid,
-        Lightning,
-        Ice,
-        Laser,
-        Count
-
-    }
+    
 
     public struct GenesArray
     {
@@ -77,10 +17,10 @@ namespace ShepProject
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<float> genes;
 
-        [NativeDisableContainerSafetyRestriction]
-        private NativeArray<ObjectType> objectTypes;
+        //[NativeDisableContainerSafetyRestriction]
+        //private NativeArray<ObjectType> objectTypes;
 
-        public NativeArray<ObjectType>.ReadOnly ObjectTypes => objectTypes.AsReadOnly();
+        //public NativeArray<ObjectType>.ReadOnly ObjectTypes => objectTypes.AsReadOnly();
 
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<ushort> geneIDs;
@@ -94,7 +34,7 @@ namespace ShepProject
         {
 
             genes = new NativeArray<float>(maxObjects * genesPerObject, type);
-            objectTypes = new NativeArray<ObjectType>(maxObjects, type);
+            //objectTypes = new NativeArray<ObjectType>(maxObjects, type);
             geneIDs = new NativeArray<ushort>(maxObjects, type);
             availables = new NativeList<ushort>(maxObjects, type);
 
@@ -127,15 +67,15 @@ namespace ShepProject
             return geneIDs[id] * (int)GeneGroups.TotalGeneCount;
         }
 
-        public ObjectType GetObjectType(int id)
-        {
-            return objectTypes[id];
-        }
+        //public ObjectType GetObjectType(int id)
+        //{
+        //    return objectTypes[id];
+        //}
 
-        public void SetObjectType(int id, ObjectType type)
-        {
-            objectTypes[id] = type;
-        }
+        //public void SetObjectType(int id, ObjectType type)
+        //{
+        //    objectTypes[id] = type;
+        //}
 
         public float GetAttraction(int id, int attraction)
         {
@@ -259,7 +199,7 @@ namespace ShepProject
             availables.AddNoResize(geneIDs[id]);
 
 
-            objectTypes[id] = ObjectType.None;
+            //objectTypes[id] = ObjectType.None;
             geneIDs[id] = ushort.MaxValue;
         }
 
@@ -267,7 +207,7 @@ namespace ShepProject
         {
             genes.Dispose();
             geneIDs.Dispose();
-            objectTypes.Dispose();
+            //objectTypes.Dispose();
             availables.Dispose();
         }
 

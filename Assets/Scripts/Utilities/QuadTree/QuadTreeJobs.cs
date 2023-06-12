@@ -479,6 +479,8 @@ namespace ShepProject
     {
 
         public GenesArray genes;
+        [ReadOnly]
+        public NativeArray<ObjectType> objTypes;
 
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<float2> positions;
@@ -489,8 +491,8 @@ namespace ShepProject
         public void Execute(int index, TransformAccess transform)
         {
 
-            if (genes.GetObjectType(index) != ObjectType.Slime
-                && genes.GetObjectType(index) != ObjectType.Sheep)
+            if (objTypes[index] != ObjectType.Slime
+                && objTypes[index] != ObjectType.Sheep)
             {
                 return;
             }

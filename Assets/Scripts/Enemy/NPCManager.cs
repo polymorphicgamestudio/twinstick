@@ -53,8 +53,7 @@ namespace ShepProject
 
 
         public int MaxTreeObjects => slimeValues.slimeCount + 750;
-        //[SerializeField]
-        //private int initialSlimeSpawnCount;
+
         private int enemiesLeftToSpawn;
 
         private int enemiesLeftToKill;
@@ -65,14 +64,15 @@ namespace ShepProject
         [SerializeField]
         private bool spawningEnemies;
 
-        [SerializeField]
-        private int[] idChecks;
+        //[SerializeField]
+        //private int[] idChecks;
 
         private Dictionary<int, EnemyPhysicsMethods> enemyPhysicsMethods;
 
-        //public Transform[] burrowLocations;
-
         private List<EnemyBurrow> burrows;
+
+        [SerializeField]
+        private Sigmoid[] sigmoids;
 
         private GenesArray genes;
         public GenesArray Genes => genes;
@@ -206,8 +206,8 @@ namespace ShepProject
             Inst.gameOver += GameOver;
             if (Inst.player != null)
             {
-                quadTree.AddTransform(Inst.player.transform);
-                genes.SetObjectType(0, ObjectType.Player);
+                quadTree.AddTransform(Inst.player.transform, ObjectType.Player);
+                //genes.SetObjectType(0, ObjectType.Player);
             }
             else
             {
@@ -415,10 +415,10 @@ namespace ShepProject
                 gfj.pathQueries = Inst.Pathfinding.GetQueryingStructure();
                 gfj.targetIDs = targetIDs;
                 gfj.genes = genes;
+                gfj.objTypes = quadTree.objTypes;
                 gfj.objectForces = objectForces;
                 gfj.quads = quadTree.quads;
                 gfj.targetType = (ObjectType)i;
-                //gfj.idsToCheck = new NativeArray<int>(idChecks, Allocator.TempJob);
                 gfj.sheepDistancesToSlime = sheepDistancesToSlimes;
                 //gfj.builder = Drawing.DrawingManager.GetBuilder();
 
@@ -453,6 +453,7 @@ namespace ShepProject
             chj.genes = genes;
             chj.headings = headings;
             chj.deltaTime = Time.deltaTime;
+            chj.objTypes = quadTree.objTypes;
             //chj.builder = DrawingManager.GetBuilder();
             chj.positions = quadTree.positions;
             //chj.idsToCheck = idsToCheck;
@@ -471,6 +472,7 @@ namespace ShepProject
             WriteTransformsJob wtj = new WriteTransformsJob();
             wtj.positions = quadTree.positions;
             wtj.genes = genes;
+            wtj.objTypes = quadTree.objTypes;
             wtj.rotation = headings;
             wtj.Schedule(quadTree.TransformAccess);
 
@@ -481,7 +483,7 @@ namespace ShepProject
             for (int i = 0; i <= quadTree.positionCount; i++)
             {
 
-                if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Sheep)
+                if (quadTree.objTypes[quadTree.objectIDs[i]] == ObjectType.Sheep)
                 {
                     Profiler.BeginSample("Sheep Velocity");
                     //if being chased, set velocity, otherwise don't
@@ -564,7 +566,7 @@ namespace ShepProject
                     Profiler.EndSample();
 
                 }
-                else if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Slime)
+                else if (quadTree.objTypes[quadTree.objectIDs[i]] == ObjectType.Slime)
                 {
 
                     Profiler.BeginSample("Enemy Velocity");
@@ -594,7 +596,7 @@ namespace ShepProject
 
             for (int i = 0; i <= quadTree.positionCount; i++)
             {
-                if (genes.GetObjectType(quadTree.objectIDs[i]) == ObjectType.Slime)
+                if (quadTree.objTypes[quadTree.objectIDs[i]] == ObjectType.Slime)
                 {
 
                     UpdateEnemyGenes(quadTree.objectIDs[i]);
@@ -618,7 +620,7 @@ namespace ShepProject
 
 
             enemiesLeftToSpawn--;
-            ushort id = quadTree.AddTransform(enemy);
+            ushort id = quadTree.AddTransform(enemy, ObjectType.Slime);
             genes.AddGenesToObject(id);
 
             UpdateEnemyGenes(id);
@@ -640,7 +642,7 @@ namespace ShepProject
         {
 
             //offset 1 for type, then attractions count
-            genes.SetObjectType(id, ObjectType.Slime);
+            //genes.SetObjectType(id, ObjectType.Slime);
             genes.SetAttraction(id, ObjectType.Sheep, slimeValues.sheepAttraction); // 1
             genes.SetAttraction(id, ObjectType.Tower, slimeValues.towerAttraction); // 1
             genes.SetAttraction(id, ObjectType.Slime, slimeValues.slimeAttraction); // .5
@@ -671,9 +673,9 @@ namespace ShepProject
             {
 
 
-                ushort id = quadTree.AddTransform(wall.transform.GetChild(0));
+                ushort id = quadTree.AddTransform(wall.transform.GetChild(0), ObjectType.Wall);
                 wall.transform.GetChild(0).parent = null;
-                genes.SetObjectType(id, ObjectType.Wall);
+                //genes.SetObjectType(id, ObjectType.Wall);
 
 
             }
@@ -693,10 +695,10 @@ namespace ShepProject
 
                 sheep.transform.position = new Vector3(Random.Range(min, max), 0, Random.Range(min, max));
 
-                ushort id = quadTree.AddTransform(sheep.transform);
+                ushort id = quadTree.AddTransform(sheep.transform, ObjectType.Sheep);
                 genes.AddGenesToObject(id);
 
-                genes.SetObjectType(id, ObjectType.Sheep);
+                //genes.SetObjectType(id, ObjectType.Sheep);
                 genes.SetAttraction(id, ObjectType.Slime, 1);
                 genes.SetAttraction(id, ObjectType.Wall, 1);
 
@@ -715,8 +717,8 @@ namespace ShepProject
 
         public void AddTowerToList(BaseTower tower)
         {
-            tower.objectID = QuadTree.AddTransform(tower.transform);
-            genes.SetObjectType(tower.objectID, ObjectType.Tower);
+            tower.objectID = QuadTree.AddTransform(tower.transform, ObjectType.Tower);
+            //genes.SetObjectType(tower.objectID, ObjectType.Tower);
 
 
         }
@@ -801,7 +803,7 @@ namespace ShepProject
             for (int i = 0; i <= quadTree.positionCount; i++)
             {
 
-                if (genes.GetObjectType(quadTree.objectIDs[i]) != ObjectType.Slime)
+                if (quadTree.objTypes[quadTree.objectIDs[i]] != ObjectType.Slime)
                     continue;
 
                 Rigidbody rb = quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>();

@@ -76,19 +76,18 @@ namespace ShepProject
 
         [ReadOnly]
         public NativeArray<ushort> objectIDs;
-
-        //[NativeDisableContainerSafetyRestriction]
         [ReadOnly]
         public NativeArray<ushort> targetIDs;
-
-        //[NativeDisableContainerSafetyRestriction]
         [ReadOnly]
         public NativeArray<float2> positions;
+
+        [ReadOnly]
+        public NativeArray<ObjectType> objTypes;
 
         [NativeDisableContainerSafetyRestriction]
         public GenesArray genes;
 
-        //[NativeDisableContainerSafetyRestriction]
+
         [ReadOnly]
         public NativeParallelHashMap<QuadKey, Quad> quads;
          
@@ -120,7 +119,7 @@ namespace ShepProject
 			if (objectID == 0)
                 return;
 
-			ObjectType objType = genes.GetObjectType(objectID);
+            ObjectType objType = objTypes[objectID];// genes.GetObjectType(objectID);
 
             if (objType == ObjectType.Wall || objType == ObjectType.Tower)
                 return;
@@ -347,7 +346,7 @@ namespace ShepProject
             float tempMin = 0;
             for (int i = quads[key].startIndex; i <= quads[key].endIndex; i++) 
             {
-                if (genes.GetObjectType(objectIDs[i]) != targetType) 
+                if (objTypes[objectIDs[i]] != targetType) 
                     continue;
                 tempMin = math.distancesq(positions[objectIDs[i]], positions[objectID]);
 
@@ -384,7 +383,7 @@ namespace ShepProject
                     continue;
 
                 //ignore it if it is not the type we're looking for
-                if (genes.GetObjectType(objectIDs[i]) != targetType)
+                if (objTypes[objectIDs[i]] != targetType)
                     continue;
 
                 localPosition = (positions[objectIDs[i]] - positions[objectID]);
@@ -592,8 +591,11 @@ namespace ShepProject
         public NativeArray<float2> objectForces;
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<float> headings;
+
         public GenesArray genes;
 
+        [ReadOnly]
+        public NativeArray<ObjectType> objTypes;
         //public NativeArray<int> idsToCheck;
 
         //public CommandBuilder builder;
@@ -606,7 +608,7 @@ namespace ShepProject
 
             int objectID = objectIDs[index];
 
-            ObjectType type = genes.GetObjectType(objectID);
+            ObjectType type = objTypes[objectID];
 
             if (type != ObjectType.Sheep && type != ObjectType.Slime)
                 return;
