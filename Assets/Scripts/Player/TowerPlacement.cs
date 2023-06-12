@@ -36,9 +36,9 @@ public class TowerPlacement : MonoBehaviour {
 		robotController = GetComponent<RobotController>();
 	}
 	private void Start() {
-		ShepGM.inst.actions.Player.Action.performed += Action_performed;
-		ShepGM.inst.actions.Player.Run.performed += HideHologramsWhileRunning;
-		ShepGM.inst.actions.Player.Run.canceled += ShowHologramsAfterRunning;
+		ShepGM.inst.Input.Actions.Player.Action.performed += Action_performed;
+		ShepGM.inst.Input.Actions.Player.Run.performed += HideHologramsWhileRunning;
+		ShepGM.inst.Input.Actions.Player.Run.canceled += ShowHologramsAfterRunning;
 	}
 	void Update() {
 		UpdateActionSelectionNumber();
@@ -79,8 +79,8 @@ public class TowerPlacement : MonoBehaviour {
 		if (Keyboard.current.qKey.wasPressedThisFrame) actionSelectionNumber--;
 		if (Keyboard.current.eKey.wasPressedThisFrame) actionSelectionNumber++;
 
-		if (ShepGM.inst.actions.Player.ActionSelectionDown.triggered) actionSelectionNumber--;
-		if (ShepGM.inst.actions.Player.ActionSelectionUp.triggered) actionSelectionNumber++;
+		if (ShepGM.inst.Input.Actions.Player.ActionSelectionDown.triggered) actionSelectionNumber--;
+		if (ShepGM.inst.Input.Actions.Player.ActionSelectionUp.triggered) actionSelectionNumber++;
 		if (actionSelectionNumber > 10) actionSelectionNumber = 1;
 		if (actionSelectionNumber < 1) actionSelectionNumber = 10;
 	}

@@ -61,7 +61,7 @@ public class TitleScreenControllerNavigation : MonoBehaviour {
 		selected = newSelection;
 	}
 	Color ReturnPressedColorOnPressed() {
-		bool anyPressed = ShepGM.inst.actions.UI.Submit.IsInProgress();
+		bool anyPressed = ShepGM.inst.Input.Actions.UI.Submit.IsInProgress();
 		foreach (Selectable s in selectables)
 			if (s.GetComponent<SelectableHelper>().isPressed) anyPressed = true;
 		return anyPressed ? colorPressed : colorDefault;
@@ -91,12 +91,12 @@ public class TitleScreenControllerNavigation : MonoBehaviour {
 		selected = EventSystem.current.currentSelectedGameObject;
 		NewSelectionIndicatorPositionandSize();
 		SetTextBold(true, selected);
-		ShepGM.inst.actions.UI.Navigate.performed += Navigate_performed;
-		ShepGM.inst.actions.Player.MouseDelta.performed += MouseDelta_performed;
+		ShepGM.inst.Input.Actions.UI.Navigate.performed += Navigate_performed;
+		ShepGM.inst.Input.Actions.Player.MouseDelta.performed += MouseDelta_performed;
 	}
 
     private void OnDestroy(){
-        ShepGM.inst.actions.UI.Navigate.performed -= Navigate_performed;
-        ShepGM.inst.actions.Player.MouseDelta.performed -= MouseDelta_performed;
+        ShepGM.inst.Input.Actions.UI.Navigate.performed -= Navigate_performed;
+        ShepGM.inst.Input.Actions.Player.MouseDelta.performed -= MouseDelta_performed;
     }
 }

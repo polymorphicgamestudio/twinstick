@@ -66,7 +66,7 @@ public class RobotControllerTitleScreen : MonoBehaviour {
 				EventSystem.current.currentSelectedGameObject.transform.position : startingLookPosObject.position;
 			ray = new Ray(camPos, lookPos - camPos);
 		}
-		else ray = Camera.main.ScreenPointToRay(ShepGM.inst.actions.Player.MousePosition.ReadValue<Vector2>());
+		else ray = Camera.main.ScreenPointToRay(ShepGM.inst.Input.Actions.Player.MousePosition.ReadValue<Vector2>());
 
 		if (lookPlane.Raycast(ray, out distance))
 			mousePos = ray.GetPoint(distance);
@@ -95,7 +95,7 @@ public class RobotControllerTitleScreen : MonoBehaviour {
 	}
 	private IEnumerator _InitializeNextFrame() {
 		yield return null;
-		ShepGM.inst.actions.UI.Navigate.performed += Navigate_performed;
-		ShepGM.inst.actions.Player.MouseDelta.performed += MouseDelta_performed;
+		ShepGM.inst.Input.Actions.UI.Navigate.performed += Navigate_performed;
+		ShepGM.inst.Input.Actions.Player.MouseDelta.performed += MouseDelta_performed;
 	}
 }

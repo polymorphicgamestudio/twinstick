@@ -18,8 +18,6 @@ namespace ShepProject {
 
 		public static ShepGM inst;
 
-		public PlayerInputActions actions;
-
 		public Transform player;
 
 		[SerializeField]
@@ -35,7 +33,6 @@ namespace ShepProject {
         [SerializeField]
         private InputManager input;
 
-
 		public NPCManager NPCS => npcs;
 		public PathfindingManager Pathfinding => pathfinding;
 		public InputManager Input => input;
@@ -45,11 +42,6 @@ namespace ShepProject {
 
 		private void Awake() 
 		{
-
-			actions = new PlayerInputActions();
-			actions.Player.Enable();
-			actions.UI.Enable();
-			actions.Buildings.Enable();
 
             if (npcs != null)
             {
@@ -80,14 +72,6 @@ namespace ShepProject {
             {
                 Debug.LogError("ShepGM Instance already exists!");
             }
-
-        }
-
-        private void OnDestroy()
-        {
-
-            actions.Dispose();
-
 
         }
 

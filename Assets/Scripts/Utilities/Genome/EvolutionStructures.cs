@@ -73,7 +73,14 @@ namespace ShepProject
     }
 
 
+    [System.Serializable]
+    public struct ChromosoneParents
+    {
+        public ushort parentOne;
+        public ushort parentTwo;
 
+
+    }
 
     [System.Serializable]
     public struct Sigmoid

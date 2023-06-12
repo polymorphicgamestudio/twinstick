@@ -21,10 +21,10 @@ namespace ShepProject {
 			cameraController = Camera.main.GetComponent<CameraController>();
 			ShepGM.inst.player = transform;
 			rb = GetComponent<Rigidbody>();
-			ShepGM.inst.actions.Player.Move.performed += Move_performed;
-			ShepGM.inst.actions.Player.Move.canceled += Move_canceled;
-			ShepGM.inst.actions.Player.Run.performed += Run_performed;
-			ShepGM.inst.actions.Player.Run.canceled += Run_canceled;
+			ShepGM.inst.Input.Actions.Player.Move.performed += Move_performed;
+			ShepGM.inst.Input.Actions.Player.Move.canceled += Move_canceled;
+			ShepGM.inst.Input.Actions.Player.Run.performed += Run_performed;
+			ShepGM.inst.Input.Actions.Player.Run.canceled += Run_canceled;
 		}
 
 		private void FixedUpdate() {
@@ -33,7 +33,7 @@ namespace ShepProject {
 
 
 		void Move_performed(InputAction.CallbackContext context) {
-			Vector2 move = ShepGM.inst.actions.Player.Move.ReadValue<Vector2>();
+			Vector2 move = ShepGM.inst.Input.Actions.Player.Move.ReadValue<Vector2>();
 			Vector3 forward = cameraController.directionForward * move.y;
 			Vector3 right = cameraController.directionRight * move.x;
 			moveInput = Vector3.ClampMagnitude(forward + right, 1f);

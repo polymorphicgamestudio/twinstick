@@ -42,15 +42,15 @@ namespace ShepProject {
 			player = ShepGM.inst.player;
 
 
-			ShepGM.inst.actions.Player.Zoom.performed += Zoom_performed;
-			ShepGM.inst.actions.Player.Zoom.canceled += Zoom_canceled;
-			ShepGM.inst.actions.Player.ToggleOrth.performed += ToggleOrth_performed;
-			ShepGM.inst.actions.Player.RotateCam.performed += RotateCam_performed;
-			ShepGM.inst.actions.Player.RotateCam.canceled += RotateCam_canceled;
+			ShepGM.inst.Input.Actions.Player.Zoom.performed += Zoom_performed;
+			ShepGM.inst.Input.Actions.Player.Zoom.canceled += Zoom_canceled;
+			ShepGM.inst.Input.Actions.Player.ToggleOrth.performed += ToggleOrth_performed;
+			ShepGM.inst.Input.Actions.Player.RotateCam.performed += RotateCam_performed;
+			ShepGM.inst.Input.Actions.Player.RotateCam.canceled += RotateCam_canceled;
 		}
 
 		private void Zoom_performed(InputAction.CallbackContext context) {
-			zoomInput = Mathf.Clamp(ShepGM.inst.actions.Player.Zoom.ReadValue<float>(),-20,20);
+			zoomInput = Mathf.Clamp(ShepGM.inst.Input.Actions.Player.Zoom.ReadValue<float>(),-20,20);
 		}
 		private void Zoom_canceled(InputAction.CallbackContext context) {
 			zoomInput = 0f;
@@ -75,7 +75,7 @@ namespace ShepProject {
 
 		void RotateCamera() {
 			if (rotating)
-				perspAngleHoz += ShepGM.inst.actions.Player.MouseDelta.ReadValue<Vector2>().x;
+				perspAngleHoz += ShepGM.inst.Input.Actions.Player.MouseDelta.ReadValue<Vector2>().x;
 		}
 
 		private void CreateMatrices() {

@@ -36,13 +36,13 @@ public class RobotController : MonoBehaviour {
 
 	private void Start() {
 		player = ShepGM.inst.player.GetComponent<Rigidbody>();
-		ShepGM.inst.actions.Player.Look.performed += Look_performed;
-		ShepGM.inst.actions.Player.MouseDelta.performed += MouseDelta_performed;
+		ShepGM.inst.Input.Actions.Player.Look.performed += Look_performed;
+		ShepGM.inst.Input.Actions.Player.MouseDelta.performed += MouseDelta_performed;
 	}
 
 	private void Look_performed(InputAction.CallbackContext context) {
 		usingController = true;
-		Vector2 joystickInput = ShepGM.inst.actions.Player.Look.ReadValue<Vector2>();
+		Vector2 joystickInput = ShepGM.inst.Input.Actions.Player.Look.ReadValue<Vector2>();
 		if (running) joystickInput = new Vector2(player.velocity.x, player.velocity.z);
 		joystickDir = new Vector3(joystickInput.x, 0f, joystickInput.y);
 	}
@@ -80,7 +80,7 @@ public class RobotController : MonoBehaviour {
 	}
 	void SetMousePos() {
 		float distance;
-		Ray ray = Camera.main.ScreenPointToRay(ShepGM.inst.actions.Player.MousePosition.ReadValue<Vector2>());
+		Ray ray = Camera.main.ScreenPointToRay(ShepGM.inst.Input.Actions.Player.MousePosition.ReadValue<Vector2>());
 		if (floorPlane.Raycast(ray, out distance))
 			mousePos = ray.GetPoint(distance);
 	}
