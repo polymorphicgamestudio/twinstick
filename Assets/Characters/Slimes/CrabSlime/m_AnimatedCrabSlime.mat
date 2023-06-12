@@ -102,8 +102,8 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.73256135, g: 0.8113208, b: 0.37887147, a: 1}
-    - _ColorMouth: {r: 0.6792453, g: 0.23389105, b: 0.23389105, a: 1}
+    - _Color: {r: 0.62340206, g: 0.7075472, b: 0.24474896, a: 1}
+    - _ColorMouth: {r: 0.38679248, g: 0.24396834, b: 0.14839207, a: 1}
     - _ColorTeeth: {r: 1, g: 1, b: 1, a: 1}
     - _DayCol: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
