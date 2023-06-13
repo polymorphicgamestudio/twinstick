@@ -341,16 +341,15 @@ namespace ShepProject
             coc.nodes = nodes;
             coc.rows = currentRows;
             coc.columns = currentColumns;
-            coc.origin = setupData.origin;
             coc.halfNodeLength = setupData.nodeLength / 2f;
             coc.Schedule(currentRows * currentColumns, SystemInfo.processorCount).Complete();
 
-            overlapResults = new NativeArray<ColliderHit>(currentRows * currentColumns * 3, Allocator.TempJob);
+            int collisionMaxHits = 6;
+
+            overlapResults = new NativeArray<ColliderHit>(currentRows * currentColumns * collisionMaxHits, Allocator.TempJob);
 
             OverlapBoxCommand.ScheduleBatch
-                (overlapCommands, overlapResults, SystemInfo.processorCount, 3).Complete();
-
-
+                (overlapCommands, overlapResults, SystemInfo.processorCount, collisionMaxHits).Complete();
 
             #region Update Node Connections
 
@@ -362,7 +361,7 @@ namespace ShepProject
                 SquareNode node = nodes[i];
                 node.ResetObstructions();
 
-                int index = i * 3;
+                int index = i * collisionMaxHits;
                 local.x = nodes[i].position.x;
                 local.y = 0;
                 local.z = nodes[i].position.y;
@@ -374,20 +373,25 @@ namespace ShepProject
                 float x = 0;
                 float z = 0;
 
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < collisionMaxHits; j++)
                 {
 
 
                     if (overlapResults[index].instanceID != 0)
                     {
 
-                        local = overlapResults[index].collider.ClosestPointOnBounds(vect);
+                        local = //overlapResults[index].collider.bounds.center;
+                         overlapResults[index].collider.ClosestPointOnBounds(vect);
                         local -= vect;
 
                         x = math.abs(local.x);
                         z = math.abs(local.z);
-                        
-                        Draw.Label2D(new Vector3(nodes[i].position.x, 0, nodes[i].position.y), local.ToString());
+                        Vector3 labelPos = new Vector3(nodes[i].position.x, 0, nodes[i].position.y + ((UnityEngine.Random.value - .5f) * 3));
+
+
+                        Draw.Label2D(labelPos, local.ToString());
+
+                        Draw.Line(overlapResults[index].collider.ClosestPointOnBounds(vect), labelPos, Color.red);
 
                         if (x > 0)
                         {
@@ -524,8 +528,6 @@ namespace ShepProject
 
 
             }
-
-
 
 
             overlapResults.Dispose();

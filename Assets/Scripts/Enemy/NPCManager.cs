@@ -688,8 +688,8 @@ namespace ShepProject
         private void AddSheepToList()
         {
 
-            int min = -40;
-            int max = -30;
+            int min = -5;
+            int max = 5;
 
             for (int i = 0; i < sheepCount; i++)
             {

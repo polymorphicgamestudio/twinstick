@@ -161,7 +161,7 @@ namespace ShepProject
 
             int posNode = GetNodeIndexFromPosition(position);
             int destNode = GetNodeIndexFromPosition(destination);
-
+			
             return directions[vectorField[(posNode * (setupData.columns * setupData.rows)) + destNode]];
 
         }

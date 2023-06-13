@@ -257,8 +257,6 @@ namespace ShepProject
     {
         public NativeArray<OverlapBoxCommand> commands;
         public NativeArray<SquareNode> nodes;
-        public Vector3 origin;
-
 
         public int mask;
         public int rows;
@@ -583,16 +581,9 @@ namespace ShepProject
                 if (currentNode.index % columns > 0)
                 {
                     //left node
-
                     if (!nodes[currentNode.index].LeftObstructed)
                         CheckNeighborNode(currentNode.index - 1, 
                             ref currentNode, orthagonalCost, (byte)NodeDirection.Left);
-                    else
-                    {
-                        vectorField[(currentNode.index * (rows * columns)) + (currentNode.index - 1)]
-                            = (byte)NodeDirection.NoMovement;
-
-                    }
 
                     if (currentNode.index + columns - 1 < nodes.Length)
                     {
@@ -601,12 +592,6 @@ namespace ShepProject
                             CheckNeighborNode((currentNode.index + columns - 1),
                                 ref currentNode, diagonalCost, (byte)NodeDirection.TopLeft);
 
-                        else
-                        {
-                            vectorField[(currentNode.index * (rows * columns)) + (currentNode.index + columns - 1)]
-                                = (byte)NodeDirection.NoMovement;
-
-                        }
                     }
 
                     if ((currentNode.index - columns) - 1 >= 0)
@@ -616,12 +601,7 @@ namespace ShepProject
                         if (!nodes[currentNode.index].BottomLeftObstructed)
                             CheckNeighborNode(((currentNode.index - columns) - 1), 
                                 ref currentNode, diagonalCost, (byte)NodeDirection.BottomLeft);
-                        else
-                        {
-                            vectorField[(currentNode.index * (rows * columns)) + ((currentNode.index - columns) - 1)]
-                                = (byte)NodeDirection.NoMovement;
-                            
-                        }
+
                     }
 
                 }
@@ -631,12 +611,6 @@ namespace ShepProject
                     if (!nodes[currentNode.index].RightObstructed)
                         CheckNeighborNode(currentNode.index + 1, 
                             ref currentNode, orthagonalCost, (byte)NodeDirection.Right);
-                    else
-                    {
-                        vectorField[(currentNode.index * (rows * columns)) + (currentNode.index + 1)]
-                            = (byte)NodeDirection.NoMovement;
-
-                    }
 
                     if (currentNode.index + columns + 1 < nodes.Length)
                     {
@@ -644,12 +618,7 @@ namespace ShepProject
                         if (!nodes[currentNode.index].TopRightObstructed)
                             CheckNeighborNode((currentNode.index + columns + 1), 
                                 ref currentNode, diagonalCost, (byte)NodeDirection.TopRight);
-                        else
-                        {
-                            vectorField[(currentNode.index * (rows * columns)) + (currentNode.index + columns + 1)]
-                                = (byte)NodeDirection.NoMovement;
 
-                        }
                     }
 
                     if ((currentNode.index - columns) + 1 >= 0)
@@ -658,12 +627,7 @@ namespace ShepProject
                         if (!nodes[currentNode.index].BottomRightObstructed)
                             CheckNeighborNode(((currentNode.index - columns) + 1),
                                 ref currentNode, diagonalCost, (byte)NodeDirection.BottomRight);
-                        else
-                        {
-                            vectorField[(currentNode.index * (rows * columns)) + ((currentNode.index - columns) + 1)]
-                                = (byte)NodeDirection.NoMovement;
 
-                        }
                     }
 
 
@@ -676,12 +640,7 @@ namespace ShepProject
                     if (!nodes[currentNode.index].TopObstructed)
                         CheckNeighborNode(currentNode.index + columns, 
                             ref currentNode, orthagonalCost, (byte)NodeDirection.Top);
-                    else
-                    {
-                        vectorField[(currentNode.index * (rows * columns)) + (currentNode.index + columns)]
-                            = (byte)NodeDirection.NoMovement;
 
-                    }
 
                 }
                 if ((currentNode.index - columns) >= 0 && currentNode.index != endNodeIndex)
@@ -690,12 +649,6 @@ namespace ShepProject
                     if (!nodes[currentNode.index].BottomObstructed)
                         CheckNeighborNode(currentNode.index - columns, 
                             ref currentNode, orthagonalCost, (byte)NodeDirection.Bottom);
-                    else
-                    {
-                        vectorField[(currentNode.index * (rows * columns)) + (currentNode.index - columns)]
-                            = (byte)NodeDirection.NoMovement;
-
-                    }
 
                 }
 
