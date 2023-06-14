@@ -21,7 +21,7 @@ namespace ShepProject
         Material material;
         public float xMin = -20;
         public float xMax = 20;
-        public int pointCount = 100;
+        public int pointCount = 30;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
