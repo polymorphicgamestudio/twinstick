@@ -12,7 +12,7 @@ namespace ShepProject
 {
 
 
-    public struct TraitStructure
+    public struct EvolutionStructure
     {
 
         [NativeDisableContainerSafetyRestriction]
@@ -39,7 +39,7 @@ namespace ShepProject
 
         private NativeArray<ChromosoneParents> chromosoneParents;
 
-        public TraitStructure(int maxObjects, int genesPerObject, Sigmoid[] sigmoids, Allocator type = Allocator.Persistent)
+        public EvolutionStructure(int maxObjects, int genesPerObject, SigmoidInfo[] sigmoids, Allocator type = Allocator.Persistent)
         {
 
             traits = new NativeArray<float>(maxObjects * genesPerObject, type);
@@ -54,8 +54,12 @@ namespace ShepProject
 
             chromosoneParents = new NativeArray<ChromosoneParents>(maxObjects, type);
 
-            //need a way to set these 
-            this.sigmoids = new NativeArray<Sigmoid>(sigmoids, type);
+            this.sigmoids = new NativeArray<Sigmoid>(sigmoids.Length, type);
+            for (int i = 0; i < sigmoids.Length; i++)
+            {
+                this.sigmoids[i] = sigmoids[i].sigmoid;
+
+            }
 
 
             for (int i = 0; i < ids.Length; i++)
@@ -74,6 +78,17 @@ namespace ShepProject
 
         }
 
+
+        public void GenerateInitialSlimes(int numberOfMutations)
+        {
+            //read everything from the sigmoids 
+
+
+
+
+
+
+        }
 
         public void WriteGenesToFile()
         {

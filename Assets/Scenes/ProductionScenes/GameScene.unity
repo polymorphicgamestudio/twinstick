@@ -652,10 +652,6 @@ PrefabInstance:
       propertyPath: startButton
       value: 
       objectReference: {fileID: 317944593}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: slimeValues.slimeCount
-      value: 3000
-      objectReference: {fileID: 0}
     - target: {fileID: 8121321063624790235, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: m_Name
       value: NPCManager

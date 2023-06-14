@@ -72,7 +72,7 @@ namespace ShepProject
         private List<EnemyBurrow> burrows;
 
         [SerializeField]
-        private Sigmoid[] sigmoids;
+        private SigmoidInfo[] sigmoids;
 
         private GenesArray genes;
         public GenesArray Genes => genes;

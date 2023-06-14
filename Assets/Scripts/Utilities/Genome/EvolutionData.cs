@@ -8,6 +8,37 @@ using UnityEngine;
 namespace ShepProject
 {
 
+
+    public enum ObjectType
+    {
+        None = -1,
+        Slime,
+        Tower,
+        Player,
+        Wall,
+        Sheep,
+        Count
+
+    }
+
+    public enum Genes
+    {
+        MainType,
+        SecondaryType,
+        ViewRangeStart,
+        ResistancesStart = ViewRangeStart + ObjectType.Count,
+        AttractionsStart = ResistancesStart + DamageType.Count,
+        SlimeOptimalDistance,
+        Speed,
+        TurnRate,
+        SprintDuration,
+        SprintCooldown,
+        Health,
+        TotalGeneCount
+
+    }
+
+
     public enum GeneGroups
     {
 
@@ -82,18 +113,29 @@ namespace ShepProject
 
     }
 
+
+    [System.Serializable]
+    public class SigmoidInfo
+    {
+
+        public string name;
+        public Sigmoid sigmoid;
+
+
+    }
+
     [System.Serializable]
     public struct Sigmoid
     {
 
         [SerializeField]
-        private float magnitude;
+        public float magnitude;
         [SerializeField]
-        private float slope;
+        public float slope;
         [SerializeField]
-        private float verticalOffset;
+        public float verticalOffset;
         [SerializeField]
-        private float horizontalOffset;
+        public float horizontalOffset;
 
         public Sigmoid(float magnitude, float verticalOffset, float horizontalOffset, float slope)
         {

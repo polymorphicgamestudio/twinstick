@@ -7,8 +7,10 @@ using UnityEngine;
 
 public class SigmoidTests : MonoBehaviour
 {
-
+	
     public Sigmoid sigmoid;
+
+    public SigmoidInfo sigmoidInfo;
 
     [Range(.01f, 2f)]
     public float pointSpace;

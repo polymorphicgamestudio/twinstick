@@ -13,19 +13,6 @@ namespace ShepProject
 {
 
 
-    public enum ObjectType
-    {
-        None = -1,
-        Slime,
-        Tower,
-        Player,
-        Wall,
-        Sheep,
-        Count
-
-    }
-
-
 
 
     public class QuadTree
