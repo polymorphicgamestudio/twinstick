@@ -1,12 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine;
-
+using Unity.Mathematics;
+using Random = Unity.Mathematics.Random;
 
 namespace ShepProject
 {
@@ -39,14 +38,14 @@ namespace ShepProject
 
         private NativeArray<ChromosoneParents> chromosoneParents;
 
-        public EvolutionStructure(int maxObjects, int genesPerObject, Sigmoid[] sigmoids, Allocator type = Allocator.Persistent)
+        public EvolutionStructure(int maxGeneticObjects, int maxObjects, int genesPerObject, SigmoidInfo[] sigmoids, Allocator type = Allocator.Persistent)
         {
 
             traits = new NativeArray<float>(maxObjects * genesPerObject, type);
             genes = new NativeArray<float>(maxObjects * genesPerObject, type);
 
-            ids = new NativeArray<ushort>(maxObjects, type);
-            availables = new NativeList<ushort>(maxObjects, type);
+            ids = new NativeArray<ushort>(maxGeneticObjects, type);
+            availables = new NativeList<ushort>(maxGeneticObjects, type);
 
             previousGenes = new NativeArray<float>(maxObjects * genesPerObject, type);
             slimeFitnesses = new NativeArray<int>(maxObjects, type);
@@ -55,7 +54,14 @@ namespace ShepProject
             chromosoneParents = new NativeArray<ChromosoneParents>(maxObjects, type);
 
             //need a way to set these 
-            this.sigmoids = new NativeArray<Sigmoid>(sigmoids, type);
+            this.sigmoids = new NativeArray<Sigmoid>(sigmoids.Length, type);
+
+            for (int i = 0; i < sigmoids.Length; i++)
+            {
+
+                this.sigmoids[i] = sigmoids[i].sigmoid;
+
+            }
 
 
             for (int i = 0; i < ids.Length; i++)
@@ -70,49 +76,54 @@ namespace ShepProject
             }
 
 
+            SetupInitialSlimeValues();
 
+            WriteValuesToFile(sigmoids);
 
         }
 
-
-        public void WriteGenesToFile()
+        public void SetupInitialSlimeValues(float mutationSize = 0)
         {
 
+            int objectTypeIndex = 0;
+            int sigmoidIndex = 0;
+            Random r = Random.CreateFromIndex((uint)(Time.time * Time.realtimeSinceStartup * 902385));
 
-            //need to talk about where we want to put this file
-
-            string filePath = Application.dataPath + "\\geneWriteFile.csv";
-            bool exists = false;
-
-            if (File.Exists(filePath))
-                exists = true;
-
-            FileStream geneFile = File.Open(filePath, FileMode.OpenOrCreate);
-            StreamWriter writer = new StreamWriter(geneFile);
-            
-            if (!exists)
+            for (int i = 0; i < ids.Length; i++)
             {
-                //write the column heads
+
+                //main slime type
+                genes[objectTypeIndex] = r.NextInt(0, (int)SlimeType.Count);
+                traits[objectTypeIndex] = genes[objectTypeIndex];
+
+                //secondary slime type
+                objectTypeIndex++;
+                genes[objectTypeIndex] = r.NextInt(0, (int)SlimeType.Count);
+                traits[objectTypeIndex] = genes[objectTypeIndex];
+
+                sigmoidIndex = 0;
+                for (int j = (int)Genes.MainResistance; j < (int)Genes.Health; j++)
+                {
+
+                    objectTypeIndex++;
+                    //this will need to be able to have a range for a mutation
+                    genes[objectTypeIndex] = 0;
+                    traits[objectTypeIndex] = sigmoids[sigmoidIndex].GetTraitValue(genes[objectTypeIndex]);
+
+                    sigmoidIndex++;
+
+                }
+
+                objectTypeIndex++;
+
+
 
             }
-            else
-            {
-                //otherwise just write the wave number and then the gene values underneath that
 
-
-            }
-            
-            //writer.WriteLine();
-
-
-            //then for each slime, write all of its gene values then do a new line
-            //and continue writing them in the csv file
 
 
 
         }
-
-
 
 
         private void GenerateSlimesForNextWave(bool writeToFile)
@@ -160,16 +171,16 @@ namespace ShepProject
 
             handle.Complete();
 
-            Thread writeToFileThread = null;
+            //Thread writeToFileThread = null;
 
-            if (writeToFile)
-            {
-                writeToFileThread = new Thread(new ThreadStart(WriteGenesToFile));
-                writeToFileThread.Start();
+            //if (writeToFile)
+            //{
+            //    writeToFileThread = new Thread(new ThreadStart(WriteValuesToFile));
+            //    writeToFileThread.Start();
                 
 
 
-            }
+            //}
 
 
             evolutionHandle.Complete();
@@ -185,12 +196,89 @@ namespace ShepProject
 
             handle.Complete();
 
-            if (writeToFile)
+            //if (writeToFile)
+            //{
+
+            //    writeToFileThread.Join();
+
+            //}
+
+
+
+        }
+
+        public void WriteValuesToFile(SigmoidInfo[] info)
+        {
+
+            //need to talk about where we want to put this file
+
+            string filePath = Application.dataPath + "/geneWriteFile.csv";
+            //bool exists = false;
+
+            //if (File.Exists(filePath))
+                //exists = true;
+
+            FileStream geneFile = File.Open(filePath, FileMode.OpenOrCreate);
+            StreamWriter writer = new StreamWriter(geneFile);
+
+            //if (!exists)
+            //{
+
+
+                string output = "Main Type, Secondary Type,";
+
+                for (int i = 0; i < info.Length; i++)
+                {
+
+                    output += info[i].name +", ";
+
+                }
+
+                output += " Health";
+                //write the column heads
+                writer.WriteLine(output);
+                
+                
+                // Slime View Range, Tower View Range, Player View Range, Wall View Range," +
+                    //" Sheep View Range,"
+                    //);
+            //}
+
+            int objectTypeIndex = 0;
+            int sigmoidIndex = 0;
+            for (int h = 0; h < ids.Length; h++)
             {
 
-                writeToFileThread.Join();
+                writer.Write(traits[objectTypeIndex]);
+
+                objectTypeIndex++;
+                writer.Write(traits[objectTypeIndex]);
+
+                sigmoidIndex = 0;
+                //otherwise just write the wave number and then the gene values underneath that
+                for (int i = (int)Genes.MainResistance; i < (int)Genes.TotalGeneCount; i++)
+                {
+                    objectTypeIndex++;
+
+
+                    writer.Write(traits[objectTypeIndex] + ", ");
+                    sigmoidIndex++;
+
+
+                }
+
+                //writer.Write("100");
+
+                writer.WriteLine();
 
             }
+
+            //writer.WriteLine();
+            writer.Close();
+            geneFile.Close();
+
+            //then for each slime, write all of its gene values then do a new line
+            //and continue writing them in the csv file
 
 
 
@@ -205,7 +293,7 @@ namespace ShepProject
                 return ids[id];
             }
 
-            return ids[id] * (int)GeneGroups.TotalGeneCount;
+            return ids[id] * (int)Genes.TotalGeneCount;
         }
 
         public void AddGenesToObject(ushort objectID)
@@ -248,6 +336,11 @@ namespace ShepProject
 
             previousGenes.Dispose();
             sigmoids.Dispose();
+
+
+            slimeFitnesses.Dispose();
+            fitnessRanges.Dispose();
+
 
         }
 

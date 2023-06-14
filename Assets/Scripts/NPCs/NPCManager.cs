@@ -75,7 +75,11 @@ namespace ShepProject
         private SigmoidInfo[] sigmoids;
 
         private GenesArray genes;
-        public GenesArray Genes => genes;
+        //public GenesArray Genes => genes;
+
+
+        public EvolutionStructure evolution;
+
 
         //will contain IDs of sheep and player, and towers won't be targeted
         private NativeList<ushort> choosableTargets;
@@ -193,6 +197,11 @@ namespace ShepProject
 
             for (int i = 0; i < targetIDs.Length; i++)
                 targetIDs[i] = ushort.MaxValue;
+
+
+            int enemiesPerWave = 500;
+            evolution = new EvolutionStructure(enemiesPerWave, MaxTreeObjects, (int)Genes.TotalGeneCount, sigmoids);
+
 
 
         }
@@ -832,6 +841,9 @@ namespace ShepProject
             objectForces.Dispose();
 
             sheepDistancesToSlimes.Dispose();
+
+
+            evolution.Dispose();
 
         }
 

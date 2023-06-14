@@ -36,12 +36,12 @@ public struct ContainsTypes
                 case ObjectType.Wall:
                 {
                     return ContainsWalls;
-
                 }
                 default:
                 {
                     throw new System.Exception( "Invalid choice " + index + " for ContainsTypes.");
                 }
+
             }
 
         }

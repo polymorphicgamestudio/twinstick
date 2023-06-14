@@ -25,9 +25,10 @@ namespace ShepProject
     {
         MainType,
         SecondaryType,
+        MainResistance,
+        SecondaryResistance,
         ViewRangeStart,
-        ResistancesStart = ViewRangeStart + ObjectType.Count,
-        AttractionsStart = ResistancesStart + DamageType.Count,
+        AttractionsStart = ViewRangeStart + DamageType.Count - 1,
         SlimeOptimalDistance,
         Speed,
         TurnRate,
