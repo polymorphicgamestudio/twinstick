@@ -6,6 +6,7 @@ using Unity.Jobs;
 using UnityEngine;
 using Unity.Mathematics;
 using Random = Unity.Mathematics.Random;
+using System.Collections.Generic;
 
 namespace ShepProject
 {
@@ -25,11 +26,14 @@ namespace ShepProject
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<ushort> ids;
 
-        [NativeDisableContainerSafetyRestriction]
-        private NativeList<ushort> availables;
+        //[NativeDisableContainerSafetyRestriction]
+        //private NativeList<ushort> availables;
 
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<float> previousGenes;
+
+        [NativeDisableContainerSafetyRestriction]
+        private NativeArray<float> previousTraits;
 
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<Sigmoid> sigmoids;
@@ -43,24 +47,29 @@ namespace ShepProject
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<ChromosoneParents> chromosoneParents;
 
+        private ushort idIndex;
+
+        private static string outputFilePath => Application.dataPath + "/geneWriteFile.csv";
+
         #endregion
 
         public EvolutionStructure(int maxGeneticObjects, int maxObjects,
              int genesPerObject, SigmoidInfo[] sigmoids, Allocator type = Allocator.Persistent)
         {
 
-            traits = new NativeArray<float>(maxObjects * genesPerObject, type);
-            genes = new NativeArray<float>(maxObjects * genesPerObject, type);
+            traits = new NativeArray<float>(maxGeneticObjects * genesPerObject, type);
+            genes = new NativeArray<float>(maxGeneticObjects * genesPerObject, type);
 
-            ids = new NativeArray<ushort>(maxGeneticObjects, type);
-            availables = new NativeList<ushort>(maxGeneticObjects, type);
+            ids = new NativeArray<ushort>(maxObjects, type);
+            //availables = new NativeList<ushort>(maxGeneticObjects, type);
 
-            previousGenes = new NativeArray<float>(maxObjects * genesPerObject, type);
-            slimeFitnesses = new NativeArray<int>(maxObjects, type);
-            fitnessRanges = new NativeArray<int>(maxObjects, type);
+            previousGenes = new NativeArray<float>(maxGeneticObjects * genesPerObject, type);
+            previousTraits = new NativeArray<float>(maxGeneticObjects * genesPerObject, type);
+            slimeFitnesses = new NativeArray<int>(maxGeneticObjects, type);
+            fitnessRanges = new NativeArray<int>(maxGeneticObjects, type);
 
-            chromosoneParents = new NativeArray<ChromosoneParents>(maxObjects, type);
-
+            chromosoneParents = new NativeArray<ChromosoneParents>(maxGeneticObjects, type);
+            idIndex = 0;
             //need a way to set these 
             this.sigmoids = new NativeArray<Sigmoid>(sigmoids.Length, type);
 
@@ -77,16 +86,55 @@ namespace ShepProject
                 ids[i] = ushort.MaxValue;
 
             }
-            for (int i = 0; i < availables.Capacity; i++)
+
+            SetupInitialSlimeValues();
+            File.Delete(outputFilePath);
+
+
+            
+
+            /*
+             * 
+             * these two jobs are for writing initial values to file
+             * 
+             */
+            CopyNativeArrayJob<float> copyGenes = new CopyNativeArrayJob<float>();
+            copyGenes.copyFrom = genes;
+            copyGenes.copyTo = previousGenes;
+            JobHandle genesHandle = copyGenes.Schedule(genes.Length, SystemInfo.processorCount);
+
+            CopyNativeArrayJob<float> copyTraits = new CopyNativeArrayJob<float>();
+            copyTraits.copyFrom = traits;
+            copyTraits.copyTo = previousTraits;
+            JobHandle traitsHandle = copyTraits.Schedule(traits.Length, SystemInfo.processorCount);
+
+
+            for (int i = 0; i < slimeFitnesses.Length; i++)
             {
-                availables.AddNoResize((ushort)((availables.Capacity) - i));
+                slimeFitnesses[i] = Random.CreateFromIndex((uint)(Time.realtimeSinceStartup * Time.deltaTime * 1290847)).NextInt(10, 500);
 
             }
 
 
-            SetupInitialSlimeValues();
+            genesHandle.Complete();
+            traitsHandle.Complete();
 
-            WriteValuesToFile(sigmoids);
+            WriteValuesToFile(new EvolutionDataFileInfo()
+            {
+                info = sigmoids,
+                waveNumber = 0
+            });
+
+            for (int i = 1; i < 3; i++)
+            {
+                GenerateSlimesForNextWave(true, new EvolutionDataFileInfo()
+                {
+                    info = sigmoids,
+                    waveNumber = i
+                });
+
+            }
+
 
         }
 
@@ -96,7 +144,6 @@ namespace ShepProject
             traits.Dispose();
             genes.Dispose();
             ids.Dispose();
-            availables.Dispose();
 
             previousGenes.Dispose();
             sigmoids.Dispose();
@@ -118,7 +165,7 @@ namespace ShepProject
             int sigmoidIndex = 0;
             Random r = Random.CreateFromIndex((uint)(Time.time * Time.realtimeSinceStartup * 902385));
 
-            for (int i = 0; i < ids.Length; i++)
+            for (int i = 0; i < slimeFitnesses.Length; i++)
             {
 
                 //main slime type
@@ -156,8 +203,8 @@ namespace ShepProject
 
         }
 
-        private void GenerateSlimesForNextWave(bool writeToFile, int waveNumber, SigmoidInfo[] info)
-        {    
+        public void GenerateSlimesForNextWave(bool writeToFile, EvolutionDataFileInfo fileInfo)
+        {
 
             /*
              * 
@@ -175,10 +222,17 @@ namespace ShepProject
              * 
              */
 
+            idIndex = 0;
             CopyNativeArrayJob<float> copyGenes = new CopyNativeArrayJob<float>();
             copyGenes.copyFrom = genes;
             copyGenes.copyTo = previousGenes;
-            JobHandle handle = copyGenes.Schedule(genes.Length, SystemInfo.processorCount);
+            JobHandle genesHandle = copyGenes.Schedule(genes.Length, SystemInfo.processorCount);
+
+            CopyNativeArrayJob<float> copyTraits = new CopyNativeArrayJob<float>();
+            copyTraits.copyFrom = traits;
+            copyTraits.copyTo = previousTraits;
+            JobHandle traitsHandle = copyTraits.Schedule(traits.Length, SystemInfo.processorCount);
+
 
             fitnessRanges[0] = 0;
             fitnessRanges[1] = slimeFitnesses[0];
@@ -194,18 +248,17 @@ namespace ShepProject
             chooseSlimes.slimeFitnesses = slimeFitnesses;
 
             chooseSlimes.parents = chromosoneParents;
-            JobHandle evolutionHandle = chooseSlimes.Schedule(ids.Length, SystemInfo.processorCount);
+            JobHandle evolutionHandle = chooseSlimes.Schedule(slimeFitnesses.Length, SystemInfo.processorCount);
 
-            handle.Complete();
+            genesHandle.Complete();
+            traitsHandle.Complete();
 
             Thread writeToFileThread = null;
 
             if (writeToFile)
             {
                 writeToFileThread = new Thread(new ParameterizedThreadStart(WriteValuesToFile));
-                writeToFileThread.Start(info);
-
-
+                writeToFileThread.Start(fileInfo);
 
             }
 
@@ -218,10 +271,7 @@ namespace ShepProject
             createChromosones.childGenes = genes;
             createChromosones.parents = chromosoneParents;
 
-            handle = createChromosones.Schedule(ids.Length, SystemInfo.processorCount);
-
-
-            handle.Complete();
+            createChromosones.Schedule(slimeFitnesses.Length, SystemInfo.processorCount).Complete();
 
             if (writeToFile)
             {
@@ -237,16 +287,29 @@ namespace ShepProject
         public void WriteValuesToFile(object infoObject)
         {
 
-
-            SigmoidInfo[] info = (SigmoidInfo[])infoObject;
+            EvolutionDataFileInfo writeInfo = (EvolutionDataFileInfo)infoObject;
+            SigmoidInfo[] info = writeInfo.info;
 
             //need to talk about where we want to put this file
 
-            string filePath = Application.dataPath + "/geneWriteFile.csv";
+            //need to also have two columns for parent's IDs of current slime
 
-            FileStream geneFile = File.Open(filePath, FileMode.OpenOrCreate);
-            StreamWriter writer = new StreamWriter(geneFile);
+            if (!File.Exists(outputFilePath))
+                File.Create(outputFilePath).Close();
 
+
+
+            List<string> newLines = new List<string>(slimeFitnesses.Length + 10);
+
+            if (writeInfo.waveNumber == 0)
+            {
+                newLines.Add("Initial Values");
+            }
+            else
+            {
+                newLines.Add("Wave " + writeInfo.waveNumber);
+            }
+                
             string output = "Player Distance Fitness, Main Type, Secondary Type,";
 
             for (int i = 0; i < info.Length; i++)
@@ -256,21 +319,20 @@ namespace ShepProject
             }
 
             output += " Health,";
-            writer.WriteLine(output);
-
+            newLines.Add(output);
 
 
             int objectTypeIndex = 0;
-            for (int h = 0; h < ids.Length; h++)
+            for (int h = 0; h < slimeFitnesses.Length; h++)
             {
 
                 //player distance fitness
-                writer.Write(slimeFitnesses[h] + ", ");
+                output = slimeFitnesses[h] + ", ";
 
-                writer.Write(traits[objectTypeIndex] + ", ");
+                output += traits[objectTypeIndex] + ", ";
 
                 objectTypeIndex++;
-                writer.Write(traits[objectTypeIndex] + ", ");
+                output += traits[objectTypeIndex] + ", ";
 
                 //sigmoidIndex = 0;
                 //otherwise just write the wave number and then the gene values underneath that
@@ -278,13 +340,13 @@ namespace ShepProject
                 {
                     objectTypeIndex++;
 
-                    writer.Write(genes[objectTypeIndex] + ", " + traits[objectTypeIndex] + ", ");
+                    output += previousGenes[objectTypeIndex] + ", " + previousTraits[objectTypeIndex] + ", ";
 
 
                 }
 
                 objectTypeIndex++;
-                writer.Write(traits[objectTypeIndex] + ", ");
+                output += previousTraits[objectTypeIndex] + ", ";
 
 
                 //write fitness
@@ -292,13 +354,15 @@ namespace ShepProject
 
 
                 objectTypeIndex++;
-                writer.WriteLine();
+                newLines.Add(output);
 
             }
 
             //writer.WriteLine();
-            writer.Close();
-            geneFile.Close();
+            //writer.Close();
+            //geneFile.Close();
+
+            File.AppendAllLines(outputFilePath, newLines);
 
             //then for each slime, write all of its gene values then do a new line
             //and continue writing them in the csv file
@@ -428,53 +492,37 @@ namespace ShepProject
 
         #endregion
 
-
-
-
-
-
-        public float GetGene(int id, Genes gene)
-        {
-
-            return genes[ObjectTypeIndex(id) + (int)gene];
-         
-        }
-
-        public float GetTrait(int id, Genes gene)
-        {
-
-            return traits[ObjectTypeIndex(id) + (int)gene];
-        }
-
         public void AddGenesToObject(ushort objectID)
         {
 
-            ids[objectID] = availables[availables.Length - 1];
-            availables.RemoveAt(availables.Length - 1);
+            ids[objectID] = idIndex;
+            idIndex++;
+            // availables[availables.Length - 1];
+            //availables.RemoveAt(availables.Length - 1);
 
         }
 
-        public void ResetIDGenes(int id)
-        {
+        //public void ResetIDGenes(int id)
+        //{
 
-            for (int i = ObjectTypeIndex(id);
-                i < ObjectTypeIndex(id) + (int)GeneGroups.TotalGeneCount; i++)
-            {
-                genes[i] = -1;
+        //    for (int i = ObjectTypeIndex(id);
+        //        i < ObjectTypeIndex(id) + (int)GeneGroups.TotalGeneCount; i++)
+        //    {
+        //        genes[i] = -1;
 
-            }
+        //    }
 
-            //need to add the returned ID to the end
-            //and then the id at the end position to where this one was
+        //    //need to add the returned ID to the end
+        //    //and then the id at the end position to where this one was
 
-            availables.AddNoResize(ids[id]);
+        //    //availables.AddNoResize(ids[id]);
 
 
-            //need to implement this again
+        //    //need to implement this again
 
-            //objectTypes[id] = ObjectType.None;
-            ids[id] = ushort.MaxValue;
-        }
+        //    //objectTypes[id] = ObjectType.None;
+        //    ids[id] = ushort.MaxValue;
+        //}
 
     }
 

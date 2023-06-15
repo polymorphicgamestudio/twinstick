@@ -173,9 +173,8 @@ namespace ShepProject
             startButton.onClick.AddListener(StartRound);
 
             int targetCount = 100;
-            //evolutionStructure = new GenesArray(MaxTreeObjects, ((int)GeneGroups.TotalGeneCount + 1), Allocator.Persistent);
-
-            evolutionStructure = new EvolutionStructure(slimeValues.slimeCount, MaxTreeObjects, (int)Genes.TotalGeneCount, sigmoids);
+            evolutionStructure = 
+                new EvolutionStructure(slimeValues.slimeCount, MaxTreeObjects, (int)Genes.TotalGeneCount, sigmoids);
 
 
             slimePool = new EnemyObjectPool(slimePrefab, (ushort)MaxTreeObjects, 1000);
@@ -271,9 +270,18 @@ namespace ShepProject
                 updateInitialize = false;
                 currentCountdownToWave = countdownToWave;
 
+
+
                 if (waveNumber > 0)
                 {
-                    endOfWaveCanvasParent.SetActive(true);
+                    //evolutionStructure.GenerateSlimesForNextWave(true, 
+                    //    new EvolutionDataFileInfo() 
+                    //    {
+                    //        info = sigmoids, 
+                    //        waveNumber = waveNumber
+                    //    });
+
+                    //endOfWaveCanvasParent.SetActive(true);
                 }
 
 
@@ -549,7 +557,7 @@ namespace ShepProject
                         //choosableTargets[quadTree.objectIDs[i] - 1] = ushort.MaxValue;
 
                         //die
-                        evolutionStructure.ResetIDGenes(quadTree.objectIDs[i]);
+                        //evolutionStructure.ResetIDGenes(quadTree.objectIDs[i]);
                         quadTree.QueueDeletion(quadTree.objectIDs[i]);
 
                         for (int j = 0; j < targetIDs.Length; j++)
@@ -772,7 +780,7 @@ namespace ShepProject
 
             slimePool.ReturnObject(enemyPhysicsMethods[id]);
             
-            evolutionStructure.ResetIDGenes(id);
+            //evolutionStructure.ResetIDGenes(id);
             enemyPhysicsMethods.Remove(id);
 
 
@@ -833,7 +841,6 @@ namespace ShepProject
         {
             quadTree.Dispose();
 
-            evolutionStructure.Dispose();
             headings.Dispose();
 
             choosableTargets.Dispose();

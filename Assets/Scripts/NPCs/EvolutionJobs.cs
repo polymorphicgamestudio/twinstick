@@ -1,4 +1,5 @@
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 
@@ -27,8 +28,8 @@ namespace ShepProject
 
             ChromosoneParents currentParents = new ChromosoneParents();
 
-            currentParents.parentOne = GetSlimeParent(rand.NextInt(0, fitnessRanges[fitnessRanges.Length] + 1));
-            currentParents.parentTwo = GetSlimeParent(rand.NextInt(0, fitnessRanges[fitnessRanges.Length] + 1));
+            currentParents.parentOne = GetSlimeParent(rand.NextInt(0, fitnessRanges[fitnessRanges.Length - 1] + 1));
+            currentParents.parentTwo = GetSlimeParent(rand.NextInt(0, fitnessRanges[fitnessRanges.Length - 1] + 1));
 
             parents[index] = currentParents;
 
@@ -39,7 +40,7 @@ namespace ShepProject
         {
 
             int startIndex = 0;
-            int endIndex = 0;
+            int endIndex = 1000000;
 
             int fraction = 2;
 
@@ -58,6 +59,8 @@ namespace ShepProject
                     startIndex += (fitnessRanges.Length / fraction);
 
                 }
+
+                fraction *= 2;
 
             }
 
@@ -87,18 +90,27 @@ namespace ShepProject
 
     public struct CreateNextGeneration : IJobParallelFor
     {
+
+
         [ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
         public NativeArray<ChromosoneParents> parents;
         [ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
         public NativeArray<float> parentGenes;
 
+        //[ReadOnly]
+        //[NativeDisableContainerSafetyRestriction]
+        //public NativeArray<Sigmoid> sigmoids;
 
+        //[NativeDisableContainerSafetyRestriction]
         public NativeArray<float> childGenes;
 
+        public float elapsedTime;
 
         public void Execute(int index)
         {
-            
+
             /*
              * 
              * how to create a genome
@@ -127,10 +139,54 @@ namespace ShepProject
              *      
              */
 
-            
+
+            Random rand = Random.CreateFromIndex((uint)(index * 213984 * elapsedTime));
+            //int parentIndex = 0;
+            float value = 0;
+
+            for (int i = 0; i < (int)Genes.Health; i++)
+            {
+
+                if (rand.NextInt(0, 1001) < 500)
+                {
+                    //parent one
+                    //parentIndex = parents[index].parentOne;
+                    value = parentGenes[(parents[index].parentOne * (int)Genes.TotalGeneCount) + i];
+
+                }
+                else
+                {
+                    //parent two
+                    //parentIndex = parents[index].parentTwo;
+                    value = parentGenes[(parents[index].parentTwo * (int)Genes.TotalGeneCount) + i];
+
+                }
 
 
-            
+                if (rand.NextInt(0, 1001) > 300)
+                {
+
+                    if (rand.NextInt(0, 1001) < 500)
+                    {
+                        //will mutate
+                        value -= 1;
+
+                    }
+                    else
+                    {
+                        value += 1;
+
+                    }
+                    
+                }
+
+                //start index of child genes
+                childGenes[(index * (int)Genes.TotalGeneCount) + i] = value;
+
+
+
+            }
+
 
         }
 

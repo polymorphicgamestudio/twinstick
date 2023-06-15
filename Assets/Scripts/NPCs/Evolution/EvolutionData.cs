@@ -8,6 +8,12 @@ using UnityEngine;
 namespace ShepProject
 {
 
+    public class EvolutionDataFileInfo
+    {
+        public SigmoidInfo[] info;
+        public int waveNumber;
+
+    }
 
     public enum ObjectType
     {
