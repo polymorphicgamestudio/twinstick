@@ -38,7 +38,8 @@ namespace ShepProject
 
         private NativeArray<ChromosoneParents> chromosoneParents;
 
-        public EvolutionStructure(int maxGeneticObjects, int maxObjects, int genesPerObject, SigmoidInfo[] sigmoids, Allocator type = Allocator.Persistent)
+        public EvolutionStructure(int maxGeneticObjects, int maxObjects,
+             int genesPerObject, SigmoidInfo[] sigmoids, Allocator type = Allocator.Persistent)
         {
 
             traits = new NativeArray<float>(maxObjects * genesPerObject, type);
@@ -127,12 +128,8 @@ namespace ShepProject
 
         }
 
-
-        private void GenerateSlimesForNextWave(bool writeToFile)
-        {
-
-            
-
+        private void GenerateSlimesForNextWave(bool writeToFile, int waveNumber, SigmoidInfo[] info)
+        {    
 
             /*
              * 
@@ -173,16 +170,16 @@ namespace ShepProject
 
             handle.Complete();
 
-            //Thread writeToFileThread = null;
+            Thread writeToFileThread = null;
 
-            //if (writeToFile)
-            //{
-            //    writeToFileThread = new Thread(new ThreadStart(WriteValuesToFile));
-            //    writeToFileThread.Start();
-                
+            if (writeToFile)
+            {
+                writeToFileThread = new Thread(new ParameterizedThreadStart(WriteValuesToFile));
+                writeToFileThread.Start(info);
 
 
-            //}
+
+            }
 
 
             evolutionHandle.Complete();
@@ -198,19 +195,22 @@ namespace ShepProject
 
             handle.Complete();
 
-            //if (writeToFile)
-            //{
+            if (writeToFile)
+            {
 
-            //    writeToFileThread.Join();
+                writeToFileThread.Join();
 
-            //}
+            }
 
 
 
         }
 
-        public void WriteValuesToFile(SigmoidInfo[] info)
+        public void WriteValuesToFile(object infoObject)
         {
+
+
+            SigmoidInfo[] info = (SigmoidInfo[])infoObject;
 
             //need to talk about where we want to put this file
 
@@ -219,7 +219,7 @@ namespace ShepProject
             FileStream geneFile = File.Open(filePath, FileMode.OpenOrCreate);
             StreamWriter writer = new StreamWriter(geneFile);
 
-            string output = "Main Type, Secondary Type,";
+            string output = "Player Distance Fitness, Main Type, Secondary Type,";
 
             for (int i = 0; i < info.Length; i++)
             {
@@ -227,12 +227,17 @@ namespace ShepProject
 
             }
 
-            output += " Health";
+            output += " Health,";
             writer.WriteLine(output);
-                
+
+
+
             int objectTypeIndex = 0;
             for (int h = 0; h < ids.Length; h++)
             {
+
+                //player distance fitness
+                writer.Write(slimeFitnesses[h] + ", ");
 
                 writer.Write(traits[objectTypeIndex] + ", ");
 
@@ -252,6 +257,11 @@ namespace ShepProject
 
                 objectTypeIndex++;
                 writer.Write(traits[objectTypeIndex] + ", ");
+
+
+                //write fitness
+
+
 
                 objectTypeIndex++;
                 writer.WriteLine();
@@ -281,9 +291,15 @@ namespace ShepProject
             return ids[id] * (int)Genes.TotalGeneCount;
         }
 
-        public void AddGenesToObject(ushort objectID)
+        private float GetGene(int id, Genes gene)
         {
 
+            return ObjectTypeIndex(id) + (int)gene;
+        
+        }
+
+        public void AddGenesToObject(ushort objectID)
+        {
 
             ids[objectID] = availables[availables.Length - 1];
             availables.RemoveAt(availables.Length - 1);
@@ -328,24 +344,6 @@ namespace ShepProject
 
 
         }
-
-
-
-
-
-
-
-
-        #region Specific Trait Methods
-
-
-
-
-
-
-
-
-        #endregion
 
     }
 
