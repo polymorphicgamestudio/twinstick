@@ -136,20 +136,20 @@ MonoBehaviour:
   - name: Turn Rate
     sigmoid:
       magnitude: 1
-      slope: 0
-      verticalOffset: 0
+      slope: 0.25
+      verticalOffset: 0.5
       horizontalOffset: 0
   - name: Sprint Duration
     sigmoid:
-      magnitude: 0
-      slope: 0
-      verticalOffset: 0
+      magnitude: 5
+      slope: 0.25
+      verticalOffset: 2.5
       horizontalOffset: 0
   - name: Sprint Cooldown
     sigmoid:
-      magnitude: 0
-      slope: 0
-      verticalOffset: 0
+      magnitude: 5
+      slope: 0.25
+      verticalOffset: 2.5
       horizontalOffset: 0
   slimeValues:
     slimeCount: 3000

@@ -199,7 +199,7 @@ namespace ShepProject
                 targetIDs[i] = ushort.MaxValue;
 
 
-            int enemiesPerWave = 500;
+            int enemiesPerWave = 20;
             evolution = new EvolutionStructure(enemiesPerWave, MaxTreeObjects, (int)Genes.TotalGeneCount, sigmoids);
 
 

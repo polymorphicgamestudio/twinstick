@@ -115,8 +115,10 @@ namespace ShepProject
                 }
 
                 objectTypeIndex++;
+                genes[objectTypeIndex] = 100;
+                traits[objectTypeIndex] = 100;
 
-
+                objectTypeIndex++;
 
             }
 
@@ -213,62 +215,45 @@ namespace ShepProject
             //need to talk about where we want to put this file
 
             string filePath = Application.dataPath + "/geneWriteFile.csv";
-            //bool exists = false;
-
-            //if (File.Exists(filePath))
-                //exists = true;
 
             FileStream geneFile = File.Open(filePath, FileMode.OpenOrCreate);
             StreamWriter writer = new StreamWriter(geneFile);
 
-            //if (!exists)
-            //{
+            string output = "Main Type, Secondary Type,";
 
+            for (int i = 0; i < info.Length; i++)
+            {
+                output += info[i].name +" Gene, " + info[i].name + " Trait, ";
 
-                string output = "Main Type, Secondary Type,";
+            }
 
-                for (int i = 0; i < info.Length; i++)
-                {
-
-                    output += info[i].name +", ";
-
-                }
-
-                output += " Health";
-                //write the column heads
-                writer.WriteLine(output);
+            output += " Health";
+            writer.WriteLine(output);
                 
-                
-                // Slime View Range, Tower View Range, Player View Range, Wall View Range," +
-                    //" Sheep View Range,"
-                    //);
-            //}
-
             int objectTypeIndex = 0;
-            int sigmoidIndex = 0;
             for (int h = 0; h < ids.Length; h++)
             {
 
-                writer.Write(traits[objectTypeIndex]);
+                writer.Write(traits[objectTypeIndex] + ", ");
 
                 objectTypeIndex++;
-                writer.Write(traits[objectTypeIndex]);
+                writer.Write(traits[objectTypeIndex] + ", ");
 
-                sigmoidIndex = 0;
+                //sigmoidIndex = 0;
                 //otherwise just write the wave number and then the gene values underneath that
-                for (int i = (int)Genes.MainResistance; i < (int)Genes.TotalGeneCount; i++)
+                for (int i = (int)Genes.MainResistance; i < (int)Genes.Health; i++)
                 {
                     objectTypeIndex++;
 
-
-                    writer.Write(traits[objectTypeIndex] + ", ");
-                    sigmoidIndex++;
+                    writer.Write(genes[objectTypeIndex] + ", " + traits[objectTypeIndex] + ", ");
 
 
                 }
 
-                //writer.Write("100");
+                objectTypeIndex++;
+                writer.Write(traits[objectTypeIndex] + ", ");
 
+                objectTypeIndex++;
                 writer.WriteLine();
 
             }
