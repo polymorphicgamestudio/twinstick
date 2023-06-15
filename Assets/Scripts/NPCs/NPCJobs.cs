@@ -86,7 +86,7 @@ namespace ShepProject
         public NativeArray<ObjectType> objTypes;
 
         [NativeDisableContainerSafetyRestriction]
-        public GenesArray genes;
+        public EvolutionStructure evolutionStructure;
 
 
         [ReadOnly]
@@ -135,7 +135,7 @@ namespace ShepProject
 
                     objectForces[(objectID * (int)ObjectType.Count) + (int)targetType] =
                         math.normalize(positions[targetIDs[objectID]] - positions[objectID])
-                        * genes.GetAttraction(objectID, ObjectType.Sheep);
+                        * evolutionStructure.GetAttraction(objectID, ObjectType.Sheep);
 
                 }
                 else
@@ -189,7 +189,7 @@ namespace ShepProject
                 return;
 
             QuadKey checkKey = parentKey;
-            float maxDistance = genes.GetViewRange(objectID, (ViewRange)objType);
+            float maxDistance = evolutionStructure.GetViewRange(objectID, (ViewRange)objType);
 
             //slime max distance
             if (8 > maxDistance) 
@@ -363,7 +363,7 @@ namespace ShepProject
 		private float2 GatherBucketForces(int objectID, ObjectType objType, QuadKey key)
         {
 
-            float maxDist = genes.GetViewRange(objectID, (ViewRange)targetType);
+            float maxDist = evolutionStructure.GetViewRange(objectID, (ViewRange)targetType);
             float maxDistSq = maxDist * maxDist;
             float2 localPosition = new float2();
 
@@ -472,10 +472,10 @@ namespace ShepProject
                             //float2 normalized = localPosition / magnitude;
 
                             float slimeForce = ((2 * magnitude)
-                                / genes.GetViewRange(objectID, ViewRange.Slime));
+                                / evolutionStructure.GetViewRange(objectID, ViewRange.Slime));
 
-                            slimeForce += (genes.GetOptimalDistance(objectID, OptimalDistance.Slime) - 1);
-                            slimeForce *= genes.GetAttraction(objectID, ObjectType.Slime);
+                            slimeForce += (evolutionStructure.GetOptimalDistance(objectID, OptimalDistance.Slime) - 1);
+                            slimeForce *= evolutionStructure.GetAttraction(objectID, ObjectType.Slime);
 
                             slimeForce = math.clamp(slimeForce, -1, 1);
 
@@ -496,7 +496,7 @@ namespace ShepProject
                         }
                         else
                         {
-                            moveTowards -= one * genes.GetAttraction(objectID, ObjectType.Slime);
+                            moveTowards -= one * evolutionStructure.GetAttraction(objectID, ObjectType.Slime);
 
 
                             //local.x = one.x;
@@ -525,9 +525,9 @@ namespace ShepProject
                             //slimes not caring at all and caring at max value they can
                             //viewDistance / 2 is where it start to 
                             math.clamp(((-2 * MathUtil.Magnitude(localPosition))
-                            / genes.GetViewRange(objectID, ViewRange.Wall)) + 2, 0, 1)
+                            / evolutionStructure.GetViewRange(objectID, ViewRange.Wall)) + 2, 0, 1)
 
-                            * genes.GetAttraction(objectID, targetType));
+                            * evolutionStructure.GetAttraction(objectID, targetType));
 
                         break;
                     }
@@ -545,9 +545,9 @@ namespace ShepProject
                                 //slimes not caring at all and caring at max value they can
                                 //viewDistance / 2 is where it start to 
                                 math.clamp(((-2 * MathUtil.Magnitude(localPosition))
-                                / genes.GetViewRange(objectID, ViewRange.Tower)) + 2, 0, 1)
+                                / evolutionStructure.GetViewRange(objectID, ViewRange.Tower)) + 2, 0, 1)
 
-                                * genes.GetAttraction(objectID, targetType));
+                                * evolutionStructure.GetAttraction(objectID, targetType));
 
 
                         }
@@ -593,7 +593,7 @@ namespace ShepProject
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<float> headings;
 
-        public GenesArray genes;
+        public EvolutionStructure evolutionStructure;
 
         [ReadOnly]
         public NativeArray<ObjectType> objTypes;
@@ -676,7 +676,7 @@ namespace ShepProject
             }
             else if (maxMagnitude == 0)
             {
-                maxMagnitude = genes.GetAttraction(objectID, ObjectType.Sheep);
+                maxMagnitude = evolutionStructure.GetAttraction(objectID, ObjectType.Sheep);
             }
 
             moveTowards += MathUtil.ClampMagnitude(objectForces[(objectID * (int)ObjectType.Count) + (int)(ObjectType.Sheep)], maxMagnitude);
@@ -725,7 +725,7 @@ namespace ShepProject
             }
 
             headings[objectID] = math.lerp(headings[objectID], headingCalculation,
-                math.clamp((math.PI * 3 * genes.GetTurnRate(objectID)) * deltaTime
+                math.clamp((math.PI * 3 * evolutionStructure.GetTurnRate(objectID)) * deltaTime
                 / math.abs(local), 0, 1));
 
 

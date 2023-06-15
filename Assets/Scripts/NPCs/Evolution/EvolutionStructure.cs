@@ -14,6 +14,8 @@ namespace ShepProject
     public struct EvolutionStructure
     {
 
+        #region Variables
+
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<float> traits;
 
@@ -34,9 +36,14 @@ namespace ShepProject
 
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<int> slimeFitnesses;
+
+        [NativeDisableContainerSafetyRestriction]
         private NativeArray<int> fitnessRanges;
 
+        [NativeDisableContainerSafetyRestriction]
         private NativeArray<ChromosoneParents> chromosoneParents;
+
+        #endregion
 
         public EvolutionStructure(int maxGeneticObjects, int maxObjects,
              int genesPerObject, SigmoidInfo[] sigmoids, Allocator type = Allocator.Persistent)
@@ -82,6 +89,27 @@ namespace ShepProject
             WriteValuesToFile(sigmoids);
 
         }
+
+
+        public void Dispose()
+        {
+            traits.Dispose();
+            genes.Dispose();
+            ids.Dispose();
+            availables.Dispose();
+
+            previousGenes.Dispose();
+            sigmoids.Dispose();
+
+
+            slimeFitnesses.Dispose();
+            fitnessRanges.Dispose();
+
+
+        }
+
+
+
 
         public void SetupInitialSlimeValues(float mutationSize = 0)
         {
@@ -291,11 +319,131 @@ namespace ShepProject
             return ids[id] * (int)Genes.TotalGeneCount;
         }
 
-        private float GetGene(int id, Genes gene)
+
+        #region Get Specific Gene Methods
+
+        public float GetAttraction(int id, int attraction)
+        {
+            return traits[ObjectTypeIndex(id) + 1 + attraction];
+        }
+
+        public float GetAttraction(int id, ObjectType attraction)
         {
 
-            return ObjectTypeIndex(id) + (int)gene;
-        
+            return GetAttraction(id, (int)attraction);
+        }
+        public void SetAttraction(int id, ObjectType attraction, float value)
+        {
+
+            traits[ObjectTypeIndex(id) + 1 + (int)attraction] = value;
+
+        }
+
+        public float GetViewRange(int id, ViewRange range)
+        {
+
+            return traits[ObjectTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range];
+        }
+
+        public void SetViewRange(int id, ViewRange range, float value)
+        {
+
+            traits[ObjectTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range] = value;
+        }
+
+        //public float GetMainResistance(int id)
+        //{
+        //    return traits[ObjectTypeIndex(id)];
+        //}
+
+        //public void SetMainResistance(int id, float value)
+        //{
+        //    traits[ObjectTypeIndex(id)] = value;
+        //}
+
+        //public float GetSecondaryResistance(int id)
+        //{
+        //    return traits[ObjectTypeIndex(id)];
+        //}
+
+        //public void SetSecondaryResistance(int id, float value)
+        //{
+        //    traits[ObjectTypeIndex(id)] = value;
+        //}
+
+
+
+        public float GetOptimalDistance(int id, OptimalDistance optimalDistance)
+        {
+            return traits[ObjectTypeIndex(id)
+                + (int)ObjectType.Count + (int)ViewRange.Count
+                + (int)DamageType.Count + (int)optimalDistance];
+        }
+
+        public void SetOptimalDistance(int id, OptimalDistance optimalDistance, float value)
+        {
+            traits[ObjectTypeIndex(id)
+                + (int)ObjectType.Count + (int)ViewRange.Count
+                + (int)DamageType.Count + (int)optimalDistance] = value;
+        }
+
+        public float GetSpeed(int id)
+        {
+
+            return traits[ObjectTypeIndex(id) + (int)GeneGroups.Speed];
+        }
+
+        public void SetSpeed(int id, float speed)
+        {
+
+            traits[ObjectTypeIndex(id) + (int)GeneGroups.Speed] = speed;
+        }
+
+        public float GetTurnRate(int id)
+        {
+
+            return traits[ObjectTypeIndex(id) + (int)GeneGroups.TurnRate];
+        }
+
+        public void SetTurnRate(int id, float value)
+        {
+
+            traits[ObjectTypeIndex(id) + (int)GeneGroups.TurnRate] = value;
+
+        }
+
+        public float GetHealth(int id)
+        {
+
+            return traits[ObjectTypeIndex(id) + (int)GeneGroups.Health];
+        }
+
+        public void SetHealth(int id, float value)
+        {
+
+            traits[ObjectTypeIndex(id) + (int)GeneGroups.Health] = value;
+
+        }
+
+
+        #endregion
+
+
+
+
+
+
+        public float GetGene(int id, Genes gene)
+        {
+
+            return genes[ObjectTypeIndex(id) + (int)gene];
+         
+        }
+
+        public float GetTrait(int id, Genes gene)
+        {
+
+            return traits[ObjectTypeIndex(id) + (int)gene];
         }
 
         public void AddGenesToObject(ushort objectID)
@@ -326,23 +474,6 @@ namespace ShepProject
 
             //objectTypes[id] = ObjectType.None;
             ids[id] = ushort.MaxValue;
-        }
-
-        public void Dispose()
-        {
-            traits.Dispose();
-            genes.Dispose();
-            ids.Dispose();
-            availables.Dispose();
-
-            previousGenes.Dispose();
-            sigmoids.Dispose();
-
-
-            slimeFitnesses.Dispose();
-            fitnessRanges.Dispose();
-
-
         }
 
     }

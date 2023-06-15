@@ -15,7 +15,7 @@ namespace ShepProject
 
         public int EnemyID => enemyID;
 
-        private GenesArray genes;
+        private EvolutionStructure evolutionStructure;
 
         [SerializeField]
         private Rigidbody rb;
@@ -35,12 +35,12 @@ namespace ShepProject
         }
 
 
-        public void SetInitialInfo(ushort enemyID, GenesArray genes, NPCManager manager)
+        public void SetInitialInfo(ushort enemyID, EvolutionStructure evolutionStructure, NPCManager manager)
         {
 
             this.manager = manager;
             this.enemyID = enemyID;
-            this.genes = genes;
+            this.evolutionStructure = evolutionStructure;
 
         }
 
@@ -54,12 +54,12 @@ namespace ShepProject
             
 
 
-            float health = genes.GetHealth(enemyID);
+            float health = evolutionStructure.GetHealth(enemyID);
 
 
             health -= scaledDamage;
 
-            genes.SetHealth(enemyID, health);
+            evolutionStructure.SetHealth(enemyID, health);
 
             if (health < 0) 
             {
