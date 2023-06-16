@@ -792,28 +792,6 @@ namespace ShepProject
                 updateInitialize = true;
             }
 
-
-            //EnemyPhysicsMethods methods;
-
-            //if (!enemyPhysicsMethods.TryGetValue(replacementOldID, out methods))
-            //    return;
-
-            //methods.UpdateID(id);
-            //enemyPhysicsMethods.Remove(replacementOldID);
-            //enemyPhysicsMethods.Add(id, methods);
-
-            //genes.TransferGenes(replacementOldID, id);
-
-            //update targetID and heading
-            //update genes array as well
-
-
-
-
-
-            //Debug.Log("Enemy Dead!");
-
-
         }
 
         private void GameOver()

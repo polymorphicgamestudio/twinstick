@@ -171,6 +171,12 @@ namespace ShepProject
 
             for (int i = (int)Genes.MainResistance; i < (int)Genes.Health; i++)
             {
+
+                //need to get a number from a normal distribution
+                //50% on the top half, 50% on the bottom half
+
+                
+
                 value = 0;
                 if (rand.NextInt(0, 1001) <= 500)
                 {

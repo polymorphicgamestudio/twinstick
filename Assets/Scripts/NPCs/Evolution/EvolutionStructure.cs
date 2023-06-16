@@ -308,36 +308,49 @@ namespace ShepProject
                 File.Create(outputFilePath).Close();
 
 
+            //add wave as a column, also add ID of the slime
+            //can remove health
+
+            //this one will most likely be when Barrie ends up starting to test things
+            //do all genes first, then all traits afterwards in blocks
 
             List<string> newLines = new List<string>(slimeFitnesses.Length + 10);
 
-            if (writeInfo.waveNumber == 0)
-            {
-                newLines.Add("Initial Values");
-            }
-            else
-            {
-                newLines.Add("Wave " + writeInfo.waveNumber);
-            }
-                
-            string output = "Player Distance Fitness, Parent One, Parent Two, Main Type, Secondary Type,";
+            string output = "";
+
+            //if (writeInfo.waveNumber == 0)
+            //{
+            ////newLines.Add("Initial Values");
+
+            output = "Slime ID, Wave Number, Player Distance Fitness, Parent One, Parent Two, Main Type, Secondary Type,";
 
             for (int i = 0; i < info.Length; i++)
             {
-                output += info[i].name +" Gene, " + info[i].name + " Trait, ";
+                output += info[i].name + " Gene, " + info[i].name + " Trait, ";
 
             }
 
-            output += " Health,";
+            //output += " Health,";
             newLines.Add(output);
+
+            //}
+            //else
+            //{
+            //    newLines.Add("Wave " + writeInfo.waveNumber);
+            //}
+
+
 
 
             //int objectTypeIndex = 0;
             for (int h = 0; h < slimeFitnesses.Length; h++)
             {
+                output = h + ", " + writeInfo.waveNumber + ", ";
+
+
 
                 //player distance fitness
-                output = slimeFitnesses[h] + ", ";
+                output += slimeFitnesses[h] + ", ";
 
                 output += parents[h].parentOne + ", " + parents[h].parentTwo + ", ";
 
@@ -359,12 +372,9 @@ namespace ShepProject
 
                 }
 
-                //objectTypeIndex++;
-                output += previousTraits[(h * (int)Genes.TotalGeneCount) + (int)Genes.Health] + ", ";
 
-
-                //write fitness
-
+                //this will output health in the file if wanted
+                //output += previousTraits[(h * (int)Genes.TotalGeneCount) + (int)Genes.Health] + ", ";
 
 
                 //objectTypeIndex++;
