@@ -407,17 +407,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9153483793bc2bc42afa4deea3be1c42, type: 3}
---- !u!114 &317944593 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2710279330700451402, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
-  m_PrefabInstance: {fileID: 5554158920758829115}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &574387746
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -647,42 +636,6 @@ PrefabInstance:
     - target: {fileID: 5453079091326956306, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: startButton
-      value: 
-      objectReference: {fileID: 317944593}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: sigmoids.Array.data[13].sigmoid.slope
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: sigmoids.Array.data[14].sigmoid.slope
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: sigmoids.Array.data[15].sigmoid.slope
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: sigmoids.Array.data[14].sigmoid.magnitude
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: sigmoids.Array.data[15].sigmoid.magnitude
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: sigmoids.Array.data[13].sigmoid.verticalOffset
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: sigmoids.Array.data[14].sigmoid.verticalOffset
-      value: 2.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: sigmoids.Array.data[15].sigmoid.verticalOffset
-      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 8121321063624790235, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: m_Name

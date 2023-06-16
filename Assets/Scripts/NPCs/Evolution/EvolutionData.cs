@@ -164,7 +164,7 @@ namespace ShepProject
         public float GetTraitValue(float geneValue)
         {
 
-            return (magnitude / (1 + math.pow(math.E, (slope * geneValue) + horizontalOffset))) + verticalOffset;
+            return (magnitude / (1 + math.pow(math.E, -1 * ((slope * geneValue) + horizontalOffset)))) + verticalOffset;
 
         }
 

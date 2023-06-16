@@ -21,7 +21,7 @@ namespace ShepProject
         Material material;
         public float xMin = -20;
         public float xMax = 20;
-        public int pointCount = 30;
+        public int pointCount = 300;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -76,8 +76,8 @@ namespace ShepProject
             if (material == null)
                 material = new Material(Shader.Find("Hidden/Internal-Colored"));
 
-            float yMin = (-magnitudeField.floatValue / 2f) + verticalOffsetField.floatValue;
-            float yMax = (magnitudeField.floatValue / 2f) + verticalOffsetField.floatValue;
+            float yMin = /*(magnitudeField.floatValue / 2f) +*/ verticalOffsetField.floatValue;
+            float yMax = (magnitudeField.floatValue) + verticalOffsetField.floatValue;
 
             float width = pos.width;
             float tempVal = 200;
@@ -112,11 +112,6 @@ namespace ShepProject
 
 
             GL.PushMatrix();
-
-            GL.Clear(true, false, Color.black);
-
-
-
             GL.Begin(GL.LINES);
             material.SetPass(0);
             GL.Color(Color.black);
@@ -127,11 +122,30 @@ namespace ShepProject
 
             DrawOutlineBox(pos, 2);
 
+            GL.End();
+            GL.PopMatrix();
+
             //connect points
 
             //draw 10 lines between the outlines
 
+            GL.PushMatrix();
+            GL.Begin(GL.LINES);
+            material.SetPass(0);
+            GL.Color(Color.black);
+
             DrawGridLines(pos, lineCount);
+
+            GL.End();
+
+            GL.PopMatrix();
+
+
+            GL.PushMatrix();
+            GL.Begin(GL.LINES);
+            material.SetPass(0);
+            GL.Color(Color.black);
+
             PlotGraph((Sigmoid)property.boxedValue, pointCount, pos, xMin, xMax, yMin, yMax);
 
             GL.End();
@@ -254,18 +268,16 @@ namespace ShepProject
             for (int i = 0; i < pointCount; i++)
             {
                 //get percentage of this between min and max value, then translate that to the rect's
-                current.y = sigmoid.GetTraitValue(xMin + (geneValueSpace * i) + sigmoid.horizontalOffset);
+                current.y = sigmoid.GetTraitValue(xMin + (geneValueSpace * i));
 
-                //divide that by maxValue to get percentage closest to one
-                current.y /= //yMax;
-                (sigmoid.magnitude / 2f);// + sigmoid.verticalOffset);
+                //divide that by magnitude to get percentage closest to one
+                current.y /= sigmoid.magnitude;
 
-                current.y *= rect.height / 2f;
-                current.y += rect.y - (rect.height * (sigmoid.verticalOffset / (yMax - yMin)));
+                current.y = 1 - current.y;
 
-
-
-                //have the y position, need to get x position now
+                current.y *= rect.height;
+                current.y += rect.y;
+                current.y += (rect.height * (sigmoid.verticalOffset / (yMax - yMin)));
 
                 current.x += plotSpace;
                 

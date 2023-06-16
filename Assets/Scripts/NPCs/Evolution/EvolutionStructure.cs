@@ -45,7 +45,11 @@ namespace ShepProject
         private NativeArray<int> fitnessRanges;
 
         [NativeDisableContainerSafetyRestriction]
-        private NativeArray<ChromosoneParents> chromosoneParents;
+        private NativeArray<ChromosoneParents> parents;
+
+        //[NativeDisableContainerSafetyRestriction]
+        //private NativeArray<ChromosoneParents> previousParents;
+
 
         private ushort idIndex;
 
@@ -68,7 +72,9 @@ namespace ShepProject
             slimeFitnesses = new NativeArray<int>(maxGeneticObjects, type);
             fitnessRanges = new NativeArray<int>(maxGeneticObjects, type);
 
-            chromosoneParents = new NativeArray<ChromosoneParents>(maxGeneticObjects, type);
+            parents = new NativeArray<ChromosoneParents>(maxGeneticObjects, type);
+            //previousParents = new NativeArray<ChromosoneParents>(maxGeneticObjects, type);
+
             idIndex = 0;
             //need a way to set these 
             this.sigmoids = new NativeArray<Sigmoid>(sigmoids.Length, type);
@@ -119,13 +125,13 @@ namespace ShepProject
             genesHandle.Complete();
             traitsHandle.Complete();
 
-            WriteValuesToFile(new EvolutionDataFileInfo()
-            {
-                info = sigmoids,
-                waveNumber = 0
-            });
+            //WriteValuesToFile(new EvolutionDataFileInfo()
+            //{
+            //    info = sigmoids,
+            //    waveNumber = 0
+            //});
 
-            for (int i = 1; i < 3; i++)
+            for (int i = 0; i < 20; i++)
             {
                 GenerateSlimesForNextWave(true, new EvolutionDataFileInfo()
                 {
@@ -141,7 +147,11 @@ namespace ShepProject
 
         public void Dispose()
         {
+            
+
             traits.Dispose();
+            previousTraits.Dispose();
+
             genes.Dispose();
             ids.Dispose();
 
@@ -152,11 +162,10 @@ namespace ShepProject
             slimeFitnesses.Dispose();
             fitnessRanges.Dispose();
 
+            parents.Dispose();
+            //previousParents.Dispose();
 
         }
-
-
-
 
         public void SetupInitialSlimeValues(float mutationSize = 0)
         {
@@ -223,6 +232,8 @@ namespace ShepProject
              */
 
             idIndex = 0;
+
+
             CopyNativeArrayJob<float> copyGenes = new CopyNativeArrayJob<float>();
             copyGenes.copyFrom = genes;
             copyGenes.copyTo = previousGenes;
@@ -243,12 +254,16 @@ namespace ShepProject
 
             }
 
+
             ChooseParentSlimes chooseSlimes = new ChooseParentSlimes();
             chooseSlimes.fitnessRanges = fitnessRanges;
             chooseSlimes.slimeFitnesses = slimeFitnesses;
+            chooseSlimes.elapsedTime = Time.realtimeSinceStartup;
 
-            chooseSlimes.parents = chromosoneParents;
+            chooseSlimes.parents = parents;
             JobHandle evolutionHandle = chooseSlimes.Schedule(slimeFitnesses.Length, SystemInfo.processorCount);
+
+            evolutionHandle.Complete();
 
             genesHandle.Complete();
             traitsHandle.Complete();
@@ -262,16 +277,18 @@ namespace ShepProject
 
             }
 
-
-            evolutionHandle.Complete();
-
-
             CreateNextGeneration createChromosones = new CreateNextGeneration();
             createChromosones.parentGenes = previousGenes;
             createChromosones.childGenes = genes;
-            createChromosones.parents = chromosoneParents;
-
+            createChromosones.parents = parents;
+            createChromosones.elapsedTime = Time.realtimeSinceStartup;
             createChromosones.Schedule(slimeFitnesses.Length, SystemInfo.processorCount).Complete();
+
+            UpdateTraitValues utv = new UpdateTraitValues();
+            utv.genes = genes;
+            utv.sigmoids = sigmoids;
+            utv.traits = traits;
+            utv.Schedule(slimeFitnesses.Length, SystemInfo.processorCount).Complete();
 
             if (writeToFile)
             {
@@ -310,7 +327,7 @@ namespace ShepProject
                 newLines.Add("Wave " + writeInfo.waveNumber);
             }
                 
-            string output = "Player Distance Fitness, Main Type, Secondary Type,";
+            string output = "Player Distance Fitness, Parent One, Parent Two, Main Type, Secondary Type,";
 
             for (int i = 0; i < info.Length; i++)
             {
@@ -328,6 +345,8 @@ namespace ShepProject
 
                 //player distance fitness
                 output = slimeFitnesses[h] + ", ";
+
+                output += parents[h].parentOne + ", " + parents[h].parentTwo + ", ";
 
                 output += traits[objectTypeIndex] + ", ";
 

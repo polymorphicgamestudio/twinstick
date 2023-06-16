@@ -20,16 +20,33 @@ namespace ShepProject
 
         public NativeArray<ChromosoneParents> parents;
 
+        public float elapsedTime;
 
         public void Execute(int index)
         {
 
-            Random rand = Random.CreateFromIndex((uint)index * 14121);
+            Random rand = Random.CreateFromIndex((uint)(index * elapsedTime * 14121));
 
             ChromosoneParents currentParents = new ChromosoneParents();
 
-            currentParents.parentOne = GetSlimeParent(rand.NextInt(0, fitnessRanges[fitnessRanges.Length - 1] + 1));
-            currentParents.parentTwo = GetSlimeParent(rand.NextInt(0, fitnessRanges[fitnessRanges.Length - 1] + 1));
+            int first = rand.NextInt(0, fitnessRanges[fitnessRanges.Length - 1] + 1);
+            int second = rand.NextInt(0, fitnessRanges[fitnessRanges.Length - 1] + 1);
+
+            currentParents.parentOne = GetSlimeParent(first);
+
+            do
+            {
+                currentParents.parentTwo = GetSlimeParent(second);
+
+            } while (currentParents.parentOne == currentParents.parentTwo);
+
+            //if (currentParents.parentOne == ushort.MaxValue || currentParents.parentTwo == ushort.MaxValue)
+            //{
+            //    int test = 0;
+
+            //    GetSlimeParent(first);
+            //    GetSlimeParent(second);
+            //}
 
             parents[index] = currentParents;
 
@@ -43,6 +60,18 @@ namespace ShepProject
             int endIndex = 1000000;
 
             int fraction = 2;
+
+            if (randValue < fitnessRanges[1])
+            {
+
+                return 0;
+
+            }
+            else if (randValue > fitnessRanges[fitnessRanges.Length - 2])
+            {
+
+                return (ushort)(fitnessRanges.Length - 1);
+            }
 
             while ((endIndex - startIndex) > 8)
             {
@@ -68,7 +97,7 @@ namespace ShepProject
             for (ushort i = (ushort)startIndex; i <= endIndex; i++)
             {
 
-                if (randValue > fitnessRanges[i])
+                if (randValue < fitnessRanges[i])
                 {
                     i--;
                     return i;
@@ -103,7 +132,7 @@ namespace ShepProject
         //[NativeDisableContainerSafetyRestriction]
         //public NativeArray<Sigmoid> sigmoids;
 
-        //[NativeDisableContainerSafetyRestriction]
+        [NativeDisableContainerSafetyRestriction]
         public NativeArray<float> childGenes;
 
         public float elapsedTime;
@@ -193,7 +222,42 @@ namespace ShepProject
 
     }
 
+    public struct UpdateTraitValues : IJobParallelFor
+    {
+        [ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<float> genes;
 
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<float> traits;
+
+
+        [ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<Sigmoid> sigmoids;
+
+
+        public void Execute(int index)
+        {
+
+            int sigmoidIndex = 0;
+            for (int i = (int)Genes.MainResistance; i < (int)Genes.Health; i++)
+            {
+
+                traits[(index * (int)Genes.TotalGeneCount) + i] 
+                    = sigmoids[sigmoidIndex].GetTraitValue(genes[(index * (int)Genes.TotalGeneCount) + i]);
+
+                sigmoidIndex++;
+
+            }
+            
+
+
+        }
+
+
+
+    }
 
 
 
