@@ -228,7 +228,7 @@ namespace ShepProject
             //uncomment to add player to list of choosableTargets
             //choosableTargets.Add(0);
 
-            AddSheepToList();
+            //AddSheepToList();
 
 
             AddBurrow(burrowCount);

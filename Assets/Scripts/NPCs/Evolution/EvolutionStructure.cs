@@ -115,9 +115,10 @@ namespace ShepProject
             JobHandle traitsHandle = copyTraits.Schedule(traits.Length, SystemInfo.processorCount);
 
 
+            Random r = Random.CreateFromIndex((uint)(Time.realtimeSinceStartup * Time.deltaTime * 1290847));
             for (int i = 0; i < slimeFitnesses.Length; i++)
             {
-                slimeFitnesses[i] = Random.CreateFromIndex((uint)(Time.realtimeSinceStartup * Time.deltaTime * 1290847)).NextInt(10, 500);
+                slimeFitnesses[i] = r.NextInt(10, 500);
 
             }
 
@@ -125,13 +126,7 @@ namespace ShepProject
             genesHandle.Complete();
             traitsHandle.Complete();
 
-            //WriteValuesToFile(new EvolutionDataFileInfo()
-            //{
-            //    info = sigmoids,
-            //    waveNumber = 0
-            //});
-
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 5; i++)
             {
                 GenerateSlimesForNextWave(true, new EvolutionDataFileInfo()
                 {
@@ -232,8 +227,6 @@ namespace ShepProject
              */
 
             idIndex = 0;
-
-
             CopyNativeArrayJob<float> copyGenes = new CopyNativeArrayJob<float>();
             copyGenes.copyFrom = genes;
             copyGenes.copyTo = previousGenes;
@@ -339,7 +332,7 @@ namespace ShepProject
             newLines.Add(output);
 
 
-            int objectTypeIndex = 0;
+            //int objectTypeIndex = 0;
             for (int h = 0; h < slimeFitnesses.Length; h++)
             {
 
@@ -348,31 +341,33 @@ namespace ShepProject
 
                 output += parents[h].parentOne + ", " + parents[h].parentTwo + ", ";
 
-                output += traits[objectTypeIndex] + ", ";
+                //main type
+                output += traits[(h * (int)Genes.TotalGeneCount)] + ", ";
 
-                objectTypeIndex++;
-                output += traits[objectTypeIndex] + ", ";
+                //objectTypeIndex++;
+                output += traits[(h * (int)Genes.TotalGeneCount) + 1] + ", ";
 
                 //sigmoidIndex = 0;
                 //otherwise just write the wave number and then the gene values underneath that
                 for (int i = (int)Genes.MainResistance; i < (int)Genes.Health; i++)
                 {
-                    objectTypeIndex++;
+                    //objectTypeIndex++;
 
-                    output += previousGenes[objectTypeIndex] + ", " + previousTraits[objectTypeIndex] + ", ";
+                    output += previousGenes[(h * (int)Genes.TotalGeneCount) + i] + ", "
+                            + previousTraits[(h * (int)Genes.TotalGeneCount) + i] + ", ";
 
 
                 }
 
-                objectTypeIndex++;
-                output += previousTraits[objectTypeIndex] + ", ";
+                //objectTypeIndex++;
+                output += previousTraits[(h * (int)Genes.TotalGeneCount) + (int)Genes.Health] + ", ";
 
 
                 //write fitness
 
 
 
-                objectTypeIndex++;
+                //objectTypeIndex++;
                 newLines.Add(output);
 
             }

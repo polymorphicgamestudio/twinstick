@@ -36,17 +36,9 @@ namespace ShepProject
 
             do
             {
-                currentParents.parentTwo = GetSlimeParent(second);
+                currentParents.parentTwo = GetSlimeParent(rand.NextInt(0, fitnessRanges[fitnessRanges.Length - 1] + 1));
 
             } while (currentParents.parentOne == currentParents.parentTwo);
-
-            //if (currentParents.parentOne == ushort.MaxValue || currentParents.parentTwo == ushort.MaxValue)
-            //{
-            //    int test = 0;
-
-            //    GetSlimeParent(first);
-            //    GetSlimeParent(second);
-            //}
 
             parents[index] = currentParents;
 
@@ -173,20 +165,22 @@ namespace ShepProject
             //int parentIndex = 0;
             float value = 0;
 
-            for (int i = 0; i < (int)Genes.Health; i++)
-            {
 
-                if (rand.NextInt(0, 1001) < 500)
+            //need to do main type and secondary type
+
+
+            for (int i = (int)Genes.MainResistance; i < (int)Genes.Health; i++)
+            {
+                value = 0;
+                if (rand.NextInt(0, 1001) <= 500)
                 {
                     //parent one
-                    //parentIndex = parents[index].parentOne;
                     value = parentGenes[(parents[index].parentOne * (int)Genes.TotalGeneCount) + i];
 
                 }
                 else
                 {
                     //parent two
-                    //parentIndex = parents[index].parentTwo;
                     value = parentGenes[(parents[index].parentTwo * (int)Genes.TotalGeneCount) + i];
 
                 }
@@ -195,7 +189,7 @@ namespace ShepProject
                 if (rand.NextInt(0, 1001) > 300)
                 {
 
-                    if (rand.NextInt(0, 1001) < 500)
+                    if (rand.NextInt(0, 1001) <= 500)
                     {
                         //will mutate
                         value -= 1;

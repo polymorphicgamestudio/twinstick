@@ -102,7 +102,7 @@ MonoBehaviour:
       magnitude: 2
       slope: 0.25
       verticalOffset: -1
-      horizontalOffset: -1
+      horizontalOffset: 0
   - name: Tower Attraction
     sigmoid:
       magnitude: 2
@@ -148,11 +148,11 @@ MonoBehaviour:
   - name: Sprint Cooldown
     sigmoid:
       magnitude: 5
-      slope: 0.25
+      slope: 1
       verticalOffset: 0
       horizontalOffset: 0
   slimeValues:
-    slimeCount: 20
+    slimeCount: 5
     sheepAttraction: 1
     towerAttraction: -1
     slimeAttraction: 0.2
