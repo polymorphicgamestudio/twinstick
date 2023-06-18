@@ -632,15 +632,12 @@ namespace ShepProject
         public void AddWallToList(Transform wall)
         {
 
-
             //for adding all the child points to make sure enemies can avoid them correctly
             for (int i = 0; i < 5; i++)
             {
 
                 ushort id = quadTree.AddTransform(wall.transform.GetChild(0), ObjectType.Wall);
                 wall.transform.GetChild(0).parent = null;
-                //genes.SetObjectType(id, ObjectType.Wall);
-
 
             }
 
@@ -716,15 +713,11 @@ namespace ShepProject
         {
 
             quadTree.RemoveTransform(id);
-
             slimePool.ReturnObject(enemyPhysicsMethods[id]);
-            
-            //evolutionStructure.ResetIDGenes(id);
             enemyPhysicsMethods.Remove(id);
 
 
             enemiesLeftToKill--;
-
             if (enemiesLeftToKill <= 0)
             {
                 duringWave = false;
