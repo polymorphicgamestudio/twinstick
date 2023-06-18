@@ -376,6 +376,39 @@ namespace ShepProject
 
         #region Get Specific Gene Methods
 
+
+        public SlimeType GetMainType(int id)
+        {
+
+            return (SlimeType)traits[ObjectMainTypeIndex(id)];
+        }
+
+        public SlimeType GetSecondaryType(int id)
+        {
+
+            return (SlimeType)traits[ObjectMainTypeIndex(id) + 1];
+        }
+
+        public float GetMainResistance(int id)
+        {
+            return traits[ObjectMainTypeIndex(id) + (int)Genes.MainResistance];
+        }
+
+        public void SetMainResistance(int id, float value)
+        {
+            traits[ObjectMainTypeIndex(id) + (int)Genes.MainResistance] = value;
+        }
+
+        public float GetSecondaryResistance(int id)
+        {
+            return traits[ObjectMainTypeIndex(id) + (int)Genes.SecondaryResistance];
+        }
+
+        public void SetSecondaryResistance(int id, float value)
+        {
+            traits[ObjectMainTypeIndex(id) + (int)Genes.SecondaryResistance] = value;
+        }
+
         public float GetAttraction(int id, ObjectType attraction)
         {
 
@@ -399,26 +432,6 @@ namespace ShepProject
         {
 
             traits[ObjectMainTypeIndex(id) + (int)Genes.SlimeViewRange + (int)range] = value;
-        }
-
-        public float GetMainResistance(int id)
-        {
-            return traits[ObjectMainTypeIndex(id) + (int)Genes.MainResistance];
-        }
-
-        public void SetMainResistance(int id, float value)
-        {
-            traits[ObjectMainTypeIndex(id) + (int)Genes.MainResistance] = value;
-        }
-
-        public float GetSecondaryResistance(int id)
-        {
-            return traits[ObjectMainTypeIndex(id) + (int)Genes.SecondaryResistance];
-        }
-
-        public void SetSecondaryResistance(int id, float value)
-        {
-            traits[ObjectMainTypeIndex(id) + (int)Genes.SecondaryResistance] = value;
         }
 
         public float GetSlimeOptimalDistance(int id)

@@ -55,12 +55,14 @@ namespace ShepProject
 
     public enum SlimeType
     {
+        Player,
         Blaster,
         Fire,
         Acid,
         Lightning,
         Ice,
         Laser,
+        Balanced,
         Count
 
 

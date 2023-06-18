@@ -48,15 +48,31 @@ namespace ShepProject
         {
             //get the resistance for this type of damage to check for any decreases in damage
             //then deal the damage
-                                            //using this part when resistances work
-            float scaledDamage = amount;// * genes.GetResistance(enemyID, damageType);
+            float scaledDamage = amount;
+            SlimeType type = (SlimeType)damageType;
 
-            
+            if (evolutionStructure.GetMainType(EnemyID) == type 
+                && evolutionStructure.GetMainType(EnemyID) == type)
+            {
+                scaledDamage *= (evolutionStructure.GetMainResistance(EnemyID)
+                    > evolutionStructure.GetSecondaryResistance(EnemyID))
+                    ? evolutionStructure.GetMainResistance(EnemyID)
+                    : evolutionStructure.GetSecondaryResistance(EnemyID);
 
+            }
+            else if (evolutionStructure.GetMainType(EnemyID) == type)
+            {
+                scaledDamage *= evolutionStructure.GetMainResistance(EnemyID);
+
+            }
+
+            else if (evolutionStructure.GetMainType(EnemyID) == type)
+            {
+                scaledDamage *= evolutionStructure.GetSecondaryResistance(EnemyID);
+
+            }
 
             float health = evolutionStructure.GetHealth(enemyID);
-
-
             health -= scaledDamage;
 
             evolutionStructure.SetHealth(enemyID, health);
