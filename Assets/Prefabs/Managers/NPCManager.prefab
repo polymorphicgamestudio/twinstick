@@ -121,6 +121,12 @@ MonoBehaviour:
       slope: 0.25
       verticalOffset: 0.2
       horizontalOffset: 0
+  - name: Sheep Attraction
+    sigmoid:
+      magnitude: 1
+      slope: 0.25
+      verticalOffset: 0
+      horizontalOffset: 0
   - name: Slime Optimal Distance
     sigmoid:
       magnitude: 2

@@ -49,29 +49,17 @@ namespace ShepProject
         {
 
             int startIndex = 0;
-            int endIndex = 1000000;
+            int endIndex = fitnessRanges.Length - 1;
 
             int fraction = 2;
-
-            if (randValue < fitnessRanges[1])
-            {
-
-                return 0;
-
-            }
-            else if (randValue > fitnessRanges[fitnessRanges.Length - 2])
-            {
-
-                return (ushort)(fitnessRanges.Length - 1);
-            }
 
             while ((endIndex - startIndex) > 8)
             {
 
-                if (randValue < fitnessRanges[startIndex + (fitnessRanges.Length / fraction)])
+                if (randValue < fitnessRanges[endIndex - (fitnessRanges.Length / fraction)])
                 {
 
-                    endIndex = startIndex + (fitnessRanges.Length / fraction);
+                    endIndex = endIndex - (fitnessRanges.Length / fraction);
 
                 }
                 else
@@ -127,6 +115,10 @@ namespace ShepProject
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<float> childGenes;
 
+
+        public float mutationMean;
+        public float mutationStandardDeviation;
+
         public float elapsedTime;
 
         public void Execute(int index)
@@ -172,11 +164,6 @@ namespace ShepProject
             for (int i = (int)Genes.MainResistance; i < (int)Genes.Health; i++)
             {
 
-                //need to get a number from a normal distribution
-                //50% on the top half, 50% on the bottom half
-
-                
-
                 value = 0;
                 if (rand.NextInt(0, 1001) <= 500)
                 {
@@ -195,15 +182,19 @@ namespace ShepProject
                 if (rand.NextInt(0, 1001) > 300)
                 {
 
+                    //if tests need to be done to check if evolution is working, just do + or - 1
+                    //tested by checking values and seemed to be working
+
                     if (rand.NextInt(0, 1001) <= 500)
                     {
+
                         //will mutate
-                        value -= 1;
+                        value -= MathUtil.RandomGaussianJobThread(mutationStandardDeviation, mutationMean, ref rand);
 
                     }
                     else
                     {
-                        value += 1;
+                        value += MathUtil.RandomGaussianJobThread(mutationStandardDeviation, mutationMean, ref rand);
 
                     }
                     

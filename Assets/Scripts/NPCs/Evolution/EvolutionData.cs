@@ -42,6 +42,7 @@ namespace ShepProject
         TowerAttraction,
         PlayerAttraction,
         WallAttraction,
+        SheepAttraction,
         SlimeOptimalDistance,
         Speed,
         TurnRate,
@@ -51,37 +52,6 @@ namespace ShepProject
         TotalGeneCount
 
     }
-
-
-    public enum GeneGroups
-    {
-
-        MainType,
-        //SecondaryType,
-        StatStartIndex = 1 // Main Type and Secondary Type
-            + (int)ObjectType.Count //for all the possible attractions an object can have
-            + (int)ViewRange.Count
-            + (int)DamageType.Count
-            + (int)OptimalDistance.Count,
-        Speed,
-        TurnRate,
-        Health,
-        TotalGeneCount
-
-    }
-
-    #region Same ordering needed for these enums
-
-    public enum ViewRange
-    {
-        Slime,
-        Tower,
-        Player,
-        Wall,
-        Count
-    }
-
-    #endregion
 
     public enum SlimeType
     {
@@ -95,13 +65,6 @@ namespace ShepProject
 
 
     }
-
-    public enum OptimalDistance
-    {
-        Slime,
-        Count
-    }
-
 
     public enum DamageType
     {
@@ -121,6 +84,7 @@ namespace ShepProject
     [System.Serializable]
     public struct ChromosoneParents
     {
+
         public ushort parentOne;
         public ushort parentTwo;
 

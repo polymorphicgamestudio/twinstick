@@ -34,18 +34,19 @@ public static class MathUtil
 
     }
 
-    public static float RandomGaussian(float stdDev, float mean = 0)
+    public static float RandomGaussianMainThread(float stdDev, float mean = 0)
     {
-        //return 0;
 
         return mean + stdDev * 
             math.sqrt(-2.0f * math.log(UnityEngine.Random.value)) * math.sin(2.0f * Mathf.PI * UnityEngine.Random.value);
+
     }
 
-    public static float RandomGaussianThreaded(float stdDev, float mean, Unity.Mathematics.Random rand)
+    public static float RandomGaussianJobThread(float stdDev, float mean, ref Unity.Mathematics.Random rand)
     {
+
         return mean + stdDev *
-    math.sqrt(-2.0f * math.log(rand.NextFloat(0, 1))) * math.sin(2.0f * Mathf.PI * rand.NextFloat(0, 1));
+            math.sqrt(-2.0f * math.log(rand.NextFloat(0, 1))) * math.sin(2.0f * Mathf.PI * rand.NextFloat(0, 1));
 
     }
 

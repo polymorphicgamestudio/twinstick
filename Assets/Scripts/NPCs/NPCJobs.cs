@@ -122,7 +122,7 @@ namespace ShepProject
 
             ObjectType objType = objTypes[objectID];// genes.GetObjectType(objectID);
 
-            if (objType == ObjectType.Wall || objType == ObjectType.Tower)
+            if (objType != ObjectType.Slime && objType != ObjectType.Sheep)
                 return;
 
             //now at this point, should only be sheep and slimes
@@ -159,11 +159,13 @@ namespace ShepProject
             }
             else if (objType == ObjectType.Sheep && targetType == ObjectType.Slime)
             {
-                if (targetType == ObjectType.Slime)
-                {
-                    sheepDistancesToSlime[(objectID)] =
-                        SearchChildrenForClosestObjectDistance(quads[new QuadKey()].key, objectID, ObjectType.Slime, 8);
-                }
+                sheepDistancesToSlime[(objectID)] =
+                    SearchChildrenForClosestObjectDistance(quads[new QuadKey()].key, objectID, ObjectType.Slime, 8);
+                
+            }
+            else if (objType == ObjectType.Sheep && (targetType != ObjectType.Slime || targetType != ObjectType.Wall))
+            {
+                return;
             }
 
             //now search all the buckets including neighbors
@@ -189,13 +191,21 @@ namespace ShepProject
                 return;
 
             QuadKey checkKey = parentKey;
-            float maxDistance = evolutionStructure.GetViewRange(objectID, (ViewRange)objType);
-
-            //slime max distance
-            if (8 > maxDistance) 
+            float maxDistance = 0;
+            
+            if (objType == ObjectType.Slime)
+                maxDistance = evolutionStructure.GetViewRange(objectID, objType);
+            else
             {
+                //sheep can see a distance of 8
                 maxDistance = 8;
             }
+
+            ////slime max distance
+            //if (8 > maxDistance) 
+            //{
+            //    maxDistance = 8;
+            //}
 
             /* 
              * 
@@ -284,7 +294,7 @@ namespace ShepProject
 			if (!quads[parentKey].key.IsDivided) {
 				//check this quad for the required object
 
-				return SearchBucketForClosestObject(parentKey, objectID, objType, maxDistance);
+				return SearchBucketForClosestObject(parentKey, objectID);
 
 			}
 
@@ -335,7 +345,7 @@ namespace ShepProject
 
 		}
 
-        private float SearchBucketForClosestObject(QuadKey key, int objectID, ObjectType objType, float maxDistance) 
+        private float SearchBucketForClosestObject(QuadKey key, int objectID) 
         {
 
 
@@ -349,6 +359,7 @@ namespace ShepProject
             {
                 if (objTypes[objectIDs[i]] != targetType) 
                     continue;
+
                 tempMin = math.distancesq(positions[objectIDs[i]], positions[objectID]);
 
 				if (tempMin < minDist)
@@ -363,14 +374,23 @@ namespace ShepProject
 		private float2 GatherBucketForces(int objectID, ObjectType objType, QuadKey key)
         {
 
-            float maxDist = evolutionStructure.GetViewRange(objectID, (ViewRange)targetType);
+            float maxDist = 0;
+
+            if (objType == ObjectType.Slime)
+            {
+
+                maxDist = evolutionStructure.GetViewRange(objectID, targetType);
+
+            }
+            else
+            {
+                maxDist = 8;
+            }
+
             float maxDistSq = maxDist * maxDist;
             float2 localPosition = new float2();
 
             float2 moveTowards = new float2();
-
-            //Quad current = new Quad();
-            //current = quads[key];
 
 
             if (quads[key].startIndex < 0)
@@ -418,22 +438,14 @@ namespace ShepProject
 
                 float2 one = new float2(math.cos(angle), math.sin(angle));
 
-                //float2 oneDegrees = new float2(math.degrees(one.x), math.degrees(one.y));
-
-                if (objType != ObjectType.Slime)
+                //this is for sheep
+                if (objType == ObjectType.Sheep)
                 {
-                    //eventually will be
-                    //localPosition /= traitValue of the viewDistance for this specific object type
+
                     localPosition /= maxDist;
                     one -= localPosition;
 
                 }
-                //else if (targetType != ObjectType.Slime)
-                //{
-                //    localPosition /= (maxDist / );
-                //    one -= localPosition;
-
-                //}
 
 
                 //now it is same type, so add to the force based on the attraction
@@ -472,10 +484,12 @@ namespace ShepProject
                             //float2 normalized = localPosition / magnitude;
 
                             float slimeForce = ((2 * magnitude)
-                                / evolutionStructure.GetViewRange(objectID, ViewRange.Slime));
+                                / evolutionStructure.GetViewRange(objectID, targetType));
 
-                            slimeForce += (evolutionStructure.GetOptimalDistance(objectID, OptimalDistance.Slime) - 1);
-                            slimeForce *= evolutionStructure.GetAttraction(objectID, ObjectType.Slime);
+
+                            //why does this need the -1, need to investigate
+                            slimeForce += (evolutionStructure.GetSlimeOptimalDistance(objectID) - 1);
+                            slimeForce *= evolutionStructure.GetAttraction(objectID, targetType);
 
                             slimeForce = math.clamp(slimeForce, -1, 1);
 
@@ -496,7 +510,10 @@ namespace ShepProject
                         }
                         else
                         {
-                            moveTowards -= one * evolutionStructure.GetAttraction(objectID, ObjectType.Slime);
+                            moveTowards -= one;
+                            
+                            //for sheep don't need this since it's a constant value
+                            // * evolutionStructure.GetAttraction(objectID, ObjectType.Slime);
 
 
                             //local.x = one.x;
@@ -518,16 +535,27 @@ namespace ShepProject
                     case ObjectType.Wall:
                     {
 
+                        if (objType == ObjectType.Slime)
+                        {
 
-                        moveTowards += (one *
+                            moveTowards += (one *
 
-                            //distance falloff which makes scales force between 
-                            //slimes not caring at all and caring at max value they can
-                            //viewDistance / 2 is where it start to 
-                            math.clamp(((-2 * MathUtil.Magnitude(localPosition))
-                            / evolutionStructure.GetViewRange(objectID, ViewRange.Wall)) + 2, 0, 1)
+                                //distance falloff which makes scales force between 
+                                //slimes not caring at all and caring at max value they can
+                                //viewDistance / 2 is where it start to 
+                                math.clamp(((-2 * MathUtil.Magnitude(localPosition))
+                                / evolutionStructure.GetViewRange(objectID, ObjectType.Wall)) + 2, 0, 1)
+                                * evolutionStructure.GetAttraction(objectID, targetType));
 
-                            * evolutionStructure.GetAttraction(objectID, targetType));
+
+                        }
+                        else
+                        {
+
+                            //only other thing it could be is sheep
+                            moveTowards += one;
+                        }
+
 
                         break;
                     }
@@ -545,7 +573,7 @@ namespace ShepProject
                                 //slimes not caring at all and caring at max value they can
                                 //viewDistance / 2 is where it start to 
                                 math.clamp(((-2 * MathUtil.Magnitude(localPosition))
-                                / evolutionStructure.GetViewRange(objectID, ViewRange.Tower)) + 2, 0, 1)
+                                / evolutionStructure.GetViewRange(objectID, ObjectType.Tower)) + 2, 0, 1)
 
                                 * evolutionStructure.GetAttraction(objectID, targetType));
 
@@ -609,9 +637,9 @@ namespace ShepProject
 
             int objectID = objectIDs[index];
 
-            ObjectType type = objTypes[objectID];
+            ObjectType objType = objTypes[objectID];
 
-            if (type != ObjectType.Sheep && type != ObjectType.Slime)
+            if (objType != ObjectType.Sheep && objType != ObjectType.Slime)
                 return;
 
 
@@ -651,7 +679,8 @@ namespace ShepProject
 
                 if (tempMagnitude > 1)
                 {
-                    objectForces[(objectID * (int)ObjectType.Count) + i] /= tempMagnitude;
+                    objectForces[(objectID * (int)ObjectType.Count) + i] 
+                        = objectForces[(objectID * (int)ObjectType.Count) + i] / tempMagnitude;
                 }
 
 
@@ -676,10 +705,19 @@ namespace ShepProject
             }
             else if (maxMagnitude == 0)
             {
-                maxMagnitude = evolutionStructure.GetAttraction(objectID, ObjectType.Sheep);
+                //since there was nothing to interact with, should just be able to return
+
+                //return;
+
+                if (objType == ObjectType.Slime)
+                    maxMagnitude = evolutionStructure.GetAttraction(objectID, ObjectType.Sheep);
+                else
+                    return;
             }
 
             moveTowards += MathUtil.ClampMagnitude(objectForces[(objectID * (int)ObjectType.Count) + (int)(ObjectType.Sheep)], maxMagnitude);
+
+
             //pos.y = .5f;
 
             //dir.x = objectForces[(objectID * (int)ObjectType.Count) + (int)ObjectType.Sheep].x;
@@ -724,10 +762,23 @@ namespace ShepProject
                 headings[objectID] += 2 * math.PI;
             }
 
-            headings[objectID] = math.lerp(headings[objectID], headingCalculation,
-                math.clamp((math.PI * 3 * evolutionStructure.GetTurnRate(objectID)) * deltaTime
-                / math.abs(local), 0, 1));
+            if (objType == ObjectType.Slime)
+            {
 
+                headings[objectID] = math.lerp(headings[objectID], headingCalculation,
+                    math.clamp((math.PI * 3 * evolutionStructure.GetTurnRate(objectID)) * deltaTime
+                    / math.abs(local), 0, 1));
+
+            }
+            else
+            {
+                //this is for sheep
+
+                headings[objectID] = math.lerp(headings[objectID], headingCalculation,
+                    math.clamp((math.PI * 2) * deltaTime / math.abs(local), 0, 1));
+
+
+            }
 
         }
     }
