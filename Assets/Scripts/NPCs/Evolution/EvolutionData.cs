@@ -8,6 +8,12 @@ using UnityEngine;
 namespace ShepProject
 {
 
+    public class EvolutionDataFileInfo
+    {
+        public SigmoidInfo[] info;
+        public int waveNumber;
+
+    }
 
     public enum ObjectType
     {
@@ -36,6 +42,7 @@ namespace ShepProject
         TowerAttraction,
         PlayerAttraction,
         WallAttraction,
+        SheepAttraction,
         SlimeOptimalDistance,
         Speed,
         TurnRate,
@@ -46,56 +53,20 @@ namespace ShepProject
 
     }
 
-
-    public enum GeneGroups
-    {
-
-        MainType,
-        //SecondaryType,
-        StatStartIndex = 1 // Main Type and Secondary Type
-            + (int)ObjectType.Count //for all the possible attractions an object can have
-            + (int)ViewRange.Count
-            + (int)DamageType.Count
-            + (int)OptimalDistance.Count,
-        Speed,
-        TurnRate,
-        Health,
-        TotalGeneCount
-
-    }
-
-    #region Same ordering needed for these enums
-
-    public enum ViewRange
-    {
-        Slime,
-        Tower,
-        Player,
-        Wall,
-        Count
-    }
-
-    #endregion
-
     public enum SlimeType
     {
+        Player,
         Blaster,
         Fire,
         Acid,
         Lightning,
         Ice,
         Laser,
+        Balanced,
         Count
 
 
     }
-
-    public enum OptimalDistance
-    {
-        Slime,
-        Count
-    }
-
 
     public enum DamageType
     {
@@ -115,6 +86,7 @@ namespace ShepProject
     [System.Serializable]
     public struct ChromosoneParents
     {
+
         public ushort parentOne;
         public ushort parentTwo;
 
@@ -158,7 +130,7 @@ namespace ShepProject
         public float GetTraitValue(float geneValue)
         {
 
-            return (magnitude / (1 + math.pow(math.E, (slope * geneValue) + horizontalOffset))) + verticalOffset;
+            return (magnitude / (1 + math.pow(math.E, -1 * ((slope * geneValue) + horizontalOffset)))) + verticalOffset;
 
         }
 

@@ -478,7 +478,7 @@ namespace ShepProject
     public struct WriteTransformsJob : IJobParallelForTransform
     {
 
-        public GenesArray genes;
+        public EvolutionStructure evolutionStructure;
 
         [NativeDisableContainerSafetyRestriction]
         [ReadOnly]

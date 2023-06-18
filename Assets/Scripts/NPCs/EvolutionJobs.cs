@@ -1,4 +1,5 @@
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 
@@ -19,16 +20,25 @@ namespace ShepProject
 
         public NativeArray<ChromosoneParents> parents;
 
+        public float elapsedTime;
 
         public void Execute(int index)
         {
 
-            Random rand = Random.CreateFromIndex((uint)index * 14121);
+            Random rand = Random.CreateFromIndex((uint)(index * elapsedTime * 14121));
 
             ChromosoneParents currentParents = new ChromosoneParents();
 
-            currentParents.parentOne = GetSlimeParent(rand.NextInt(0, fitnessRanges[fitnessRanges.Length] + 1));
-            currentParents.parentTwo = GetSlimeParent(rand.NextInt(0, fitnessRanges[fitnessRanges.Length] + 1));
+            int first = rand.NextInt(0, fitnessRanges[fitnessRanges.Length - 1] + 1);
+            int second = rand.NextInt(0, fitnessRanges[fitnessRanges.Length - 1] + 1);
+
+            currentParents.parentOne = GetSlimeParent(first);
+
+            do
+            {
+                currentParents.parentTwo = GetSlimeParent(rand.NextInt(0, fitnessRanges[fitnessRanges.Length - 1] + 1));
+
+            } while (currentParents.parentOne == currentParents.parentTwo);
 
             parents[index] = currentParents;
 
@@ -39,17 +49,17 @@ namespace ShepProject
         {
 
             int startIndex = 0;
-            int endIndex = 0;
+            int endIndex = fitnessRanges.Length - 1;
 
             int fraction = 2;
 
             while ((endIndex - startIndex) > 8)
             {
 
-                if (randValue < fitnessRanges[startIndex + (fitnessRanges.Length / fraction)])
+                if (randValue < fitnessRanges[endIndex - (fitnessRanges.Length / fraction)])
                 {
 
-                    endIndex = startIndex + (fitnessRanges.Length / fraction);
+                    endIndex = endIndex - (fitnessRanges.Length / fraction);
 
                 }
                 else
@@ -59,13 +69,15 @@ namespace ShepProject
 
                 }
 
+                fraction *= 2;
+
             }
 
 
             for (ushort i = (ushort)startIndex; i <= endIndex; i++)
             {
 
-                if (randValue > fitnessRanges[i])
+                if (randValue < fitnessRanges[i])
                 {
                     i--;
                     return i;
@@ -87,18 +99,31 @@ namespace ShepProject
 
     public struct CreateNextGeneration : IJobParallelFor
     {
+
+
         [ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
         public NativeArray<ChromosoneParents> parents;
         [ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
         public NativeArray<float> parentGenes;
 
+        //[ReadOnly]
+        //[NativeDisableContainerSafetyRestriction]
+        //public NativeArray<Sigmoid> sigmoids;
 
+        [NativeDisableContainerSafetyRestriction]
         public NativeArray<float> childGenes;
 
 
+        public float mutationMean;
+        public float mutationStandardDeviation;
+
+        public float elapsedTime;
+
         public void Execute(int index)
         {
-            
+
             /*
              * 
              * how to create a genome
@@ -127,17 +152,103 @@ namespace ShepProject
              *      
              */
 
-            
+
+            Random rand = Random.CreateFromIndex((uint)(index * 213984 * elapsedTime));
+            //int parentIndex = 0;
+            float value = 0;
 
 
-            
+            //need to do main type and secondary type
+
+
+            for (int i = (int)Genes.MainResistance; i < (int)Genes.Health; i++)
+            {
+
+                value = 0;
+                if (rand.NextInt(0, 1001) <= 500)
+                {
+                    //parent one
+                    value = parentGenes[(parents[index].parentOne * (int)Genes.TotalGeneCount) + i];
+
+                }
+                else
+                {
+                    //parent two
+                    value = parentGenes[(parents[index].parentTwo * (int)Genes.TotalGeneCount) + i];
+
+                }
+
+
+                if (rand.NextInt(0, 1001) > 300)
+                {
+
+                    //if tests need to be done to check if evolution is working, just do + or - 1
+                    //tested by checking values and seemed to be working
+
+                    if (rand.NextInt(0, 1001) <= 500)
+                    {
+
+                        //will mutate
+                        value -= MathUtil.RandomGaussianJobThread(mutationStandardDeviation, mutationMean, ref rand);
+
+                    }
+                    else
+                    {
+                        value += MathUtil.RandomGaussianJobThread(mutationStandardDeviation, mutationMean, ref rand);
+
+                    }
+                    
+                }
+
+                //start index of child genes
+                childGenes[(index * (int)Genes.TotalGeneCount) + i] = value;
+
+
+
+            }
+
 
         }
 
 
     }
 
+    public struct UpdateTraitValues : IJobParallelFor
+    {
+        [ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<float> genes;
 
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<float> traits;
+
+
+        [ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<Sigmoid> sigmoids;
+
+
+        public void Execute(int index)
+        {
+
+            int sigmoidIndex = 0;
+            for (int i = (int)Genes.MainResistance; i < (int)Genes.Health; i++)
+            {
+
+                traits[(index * (int)Genes.TotalGeneCount) + i] 
+                    = sigmoids[sigmoidIndex].GetTraitValue(genes[(index * (int)Genes.TotalGeneCount) + i]);
+
+                sigmoidIndex++;
+
+            }
+            
+
+
+        }
+
+
+
+    }
 
 
 

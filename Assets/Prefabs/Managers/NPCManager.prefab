@@ -70,12 +70,12 @@ MonoBehaviour:
   - name: Slime View Range
     sigmoid:
       magnitude: 15
-      slope: 0.1
+      slope: 0.25
       verticalOffset: 1
       horizontalOffset: -1
   - name: Tower View Range
     sigmoid:
-      magnitude: 20
+      magnitude: 19
       slope: 0.25
       verticalOffset: 1
       horizontalOffset: -1
@@ -99,25 +99,31 @@ MonoBehaviour:
       horizontalOffset: -1
   - name: Slime Attraction
     sigmoid:
-      magnitude: 1
+      magnitude: 2
       slope: 0.25
-      verticalOffset: 0.5
-      horizontalOffset: -2
+      verticalOffset: -1
+      horizontalOffset: 0
   - name: Tower Attraction
     sigmoid:
       magnitude: 2
       slope: 0.25
-      verticalOffset: 0
+      verticalOffset: -1
       horizontalOffset: 0
   - name: Player Attraction
     sigmoid:
       magnitude: 2
       slope: 0.25
-      verticalOffset: 0
+      verticalOffset: -1
       horizontalOffset: 0
   - name: Wall Attraction
     sigmoid:
-      magnitude: 2
+      magnitude: 0.8
+      slope: 0.25
+      verticalOffset: 0.2
+      horizontalOffset: 0
+  - name: Sheep Attraction
+    sigmoid:
+      magnitude: 1
       slope: 0.25
       verticalOffset: 0
       horizontalOffset: 0
@@ -125,7 +131,7 @@ MonoBehaviour:
     sigmoid:
       magnitude: 2
       slope: 0.25
-      verticalOffset: 0
+      verticalOffset: -1
       horizontalOffset: 0
   - name: Speed
     sigmoid:
@@ -137,22 +143,22 @@ MonoBehaviour:
     sigmoid:
       magnitude: 1
       slope: 0.25
-      verticalOffset: 0.5
+      verticalOffset: 0
       horizontalOffset: 0
   - name: Sprint Duration
     sigmoid:
       magnitude: 5
       slope: 0.25
-      verticalOffset: 2.5
+      verticalOffset: 0
       horizontalOffset: 0
   - name: Sprint Cooldown
     sigmoid:
       magnitude: 5
-      slope: 0.25
-      verticalOffset: 2.5
+      slope: 1
+      verticalOffset: 0
       horizontalOffset: 0
   slimeValues:
-    slimeCount: 3000
+    slimeCount: 5
     sheepAttraction: 1
     towerAttraction: -1
     slimeAttraction: 0.2

@@ -11,208 +11,208 @@ namespace ShepProject
 
     
 
-    public struct GenesArray
-    {
+    //public struct GenesArray
+    //{
 
-        [NativeDisableContainerSafetyRestriction]
-        private NativeArray<float> genes;
+    //    [NativeDisableContainerSafetyRestriction]
+    //    private NativeArray<float> genes;
 
-        //[NativeDisableContainerSafetyRestriction]
-        //private NativeArray<ObjectType> objectTypes;
+    //    //[NativeDisableContainerSafetyRestriction]
+    //    //private NativeArray<ObjectType> objectTypes;
 
-        //public NativeArray<ObjectType>.ReadOnly ObjectTypes => objectTypes.AsReadOnly();
+    //    //public NativeArray<ObjectType>.ReadOnly ObjectTypes => objectTypes.AsReadOnly();
 
-        [NativeDisableContainerSafetyRestriction]
-        private NativeArray<ushort> geneIDs;
+    //    [NativeDisableContainerSafetyRestriction]
+    //    private NativeArray<ushort> geneIDs;
 
-        [NativeDisableContainerSafetyRestriction]
-        private NativeList<ushort> availables;
+    //    [NativeDisableContainerSafetyRestriction]
+    //    private NativeList<ushort> availables;
 
 
 
-        public GenesArray(int maxObjects, int genesPerObject, Allocator type)
-        {
+    //    public GenesArray(int maxObjects, int genesPerObject, Allocator type)
+    //    {
 
-            genes = new NativeArray<float>(maxObjects * genesPerObject, type);
-            //objectTypes = new NativeArray<ObjectType>(maxObjects, type);
-            geneIDs = new NativeArray<ushort>(maxObjects, type);
-            availables = new NativeList<ushort>(maxObjects, type);
+    //        genes = new NativeArray<float>(maxObjects * genesPerObject, type);
+    //        //objectTypes = new NativeArray<ObjectType>(maxObjects, type);
+    //        geneIDs = new NativeArray<ushort>(maxObjects, type);
+    //        availables = new NativeList<ushort>(maxObjects, type);
 
-            for (int i = 0; i < geneIDs.Length; i++)
-            {
-                geneIDs[i] = ushort.MaxValue;
+    //        for (int i = 0; i < geneIDs.Length; i++)
+    //        {
+    //            geneIDs[i] = ushort.MaxValue;
 
-            }
-            for (int i = 0; i < availables.Capacity; i++)
-            {
-                availables.AddNoResize((ushort)((availables.Capacity) - i));
+    //        }
+    //        for (int i = 0; i < availables.Capacity; i++)
+    //        {
+    //            availables.AddNoResize((ushort)((availables.Capacity) - i));
 
-            }
+    //        }
 
-        }
+    //    }
 
 
 
-        #region Get Specific Gene Methods
+    //    #region Get Specific Gene Methods
 
-        private int ObjectTypeIndex(int id)
-        {
+    //    private int ObjectTypeIndex(int id)
+    //    {
 
-            if (geneIDs[id] == ushort.MaxValue)
-            {
-                Debug.LogError("Object " + id + " hasn't been assigned.");
-                return ushort.MaxValue;
-            }
+    //        if (geneIDs[id] == ushort.MaxValue)
+    //        {
+    //            Debug.LogError("Object " + id + " hasn't been assigned.");
+    //            return ushort.MaxValue;
+    //        }
 
-            return geneIDs[id] * (int)GeneGroups.TotalGeneCount;
-        }
+    //        return geneIDs[id] * (int)GeneGroups.TotalGeneCount;
+    //    }
 
-        //public ObjectType GetObjectType(int id)
-        //{
-        //    return objectTypes[id];
-        //}
+    //    //public ObjectType GetObjectType(int id)
+    //    //{
+    //    //    return objectTypes[id];
+    //    //}
 
-        //public void SetObjectType(int id, ObjectType type)
-        //{
-        //    objectTypes[id] = type;
-        //}
+    //    //public void SetObjectType(int id, ObjectType type)
+    //    //{
+    //    //    objectTypes[id] = type;
+    //    //}
 
-        public float GetAttraction(int id, int attraction)
-        {
-            return genes[ObjectTypeIndex(id) + 1 + attraction];
-        }
+    //    public float GetAttraction(int id, int attraction)
+    //    {
+    //        return genes[ObjectTypeIndex(id) + 1 + attraction];
+    //    }
 
-        public float GetAttraction(int id, ObjectType attraction)
-        {
+    //    public float GetAttraction(int id, ObjectType attraction)
+    //    {
 
-            return GetAttraction(id, (int)attraction);
-        }
-        public void SetAttraction(int id, ObjectType attraction, float value)
-        {
+    //        return GetAttraction(id, (int)attraction);
+    //    }
+    //    public void SetAttraction(int id, ObjectType attraction, float value)
+    //    {
 
-            genes[ObjectTypeIndex(id) + 1 + (int)attraction] = value;
+    //        genes[ObjectTypeIndex(id) + 1 + (int)attraction] = value;
 
-        }
+    //    }
 
-        public float GetViewRange(int id, ViewRange range)
-        {
+    //    public float GetViewRange(int id, ViewRange range)
+    //    {
 
-            return genes[ObjectTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range];
-        }
+    //        return genes[ObjectTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range];
+    //    }
 
-        public void SetViewRange(int id, ViewRange range, float value)
-        {
+    //    public void SetViewRange(int id, ViewRange range, float value)
+    //    {
 
-            genes[ObjectTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range] = value;
-        }
+    //        genes[ObjectTypeIndex(id) + 1 + (int)ObjectType.Count + (int)range] = value;
+    //    }
 
-        public float GetResistance(int id, DamageType damageType)
-        {
+    //    public float GetResistance(int id, DamageType damageType)
+    //    {
 
-            return genes[ObjectTypeIndex(id) + (int)damageType];
-        }
+    //        return genes[ObjectTypeIndex(id) + (int)damageType];
+    //    }
 
-        public void SetResistance(int id, DamageType damageType, float value)
-        {
-            genes[ObjectTypeIndex(id) + (int)damageType] = value;
-        }
+    //    public void SetResistance(int id, DamageType damageType, float value)
+    //    {
+    //        genes[ObjectTypeIndex(id) + (int)damageType] = value;
+    //    }
 
-        public float GetOptimalDistance(int id, OptimalDistance optimalDistance)
-        {
-            return genes[ObjectTypeIndex(id)
-                + (int)ObjectType.Count + (int)ViewRange.Count
-                + (int)DamageType.Count + (int)optimalDistance];
-        }
+    //    public float GetOptimalDistance(int id, OptimalDistance optimalDistance)
+    //    {
+    //        return genes[ObjectTypeIndex(id)
+    //            + (int)ObjectType.Count + (int)ViewRange.Count
+    //            + (int)DamageType.Count + (int)optimalDistance];
+    //    }
 
-        public void SetOptimalDistance(int id, OptimalDistance optimalDistance, float value)
-        {
-            genes[ObjectTypeIndex(id)
-                + (int)ObjectType.Count + (int)ViewRange.Count
-                + (int)DamageType.Count + (int)optimalDistance] = value;
-        }
+    //    public void SetOptimalDistance(int id, OptimalDistance optimalDistance, float value)
+    //    {
+    //        genes[ObjectTypeIndex(id)
+    //            + (int)ObjectType.Count + (int)ViewRange.Count
+    //            + (int)DamageType.Count + (int)optimalDistance] = value;
+    //    }
 
-        public float GetSpeed(int id)
-        {
+    //    public float GetSpeed(int id)
+    //    {
 
-            return genes[ObjectTypeIndex(id) + (int)GeneGroups.Speed];
-        }
+    //        return genes[ObjectTypeIndex(id) + (int)GeneGroups.Speed];
+    //    }
 
-        public void SetSpeed(int id, float speed)
-        {
+    //    public void SetSpeed(int id, float speed)
+    //    {
 
-            genes[ObjectTypeIndex(id) + (int)GeneGroups.Speed] = speed;
-        }
+    //        genes[ObjectTypeIndex(id) + (int)GeneGroups.Speed] = speed;
+    //    }
 
-        public float GetTurnRate(int id)
-        {
+    //    public float GetTurnRate(int id)
+    //    {
 
-            return genes[ObjectTypeIndex(id) + (int)GeneGroups.TurnRate];
-        }
+    //        return genes[ObjectTypeIndex(id) + (int)GeneGroups.TurnRate];
+    //    }
 
-        public void SetTurnRate(int id, float value)
-        {
+    //    public void SetTurnRate(int id, float value)
+    //    {
 
-            genes[ObjectTypeIndex(id) + (int)GeneGroups.TurnRate] = value;
+    //        genes[ObjectTypeIndex(id) + (int)GeneGroups.TurnRate] = value;
 
-        }
+    //    }
 
-        public float GetHealth(int id)
-        {
+    //    public float GetHealth(int id)
+    //    {
 
-            return genes[ObjectTypeIndex(id) + (int)GeneGroups.Health];
-        }
+    //        return genes[ObjectTypeIndex(id) + (int)GeneGroups.Health];
+    //    }
 
-        public void SetHealth(int id, float value)
-        {
+    //    public void SetHealth(int id, float value)
+    //    {
 
-            genes[ObjectTypeIndex(id) + (int)GeneGroups.Health] = value;
+    //        genes[ObjectTypeIndex(id) + (int)GeneGroups.Health] = value;
 
-        }
+    //    }
 
 
-        #endregion
+    //    #endregion
 
-        public void AddGenesToObject(ushort objectID)
-        {
-            //availableIDsEndIndex++;
-            //geneIDs[objectID] = availables[availableIDsEndIndex];
+    //    public void AddGenesToObject(ushort objectID)
+    //    {
+    //        //availableIDsEndIndex++;
+    //        //geneIDs[objectID] = availables[availableIDsEndIndex];
 
-            geneIDs[objectID] = availables[availables.Length - 1];
-            availables.RemoveAt(availables.Length - 1);
+    //        geneIDs[objectID] = availables[availables.Length - 1];
+    //        availables.RemoveAt(availables.Length - 1);
 
-        }
+    //    }
 
 
-        public void ResetIDGenes(int id)
-        {
+    //    public void ResetIDGenes(int id)
+    //    {
 
-            for (int i = ObjectTypeIndex(id);
-                i < ObjectTypeIndex(id) + (int)GeneGroups.TotalGeneCount; i++)
-            {
-                genes[i] = -1;
+    //        for (int i = ObjectTypeIndex(id);
+    //            i < ObjectTypeIndex(id) + (int)GeneGroups.TotalGeneCount; i++)
+    //        {
+    //            genes[i] = -1;
 
-            }
+    //        }
 
-            //need to add the returned ID to the end
-            //and then the id at the end position to where this one was
+    //        //need to add the returned ID to the end
+    //        //and then the id at the end position to where this one was
 
-            availables.AddNoResize(geneIDs[id]);
+    //        availables.AddNoResize(geneIDs[id]);
 
 
-            //objectTypes[id] = ObjectType.None;
-            geneIDs[id] = ushort.MaxValue;
-        }
+    //        //objectTypes[id] = ObjectType.None;
+    //        geneIDs[id] = ushort.MaxValue;
+    //    }
 
-        public void Dispose()
-        {
-            genes.Dispose();
-            geneIDs.Dispose();
-            //objectTypes.Dispose();
-            availables.Dispose();
-        }
+    //    public void Dispose()
+    //    {
+    //        genes.Dispose();
+    //        geneIDs.Dispose();
+    //        //objectTypes.Dispose();
+    //        availables.Dispose();
+    //    }
 
 
 
-    }
+    //}
 
 }

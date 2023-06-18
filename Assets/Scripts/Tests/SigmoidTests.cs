@@ -16,6 +16,16 @@ public class SigmoidTests : MonoBehaviour
     public float pointSpace;
 
     public int2 range;
+    public float geneValue;
+    public float traitValue;
+
+
+    private void OnValidate()
+    {
+
+        traitValue = sigmoid.GetTraitValue(geneValue);
+
+    }
 
     // Update is called once per frame
     void Update()
@@ -26,6 +36,8 @@ public class SigmoidTests : MonoBehaviour
         float max = range.y;
 
         Draw.Line(new float3(range.x, 0, 0), new float3(range.y, 0, 0), Color.cyan);
+
+        traitValue = sigmoid.GetTraitValue(geneValue);
 
         while (min < max)
         {

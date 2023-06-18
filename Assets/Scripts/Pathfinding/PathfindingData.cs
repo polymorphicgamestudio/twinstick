@@ -159,10 +159,9 @@ namespace ShepProject
         public float2 GetHeadingToDestination(float2 position, float2 destination)
         {
 
-            int posNode = GetNodeIndexFromPosition(position);
-            int destNode = GetNodeIndexFromPosition(destination);
-			
-            return directions[vectorField[(posNode * (setupData.columns * setupData.rows)) + destNode]];
+            return directions[vectorField[
+                    (GetNodeIndexFromPosition(position) * (setupData.columns * setupData.rows))
+                    + GetNodeIndexFromPosition(destination)]];
 
         }
 

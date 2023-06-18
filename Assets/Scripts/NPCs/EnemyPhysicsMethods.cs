@@ -15,7 +15,7 @@ namespace ShepProject
 
         public int EnemyID => enemyID;
 
-        private GenesArray genes;
+        private EvolutionStructure evolutionStructure;
 
         [SerializeField]
         private Rigidbody rb;
@@ -35,12 +35,12 @@ namespace ShepProject
         }
 
 
-        public void SetInitialInfo(ushort enemyID, GenesArray genes, NPCManager manager)
+        public void SetInitialInfo(ushort enemyID, EvolutionStructure evolutionStructure, NPCManager manager)
         {
 
             this.manager = manager;
             this.enemyID = enemyID;
-            this.genes = genes;
+            this.evolutionStructure = evolutionStructure;
 
         }
 
@@ -48,18 +48,34 @@ namespace ShepProject
         {
             //get the resistance for this type of damage to check for any decreases in damage
             //then deal the damage
-                                            //using this part when resistances work
-            float scaledDamage = amount;// * genes.GetResistance(enemyID, damageType);
+            float scaledDamage = amount;
+            SlimeType type = (SlimeType)damageType;
 
-            
+            if (evolutionStructure.GetMainType(EnemyID) == type 
+                && evolutionStructure.GetMainType(EnemyID) == type)
+            {
+                scaledDamage *= (evolutionStructure.GetMainResistance(EnemyID)
+                    > evolutionStructure.GetSecondaryResistance(EnemyID))
+                    ? evolutionStructure.GetMainResistance(EnemyID)
+                    : evolutionStructure.GetSecondaryResistance(EnemyID);
 
+            }
+            else if (evolutionStructure.GetMainType(EnemyID) == type)
+            {
+                scaledDamage *= evolutionStructure.GetMainResistance(EnemyID);
 
-            float health = genes.GetHealth(enemyID);
+            }
 
+            else if (evolutionStructure.GetMainType(EnemyID) == type)
+            {
+                scaledDamage *= evolutionStructure.GetSecondaryResistance(EnemyID);
 
+            }
+
+            float health = evolutionStructure.GetHealth(enemyID);
             health -= scaledDamage;
 
-            genes.SetHealth(enemyID, health);
+            evolutionStructure.SetHealth(enemyID, health);
 
             if (health < 0) 
             {
