@@ -15,18 +15,14 @@ namespace ShepProject
 
         public int EnemyID => enemyID;
 
-        private EvolutionStructure evolutionStructure;
+        //private EvolutionStructure evolutionStructure;
 
         [SerializeField]
         private Rigidbody rb;
         private NPCManager manager;
 
 
-        public bool Initialized()
-        {
-            return enemyID != -1;
-
-        }
+        public bool Initialized => enemyID != -1;
 
         public void UpdateID(ushort enemyID)
         {
@@ -35,12 +31,12 @@ namespace ShepProject
         }
 
 
-        public void SetInitialInfo(ushort enemyID, EvolutionStructure evolutionStructure, NPCManager manager)
+        public void SetInitialInfo(ushort enemyID, NPCManager manager)
         {
 
             this.manager = manager;
             this.enemyID = enemyID;
-            this.evolutionStructure = evolutionStructure;
+            //this.evolutionStructure = evolutionStructure;
 
         }
 
@@ -51,31 +47,31 @@ namespace ShepProject
             float scaledDamage = amount;
             SlimeType type = (SlimeType)damageType;
 
-            if (evolutionStructure.GetMainType(EnemyID) == type 
-                && evolutionStructure.GetMainType(EnemyID) == type)
+            if (manager.EvolutionStructure.GetMainType(EnemyID) == type 
+                && manager.EvolutionStructure.GetMainType(EnemyID) == type)
             {
-                scaledDamage *= (evolutionStructure.GetMainResistance(EnemyID)
-                    > evolutionStructure.GetSecondaryResistance(EnemyID))
-                    ? evolutionStructure.GetMainResistance(EnemyID)
-                    : evolutionStructure.GetSecondaryResistance(EnemyID);
+                scaledDamage *= (manager.EvolutionStructure.GetMainResistance(EnemyID)
+                    > manager.EvolutionStructure.GetSecondaryResistance(EnemyID))
+                    ? manager.EvolutionStructure.GetMainResistance(EnemyID)
+                    : manager.EvolutionStructure.GetSecondaryResistance(EnemyID);
 
             }
-            else if (evolutionStructure.GetMainType(EnemyID) == type)
+            else if (manager.EvolutionStructure.GetMainType(EnemyID) == type)
             {
-                scaledDamage *= evolutionStructure.GetMainResistance(EnemyID);
-
-            }
-
-            else if (evolutionStructure.GetMainType(EnemyID) == type)
-            {
-                scaledDamage *= evolutionStructure.GetSecondaryResistance(EnemyID);
+                scaledDamage *= manager.EvolutionStructure.GetMainResistance(EnemyID);
 
             }
 
-            float health = evolutionStructure.GetHealth(enemyID);
+            else if (manager.EvolutionStructure.GetMainType(EnemyID) == type)
+            {
+                scaledDamage *= manager.EvolutionStructure.GetSecondaryResistance(EnemyID);
+
+            }
+
+            float health = manager.EvolutionStructure.GetHealth(enemyID);
             health -= scaledDamage;
 
-            evolutionStructure.SetHealth(enemyID, health);
+            manager.EvolutionStructure.SetHealth(enemyID, health);
 
             if (health < 0) 
             {
@@ -93,6 +89,11 @@ namespace ShepProject
 
         }
 
+        public void GameOver()
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
 
 
 

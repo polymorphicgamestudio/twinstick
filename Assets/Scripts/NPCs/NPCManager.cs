@@ -68,6 +68,7 @@ namespace ShepProject
         //private int[] idChecks;
 
         private Dictionary<int, EnemyPhysicsMethods> enemyPhysicsMethods;
+        private Dictionary<int, SheepPhysicsMethods> sheepPhysicsMethods;
 
         private List<EnemyBurrow> burrows;
 
@@ -78,7 +79,8 @@ namespace ShepProject
         //public GenesArray Genes => genes;
 
 
-        public EvolutionStructure evolutionStructure;
+        private EvolutionStructure evolutionStructure;
+        public EvolutionStructure EvolutionStructure => evolutionStructure;
 
 
         //will contain IDs of sheep and player, and towers won't be targeted
@@ -159,7 +161,7 @@ namespace ShepProject
             for (int i = 0; i < choosableTargets.Length; i++)
             {
 
-                quadTree.Transforms[choosableTargets[i]].GetComponent<Rigidbody>().isKinematic = false;
+                sheepPhysicsMethods[choosableTargets[i]].UnsetKinematic();
 
 
             }
@@ -195,6 +197,7 @@ namespace ShepProject
             currentCountdownToWave = countdownToWave;
 
             enemyPhysicsMethods = new Dictionary<int, EnemyPhysicsMethods>(MaxTreeObjects);
+            sheepPhysicsMethods = new Dictionary<int, SheepPhysicsMethods>(sheepCount);
 
             for (int i = 0; i < targetIDs.Length; i++)
                 targetIDs[i] = ushort.MaxValue;
@@ -281,6 +284,14 @@ namespace ShepProject
                     //    });
 
                     //endOfWaveCanvasParent.SetActive(true);
+
+                    for (int i = 0; i < choosableTargets.Length; i++)
+                    {
+
+                        sheepPhysicsMethods[choosableTargets[i]].WaveEndInfoSet();
+
+                    }
+
                 }
 
 
@@ -500,86 +511,19 @@ namespace ShepProject
             for (int i = 0; i <= quadTree.positionCount; i++)
             {
 
+
+                /*
+                 * 
+                 * cache sheep animator and rigidbody and put them inside a dictionary
+                 * 
+                 */
                 if (quadTree.objTypes[quadTree.objectIDs[i]] == ObjectType.Sheep)
                 {
                     Profiler.BeginSample("Sheep Velocity");
                     //if being chased, set velocity, otherwise don't
-                    int ID = quadTree.objectIDs[i];
-                    float sheepSpeed = 3;
 
-                    if (sheepDistancesToSlimes[ID] > 64)
-                    {
-                        //idle animation
-                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject
-                            .GetComponent<Animator>().SetBool("Moving", false);
-                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject
-                            .GetComponent<Animator>().SetBool("Running", false);
-
-                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject
-                            .GetComponent<Rigidbody>().velocity = Vector3.zero;
-                    }
-                    else if (sheepDistancesToSlimes[ID] > 36)
-                    {
-                        //walk animation
-                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject
-                            .GetComponent<Animator>().SetBool("Moving", true);
-                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject
-                            .GetComponent<Animator>().SetBool("Running", false);
-
-                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
-                            = (quadTree.Transforms[quadTree.objectIDs[i]].forward * (sheepSpeed / 2f));
-                    }
-                    else if (sheepDistancesToSlimes[ID] >= 4)
-                    {
-                        //run animation
-                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject
-                            .GetComponent<Animator>().SetBool("Moving", true);
-                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject
-                            .GetComponent<Animator>().SetBool("Running", true);
-
-                        quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
-                            = (quadTree.Transforms[quadTree.objectIDs[i]].forward * sheepSpeed);
-                    }
-                    else
-                    {
-
-                        for (int j = 0; j < choosableTargets.Length; j++)
-                        {
-
-                            if (choosableTargets[j] != quadTree.objectIDs[i])
-                                continue;
-
-                            choosableTargets.RemoveAt(j);
-
-                            break;
-
-                        }
-                        //choosableTargets[quadTree.objectIDs[i] - 1] = ushort.MaxValue;
-
-                        //die
-                        //evolutionStructure.ResetIDGenes(quadTree.objectIDs[i]);
-                        quadTree.QueueDeletion(quadTree.objectIDs[i]);
-
-                        for (int j = 0; j < targetIDs.Length; j++)
-                        {
-
-                            if (targetIDs[j] == quadTree.objectIDs[i])
-                            {
-                                targetIDs[j] = ushort.MaxValue;
-                            }
-
-                        }
-
-                        //if all sheep are dead, game over.
-
-                        if (choosableTargets.Length == 0)
-                        {
-                            Inst.GameOverEventTrigger();
-                            //GameOver();
-                            break;
-                        }
-
-                    }
+                    sheepPhysicsMethods[
+                        quadTree.objectIDs[i]].SetSlimeDistance(sheepDistancesToSlimes[quadTree.objectIDs[i]]);
 
                     Profiler.EndSample();
 
@@ -648,9 +592,9 @@ namespace ShepProject
 
             EnemyPhysicsMethods methods = enemy.GetComponent<EnemyPhysicsMethods>();
 
-            if (!methods.Initialized())
+            if (!methods.Initialized)
             {
-                methods.SetInitialInfo(id, evolutionStructure, this);
+                methods.SetInitialInfo(id, this);
             }
 
             enemyPhysicsMethods.Add(id, methods);
@@ -713,18 +657,14 @@ namespace ShepProject
 
                 GameObject sheep = Instantiate(sheepPrefab);
 
+
                 sheep.transform.position = new Vector3(Random.Range(min, max), 0, Random.Range(min, max));
 
                 ushort id = quadTree.AddTransform(sheep.transform, ObjectType.Sheep);
-                //evolutionStructure.AddGenesToObject(id);
 
-                ////genes.SetObjectType(id, ObjectType.Sheep);
-                //evolutionStructure.SetAttraction(id, ObjectType.Slime, 1);
-                //evolutionStructure.SetAttraction(id, ObjectType.Wall, 1);
-
-                //evolutionStructure.SetTurnRate(id, .5f);
-                //evolutionStructure.SetViewRange(id, ObjectType.Slime, 8);
-                //evolutionStructure.SetSpeed(id, 3);
+                SheepPhysicsMethods methods = sheep.GetComponent<SheepPhysicsMethods>();
+                methods.SetInitialInfo(id, this);
+                sheepPhysicsMethods.Add(id, methods);
 
                 choosableTargets.Add(id);
 
@@ -752,7 +692,7 @@ namespace ShepProject
 
             for (int i = 0; i < count; i++)
             {
-                EnemyBurrow burrow = GameObject.Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
+                EnemyBurrow burrow = Instantiate(burrowPrefab).GetComponent<EnemyBurrow>();
 
 
 
@@ -793,6 +733,41 @@ namespace ShepProject
 
         }
 
+        public void OnSheepDeath(ushort id)
+        {
+
+            ResetSlimeTargetID resetTargets = new ResetSlimeTargetID();
+            resetTargets.targetIDs = targetIDs;
+            resetTargets.sheepID = id;
+            JobHandle handle = resetTargets.Schedule(targetIDs.Length, SystemInfo.processorCount);
+
+            for (int j = 0; j < choosableTargets.Length; j++)
+            {
+
+                if (choosableTargets[j] != id)
+                    continue;
+
+                choosableTargets.RemoveAt(j);
+
+                break;
+
+            }
+
+            quadTree.QueueDeletion(id);
+            sheepPhysicsMethods.Remove(id);
+
+
+            //if all sheep are dead, game over.
+            if (choosableTargets.Length == 0)
+            {
+                Inst.GameOverEventTrigger();
+
+            }
+
+            handle.Complete();
+
+        }
+
         private void GameOver()
         {
 
@@ -804,10 +779,7 @@ namespace ShepProject
                 if (quadTree.objTypes[quadTree.objectIDs[i]] != ObjectType.Slime)
                     continue;
 
-                Rigidbody rb = quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>();
-
-                rb.velocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
+                enemyPhysicsMethods[quadTree.objectIDs[i]].GameOver();
 
             }
 

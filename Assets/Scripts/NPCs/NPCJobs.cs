@@ -740,6 +740,8 @@ namespace ShepProject
 
             //builder.Ray(pos, math.forward(quaternion.Euler(new float3(0, headingCalculation, 0))), Color.magenta);
 
+
+
             if (headingCalculation < 0)
             {
                 headingCalculation += 2 * math.PI;
@@ -749,6 +751,17 @@ namespace ShepProject
 
             if (local == 0)
                 return;
+
+            //to stop sheep from turning to the top of the map
+            if (objType == ObjectType.Sheep)
+            {
+
+                if (headingCalculation == 0)
+                {
+                    return;
+                }
+
+            }
 
             if (local < -math.PI)
             {
@@ -779,6 +792,23 @@ namespace ShepProject
 
 
             }
+
+        }
+    }
+
+    public struct ResetSlimeTargetID : IJobParallelFor
+    {
+
+        public NativeArray<ushort> targetIDs;
+        public ushort sheepID;
+
+        public void Execute(int index)
+        {
+            if (targetIDs[index] == sheepID)
+            {
+                targetIDs[index] = ushort.MaxValue;
+            }
+
 
         }
     }
