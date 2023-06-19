@@ -157,7 +157,7 @@ namespace ShepProject
         }
 
         // Update is called once per frame
-        void Update()
+        public void ManualUpdate()
         {
 
             setupData.origin = transform.position;

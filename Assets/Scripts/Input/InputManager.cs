@@ -89,7 +89,7 @@ namespace ShepProject
 
         }
 
-        private void Update()
+        public void ManualUpdate()
         {
 
             raycastResults.Clear();

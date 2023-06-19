@@ -76,6 +76,12 @@ public abstract class BaseTower : MonoBehaviour
 
     }
 
+    public virtual void EndOfWave()
+    {
+
+        
+    }
+
 
     public virtual void ShootTurret()
     {

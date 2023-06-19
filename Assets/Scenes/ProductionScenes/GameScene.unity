@@ -639,11 +639,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: sheepCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: burrowCount
-      value: 1
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: startButton
@@ -651,10 +647,6 @@ PrefabInstance:
       objectReference: {fileID: 1281194100}
     - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: slimeValues.slimeCount
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: slimeValues.slimeHealth
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8121321063624790235, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}

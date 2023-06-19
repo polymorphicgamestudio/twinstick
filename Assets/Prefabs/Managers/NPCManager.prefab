@@ -48,10 +48,11 @@ MonoBehaviour:
   sheepPrefab: {fileID: 8759591037758108741, guid: 717e80078cde2704f99bd475bd0ff376, type: 3}
   endOfWaveCanvasParent: {fileID: 0}
   slimePrefab: {fileID: 3180250549467891622, guid: d3835c63c2cab04448df5a6b0161012f, type: 3}
-  burrowCount: 30
-  sheepCount: 10
+  burrowCount: 10
+  sheepCount: 15
   countdownToWave: 10000
   currentCountdownToWave: 0
+  quadTreeBucketSize: 15
   startButton: {fileID: 0}
   spawningEnemies: 0
   sigmoids:
@@ -158,7 +159,7 @@ MonoBehaviour:
       verticalOffset: 0
       horizontalOffset: 0
   slimeValues:
-    slimeCount: 5
+    slimeCount: 30
     sheepAttraction: 1
     towerAttraction: -1
     slimeAttraction: 0.2
@@ -170,4 +171,4 @@ MonoBehaviour:
     slimeOptimalDistance: -0.75
     slimeSpeed: 3.5
     slimeTurnRate: 0.6
-    slimeHealth: 100
+    slimeHealth: 10

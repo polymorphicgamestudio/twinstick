@@ -10,7 +10,6 @@ namespace ShepProject
 
     public class LightningTowerController : BaseTower
     {
-
         public GameObject lightningBolt;
         public Transform end;
 
@@ -27,7 +26,7 @@ namespace ShepProject
             base.Start();
 
             lightningBolt.transform.SetParent(null);
-
+            lightningBolt.SetActive(false);
         }
 
         public override void ManualUpdate()
@@ -69,6 +68,20 @@ namespace ShepProject
 
         }
 
+        public override void EndOfWave()
+        {
+            base.EndOfWave();
+
+            Invoke(nameof(TurnOffBolt), currentBeamActivationTime);
+
+        }
+
+        protected void TurnOffBolt()
+        {
+            currentBeamActivationTime = 0;
+            lightningBolt.SetActive(false);
+            
+        }
 
 
     }

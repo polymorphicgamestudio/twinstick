@@ -34,11 +34,6 @@ namespace ShepProject
 
         public int burrowCount;
         public int sheepCount;
-
-        //[ReadOnly]
-        //public int TreeObjectCount;
-
-        //[SerializeField]
         private int waveNumber;
         private bool duringWave;
         private bool updateInitialize;
@@ -55,29 +50,21 @@ namespace ShepProject
         public int MaxTreeObjects => slimeValues.slimeCount + 750;
 
         private int enemiesLeftToSpawn;
-
         private int enemiesLeftToKill;
-
+        [SerializeField]
+        private short quadTreeBucketSize;
 
         public Button startButton;
 
         [SerializeField]
         private bool spawningEnemies;
 
-        //[SerializeField]
-        //private int[] idChecks;
-
         private Dictionary<int, EnemyPhysicsMethods> enemyPhysicsMethods;
         private Dictionary<int, SheepPhysicsMethods> sheepPhysicsMethods;
-
         private List<EnemyBurrow> burrows;
 
         [SerializeField]
         private SigmoidInfo[] sigmoids;
-
-        //private GenesArray evolutionStructure;
-        //public GenesArray Genes => genes;
-
 
         private EvolutionStructure evolutionStructure;
         public EvolutionStructure EvolutionStructure => evolutionStructure;
@@ -109,41 +96,6 @@ namespace ShepProject
 
         private bool slimeCustomization;
 
-        private void OnGUI()
-        {
-
-
-            //if (GUI.Button(new Rect(50, 25, 250, 50), "Damage Random Enemies")) {
-            //	int enemiesToDamage = 5;
-
-
-            //	for (int i = quadTree.positionCount; i > 0; i--) {
-
-            //		if (genes.GetObjectType(i) != ObjectType.Slime)
-            //			continue;
-
-            //		enemyPhysicsMethods[i].DealDamage(25, DamageType.Blaster);
-
-            //		enemiesToDamage--;
-
-            //		if (enemiesToDamage == 0)
-            //			break;
-
-            //	}
-
-
-            //}
-
-
-
-        }
-
-        private void OnDrawGizmos()
-        {
-
-
-        }
-
         #endregion
 
 
@@ -166,6 +118,11 @@ namespace ShepProject
 
             }
 
+
+            duringWave = true;
+            updateInitialize = true;
+
+
         }
 
         private void Awake()
@@ -176,10 +133,10 @@ namespace ShepProject
 
             int targetCount = 100;
             evolutionStructure = 
-                new EvolutionStructure(slimeValues.slimeCount, MaxTreeObjects, (int)Genes.TotalGeneCount, sigmoids, 25, 0);
+                new EvolutionStructure(slimeValues.slimeCount, MaxTreeObjects, (int)Genes.TotalGeneCount, sigmoids, 1, 0);
 
 
-            slimePool = new EnemyObjectPool(slimePrefab, (ushort)MaxTreeObjects, 1000);
+            slimePool = new EnemyObjectPool(slimePrefab, (ushort)MaxTreeObjects, 20);
 
             choosableTargets = new NativeList<ushort>(targetCount, Allocator.Persistent);
             targetIDs = new NativeArray<ushort>(MaxTreeObjects, Allocator.Persistent);
@@ -190,7 +147,7 @@ namespace ShepProject
             headings = new NativeArray<float>(MaxTreeObjects, Allocator.Persistent);
 
             burrows = new List<EnemyBurrow>();
-            quadTree = new QuadTree(MaxTreeObjects, 30);
+            quadTree = new QuadTree(MaxTreeObjects, quadTreeBucketSize);
 
             quadTree.npcManager = this;
 
@@ -241,7 +198,7 @@ namespace ShepProject
 
         }
 
-        void Update()
+        public void ManualUpdate()
         {
 
 
@@ -270,9 +227,12 @@ namespace ShepProject
             if (updateInitialize)
             {
                 updateInitialize = false;
+
                 currentCountdownToWave = countdownToWave;
 
-
+                if (waveNumber > 0)
+                	//end of wave event invoke
+                	Inst.EndOfWaveEventTrigger(waveNumber);
 
                 if (waveNumber > 0)
                 {
@@ -367,7 +327,7 @@ namespace ShepProject
                 enemiesLeftToSpawn = slimeValues.slimeCount;
                 enemiesLeftToKill = slimeValues.slimeCount;
 
-                return;
+                //return;
 
             }
 
@@ -720,8 +680,10 @@ namespace ShepProject
             enemiesLeftToKill--;
             if (enemiesLeftToKill <= 0)
             {
+
                 duringWave = false;
                 updateInitialize = true;
+                waveNumber++;
             }
 
         }

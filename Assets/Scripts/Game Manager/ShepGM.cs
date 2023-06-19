@@ -39,6 +39,7 @@ namespace ShepProject {
 
 
 		public event EventTrigger gameOver;
+        public event EventTrigger<int> endOfWave;
 
 		private void Awake() 
 		{
@@ -73,6 +74,26 @@ namespace ShepProject {
                 Debug.LogError("ShepGM Instance already exists!");
             }
 
+        }
+
+
+
+        private void Update()
+        {
+
+
+            input.ManualUpdate();
+
+            npcs.ManualUpdate();
+            buildings.ManualUpdate();
+            pathfinding.ManualUpdate();
+
+
+        }
+
+        public void EndOfWaveEventTrigger(int waveEndedNumber)
+        {
+            endOfWave?.Invoke(waveEndedNumber);
         }
 
         public void GameOverEventTrigger() 

@@ -11,7 +11,17 @@ public abstract class BeamTowerController : BaseTower
     protected Vector3 direction;
 
     public float beamActivationTime;
-    private float currentBeamActivationTime;
+    protected float currentBeamActivationTime;
+
+
+    protected override void Start()
+    {
+        base.Start();
+
+
+
+    }
+
 
     public override void ManualUpdate()
     {
@@ -21,13 +31,28 @@ public abstract class BeamTowerController : BaseTower
         {
             currentBeamActivationTime -= Time.deltaTime;
 
-            if (currentBeamActivationTime < 0)
+            if (currentBeamActivationTime <= 0)
                 beam.enabled = false;
 
 
         }
 
 
+    }
+
+    public override void EndOfWave()
+    {
+        base.EndOfWave();
+
+        Invoke(nameof(TurnOffBeam), currentBeamActivationTime);
+
+    }
+
+    protected void TurnOffBeam()
+    {
+        currentBeamActivationTime = 0;
+        beam.enabled = false;
+        barrelParticles.Stop();
     }
 
     public override void ShootTurret()

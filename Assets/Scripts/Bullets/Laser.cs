@@ -14,11 +14,23 @@ namespace ShepProject
         private Transform muzzleEffect;
 
         [SerializeField]
-        private LineRenderer beam;
+        public LineRenderer beam;
+
+
+        private void Awake()
+        {
+
+            laserEnd.gameObject.SetActive(false);
+            muzzleEffect.gameObject.SetActive(false);
+        }
 
         void Start()
         {
             beam = GetComponent<LineRenderer>();
+
+
+            beam.enabled = false;
+
         }
 
         void Update()

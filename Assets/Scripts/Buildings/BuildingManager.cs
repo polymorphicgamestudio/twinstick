@@ -68,12 +68,13 @@ namespace ShepProject
 
             Inst.Input.Actions.Player.Run.performed += HideHologramsWhileRunning;
             Inst.Input.Actions.Player.Run.canceled += ShowHologramsAfterRunning;
+            Inst.endOfWave += EndOfWave;
 
             #endregion
         }
 
 
-        private void Update()
+        public void ManualUpdate()
         {
 
             #region Building Towers
@@ -153,6 +154,15 @@ namespace ShepProject
             if (Inst.NPCS.CurrentCountdownToWave > 0)
                 return;
 
+            TowersSearchForTargets();
+            TowersUpdate();
+
+            #endregion
+
+        }
+
+        private void TowersSearchForTargets()
+        {
             for (int i = 0; i < towers.Count; i++)
             {
 
@@ -175,10 +185,10 @@ namespace ShepProject
 
 
             }
+        }
 
-
-            //now done searching, do the manual update
-
+        private void TowersUpdate()
+        {
             for (int i = 0; i < towers.Count; i++)
             {
 
@@ -186,29 +196,20 @@ namespace ShepProject
 
             }
 
-            #endregion
+        }
+
+        private void EndOfWave(int data)
+        {
+            for (int i = 0; i < towers.Count; i++)
+            {
+
+                towers[i].EndOfWave();
+
+            }
 
         }
 
 
-        ////I really hate how this works, but I'm setting this up for now because selecting towers from the HUD
-        ////using the mouse doesn't work otherwise.  Still not a fan of building manager for the record  - landon 
-        //public void SetStateFromActionSelectionNumber(int actionNumber)
-        //{
-
-        //    actionSelectionNumber = actionNumber;// actionNumber > 10 ? 10 : actionNumber < 1 ? 1 : actionNumber;
-        //    if (actionSelectionNumber > 3)
-        //    {
-        //        modeController.TurnOnBuildMode();
-
-        //        InstantiateHologram(actionSelectionNumber - 3);
-
-        //    }
-        //    else
-        //    {
-        //        CancelBuildMode();
-        //    }
-        //}
 
         #region Building Related
 

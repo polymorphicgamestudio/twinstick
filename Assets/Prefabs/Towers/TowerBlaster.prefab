@@ -455,7 +455,7 @@ MonoBehaviour:
   timer: 0.2
   currentTimer: 0
   minDist: 0
-  maxDist: 20
+  maxDist: 30
   slimeTarget: {fileID: 0}
   rotBoneHoz: {fileID: 3770160217998941399}
   rotBoneVert: {fileID: 5855215440035512831}
@@ -463,7 +463,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   barrel: {fileID: 4172032191077313826}
-  barrelParticles: {fileID: 2693510478044710855}
+  barrelParticles: {fileID: 3536865060065689364}
   beam: {fileID: 1879553106351586658}
   beamActivationTime: 0.1
 --- !u!1 &5339181460291822323
@@ -5656,6 +5656,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Blaster MuzzleFlash
       objectReference: {fileID: 0}
+    - target: {fileID: 7148873417289596536, guid: 41df7fed09200d145aa61a4a15990cf0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7148873417289596541, guid: 41df7fed09200d145aa61a4a15990cf0, type: 3}
       propertyPath: looping
       value: 0
@@ -5714,11 +5718,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7148873417289596543, guid: 41df7fed09200d145aa61a4a15990cf0, type: 3}
   m_PrefabInstance: {fileID: 5067855789589445050}
   m_PrefabAsset: {fileID: 0}
---- !u!198 &2693510478044710855 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 7148873417289596541, guid: 41df7fed09200d145aa61a4a15990cf0, type: 3}
-  m_PrefabInstance: {fileID: 5067855789589445050}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5465199262965836340
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5774,6 +5773,10 @@ PrefabInstance:
     - target: {fileID: 5894589939212834643, guid: c744db66cc74bc0458c07e1f6c1caff7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5894589939212834646, guid: c744db66cc74bc0458c07e1f6c1caff7, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
