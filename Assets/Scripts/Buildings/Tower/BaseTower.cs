@@ -14,6 +14,7 @@ public abstract class BaseTower : MonoBehaviour
 
     public float minDist = 0f;
     public float maxDist = 20f;
+    public float towerDamage;
 
     private float maxDistSquared;
     private float targetSqrDistance;

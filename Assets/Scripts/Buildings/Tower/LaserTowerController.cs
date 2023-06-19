@@ -44,7 +44,8 @@ public class LaserTowerController : BeamTowerController
 
             for (int i = 0; i < hits.Length; i++)
             {
-                hits[i].collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Laser);
+                hits[i].collider.GetComponent<EnemyPhysicsMethods>()
+                    .DealDamage(towerDamage * Time.deltaTime, DamageType.Laser);
 
             }
 

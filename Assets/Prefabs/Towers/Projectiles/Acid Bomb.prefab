@@ -233,6 +233,7 @@ MonoBehaviour:
   damageType: 3
   explosion: {fileID: 3779588476158871047, guid: 259c00593548c1a4b9f92c4a3c3ccf5f, type: 3}
   explosionRange: 3
+  damage: 50
 --- !u!135 &5527182952864859329
 SphereCollider:
   m_ObjectHideFlags: 0

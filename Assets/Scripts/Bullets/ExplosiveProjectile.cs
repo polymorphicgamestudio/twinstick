@@ -13,6 +13,7 @@ namespace ShepProject
         public DamageType damageType;
         public ParticleSystem explosion;
         public float explosionRange;
+        public float damage;
 
         void OnTriggerEnter(Collider collider)
         {
@@ -28,7 +29,7 @@ namespace ShepProject
 
             for (int i = 0; i < overlaps.Length; i++)
             {
-                overlaps[i].GetComponent<EnemyPhysicsMethods>().DealDamage(100, damageType);
+                overlaps[i].GetComponent<EnemyPhysicsMethods>().DealDamage(damage, damageType);
 
 
             }

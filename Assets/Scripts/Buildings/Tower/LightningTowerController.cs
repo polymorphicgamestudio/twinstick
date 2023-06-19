@@ -55,7 +55,7 @@ namespace ShepProject
                 return;
             }
 
-            hit.collider.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Blaster);
+            hit.collider.GetComponent<EnemyPhysicsMethods>().DealDamage(towerDamage, DamageType.Blaster);
 
 
 

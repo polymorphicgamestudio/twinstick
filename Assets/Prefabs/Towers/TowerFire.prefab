@@ -5594,14 +5594,13 @@ MonoBehaviour:
   currentTimer: 0
   minDist: 0
   maxDist: 20
+  towerDamage: 50
   slimeTarget: {fileID: 0}
   rotBoneHoz: {fileID: 5916002734980033242}
   rotBoneVert: {fileID: 6013516840170974966}
-  animator: {fileID: 0}
   mask:
     serializedVersion: 2
     m_Bits: 128
   barrel: {fileID: 6600784619927576588}
   bombPrefab: {fileID: 1950153041623984267, guid: f91dc3a8fe794b84b82fea96b13e0533, type: 3}
   bombSpeed: 10
-  barrel: {fileID: 6600784619927576588}

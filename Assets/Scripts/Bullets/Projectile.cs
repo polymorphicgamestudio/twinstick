@@ -9,6 +9,8 @@ public class Projectile : MonoBehaviour
     private Rigidbody rb;
 
     public float aliveTime;
+    public float damage;
+
 
     private void Update()
     {
@@ -29,7 +31,7 @@ public class Projectile : MonoBehaviour
     {
 
         if (1 << other.gameObject.layer == LayerMask.GetMask("Slime"))
-            other.GetComponent<EnemyPhysicsMethods>().DealDamage(100, DamageType.Player);
+            other.GetComponent<EnemyPhysicsMethods>().DealDamage(damage, DamageType.Player);
 
         Destroy(gameObject);
 

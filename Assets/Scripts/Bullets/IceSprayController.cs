@@ -5,16 +5,17 @@ using UnityEngine;
 
 public class IceSprayController : MonoBehaviour
 {
+    public float damage;
 
     private void OnTriggerEnter(Collider other)
     {
-        other.GetComponent<EnemyPhysicsMethods>().DealDamage(10, DamageType.Ice);
+        other.GetComponent<EnemyPhysicsMethods>().DealDamage(damage * Time.deltaTime, DamageType.Ice);
 
     }
 
     private void OnTriggerStay(Collider other)
     {
-        other.GetComponent<EnemyPhysicsMethods>().DealDamage(10, DamageType.Ice);
+        other.GetComponent<EnemyPhysicsMethods>().DealDamage(damage * Time.deltaTime, DamageType.Ice);
 
     }
 
