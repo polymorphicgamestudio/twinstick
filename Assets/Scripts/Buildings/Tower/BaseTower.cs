@@ -22,7 +22,7 @@ public abstract class BaseTower : MonoBehaviour
 
     public bool NeedsTarget => slimeTarget == null;
 
-    [HideInInspector]
+    //[HideInInspector]
     public Transform slimeTarget;
 
 	public Transform rotBoneHoz;

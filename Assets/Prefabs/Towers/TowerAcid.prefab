@@ -288,10 +288,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectID: 0
-  timer: 0.5
+  timer: 1
   currentTimer: 0
   minDist: 0
-  maxDist: 20
+  maxDist: 30
   towerDamage: 50
   slimeTarget: {fileID: 0}
   rotBoneHoz: {fileID: 5172683211812970943}
@@ -302,6 +302,8 @@ MonoBehaviour:
   barrel: {fileID: 6032181036920477341}
   bombPrefab: {fileID: 2581103228676468692, guid: 10db1ca2c09189744b6c9d0e4db309e4, type: 3}
   bombSpeed: 10
+  minBombAirTime: 0.25
+  maxBombAirTime: 1
 --- !u!1 &3302327193128445562
 GameObject:
   m_ObjectHideFlags: 0
