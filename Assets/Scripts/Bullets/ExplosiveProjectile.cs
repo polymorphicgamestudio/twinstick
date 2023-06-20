@@ -14,7 +14,7 @@ namespace ShepProject
         public DamageType damageType;
         public ParticleSystem explosion;
         public Rigidbody rb;
-        //public float explosionRange;
+        public float explosionRange;
         [HideInInspector]
         public float damage;
         public float projectileSpeed;
