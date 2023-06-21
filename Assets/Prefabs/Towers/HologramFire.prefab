@@ -11,13 +11,14 @@ GameObject:
   - component: {fileID: 1540407395827302224}
   - component: {fileID: 9064258114942690015}
   - component: {fileID: 7565818575480804065}
+  - component: {fileID: 6120724016288353128}
   m_Layer: 0
   m_Name: HologramFire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1540407395827302224
 Transform:
   m_ObjectHideFlags: 0
@@ -85,6 +86,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6120724016288353128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 404178578318331231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5d85eecce8f15847b4474619d211a5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3242967469110905378
 GameObject:
   m_ObjectHideFlags: 0

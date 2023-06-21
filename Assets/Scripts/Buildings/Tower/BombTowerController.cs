@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class BombTowerController : BaseTower
+public class BombTowerController : TowerBaseClass
 {
     public GameObject bombPrefab;
     public float bombSpeed = 10f;

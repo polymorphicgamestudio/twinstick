@@ -77,14 +77,14 @@ GameObject:
   - component: {fileID: 3634079669431937546}
   - component: {fileID: 8653616374335650617}
   - component: {fileID: 2962487812631988365}
-  - component: {fileID: 7695359252614764623}
+  - component: {fileID: 3279578810200674648}
   m_Layer: 9
   m_Name: HologramWall
   m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8139662493593624968
 Transform:
   m_ObjectHideFlags: 0
@@ -104,7 +104,7 @@ Transform:
   - {fileID: 2732241460986858065}
   - {fileID: 5638051999894001210}
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3295081902732344466
 MeshFilter:
@@ -309,7 +309,7 @@ MonoBehaviour:
   wakeSound: {fileID: 8300000, guid: d3d7e2a4500c866478831755cb6829f7, type: 3}
   shootSound: {fileID: 0}
   shootParticles: {fileID: 0}
---- !u!114 &7695359252614764623
+--- !u!114 &3279578810200674648
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -318,11 +318,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5581380165359829353}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fca9d3c6ee8aa204bbd87843be11dfad, type: 3}
+  m_Script: {fileID: 11500000, guid: b1ba78c573667c84b9fa23127b24b72f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wall: {fileID: 1816357759912485291, guid: 2f78a884f09393d41bb265ca722b4575, type: 3}
-  validLocation: 0
+  wall: {fileID: 0}
 --- !u!1 &7089792586384220474
 GameObject:
   m_ObjectHideFlags: 0

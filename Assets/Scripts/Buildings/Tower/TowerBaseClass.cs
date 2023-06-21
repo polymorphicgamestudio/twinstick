@@ -1,7 +1,7 @@
 using Unity.Mathematics;
 using UnityEngine;
 
-public abstract class BaseTower : MonoBehaviour 
+public abstract class TowerBaseClass : MonoBehaviour 
 {
 
     [HideInInspector]

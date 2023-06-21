@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class IceTowerController : BaseTower
+public class IceTowerController : TowerBaseClass
 {
     public ParticleSystem iceParticles;
     public Collider particlesCollider;

@@ -32,11 +32,14 @@ public class RobotController : MonoBehaviour {
 	[HideInInspector] public Vector3 hologramPos;
 
 	public Animator animController;
+	private PlayerMovementController movementController;
 
 
 	private void Start() {
 		player = ShepGM.inst.player.GetComponent<Rigidbody>();
-		ShepGM.inst.Input.Actions.Player.Look.performed += Look_performed;
+		movementController = player.GetComponent<PlayerMovementController>();
+
+        ShepGM.inst.Input.Actions.Player.Look.performed += Look_performed;
 		ShepGM.inst.Input.Actions.Player.MouseDelta.performed += MouseDelta_performed;
 	}
 
@@ -55,7 +58,7 @@ public class RobotController : MonoBehaviour {
 	//animation code put in update so that we can insure IK animation in late update can happen after
 	void Update() {
 		SetMousePos();
-		UpdateJoystickDirOnRunningChange(player.GetComponent<PlayerMovementController>().running);
+		UpdateJoystickDirOnRunningChange(movementController.running);
 		SetNeckAngle(1f, 20f, -20f, 35f);
 		SetLookDirection();
 

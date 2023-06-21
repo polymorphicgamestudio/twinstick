@@ -10,10 +10,10 @@ namespace ShepProject
     public class BuildingManager : SystemBase
     {
 
-        public GameObject[] hologramPrefabs;
-        public GameObject[] buildUpHolograms;
-        public BaseTower[] prefabs;
-        public List<BaseTower> towers;
+        public BuildingPlacementBase[] hologramPrefabs;
+        public GameObject[] buildUpPrefabs;
+        public GameObject[] prefabs;
+        public List<TowerBaseClass> towers;
 
         [SerializeField]
         private BoxCollider playableArea;
@@ -22,15 +22,15 @@ namespace ShepProject
 
         [SerializeField]
         private RobotController controller;
+
+        public RobotController Controller => controller;
+
         [SerializeField]
         private RobotModeController modeController;
 
-        private int currentBuildingIndex;
-        public int actionSelectionNumber;
-        private int previousActionSelection;
+        public RobotModeController ModeController => modeController;
 
-        private GameObject currentHologram;
-        private WallPlacement wallPlacement;
+        private BuildingPlacementBase currentBuilding;
 
         private List<GameObject> currentBuildUps;
         private List<int> buildIndices;
@@ -41,24 +41,22 @@ namespace ShepProject
 
         private bool running;
 
-        Vector2 bounds = new Vector2(72, 40);  // (5, 3) * 16 - 8
-        Color colorValid = new Color(0.05f, 0.39f, 1f, 0.25f);
-        Color colorInvalid = new Color(1f, 0.07f, 0.07f, 0.25f);
-
+        public readonly Vector2 bounds = new Vector2(72, 40);  // (5, 3) * 16 - 8
+        public readonly Color colorValid = new Color(0.05f, 0.39f, 1f, 0.25f);
+        public readonly Color colorInvalid = new Color(1f, 0.07f, 0.07f, 0.25f);
+        public readonly float buildTime = 7f;
 
 
         private void Start()
         {
 
-            actionSelectionNumber = 1;
-
-            currentBuildUps = new List<GameObject>();
-            buildUpTimers = new List<float>();
-            towers = new List<BaseTower>();
-            buildIndices = new List<int>();
+            currentBuildUps = new List<GameObject>(10);
+            buildUpTimers = new List<float>(10);
+            towers = new List<TowerBaseClass>(10);
+            buildIndices = new List<int>(10);
 
 
-            currentBuildingIndex = -1;
+            //currentBuildingIndex = -1;
 
             //generate a wall surrounding the area
             GeneratePlayableAreaWall();
@@ -66,56 +64,34 @@ namespace ShepProject
             #region Setup Input Callbacks
 
 
-            Inst.Input.Actions.Player.Run.performed += HideHologramsWhileRunning;
-            Inst.Input.Actions.Player.Run.canceled += ShowHologramsAfterRunning;
+            //Inst.Input.Actions.Player.Run.performed += HideHologramsWhileRunning;
+            //Inst.Input.Actions.Player.Run.canceled += ShowHologramsAfterRunning;
+            Inst.Input.actionSelectionChanged += ActionSelectionChanged;
             Inst.endOfWave += EndOfWave;
 
             #endregion
-        }
 
+        }
 
         public void ManualUpdate()
         {
 
             #region Building Towers
 
-            if (currentHologram != null)
+
+            if (currentBuilding != null)
             {
-                currentHologram.transform.position = controller.hologramPos;
-                UpdateTowerHologramColor();
-            }
+                currentBuilding.PlacementUpdate(this);
 
-            if (wallPlacement != null)
-            {
-
-                wallPlacement.PositionWall(modeController.WallReferencePosition(), modeController.WallReferenceRotation());
-                //UpdateWallHologramColor();
-            }
-
-            if (Inst.Input.CurrentActionSelection >= 3)
-            {
-
-                if (previousActionSelection != Inst.Input.CurrentActionSelection)
+                if (Inst.Input.ActionSelected)
                 {
-
-                    previousActionSelection = Inst.Input.CurrentActionSelection;
-                    InstantiateHologram(Inst.Input.CurrentActionSelection - 3);
+                    ConfirmBuilding();
                 }
 
             }
-            else
-            {
-                CancelBuildMode();
-                previousActionSelection = Inst.Input.CurrentActionSelection;
 
-            }
 
-            if (Inst.Input.ActionSelected)
-            {
-                ConfirmBuilding();
-            }
-
-            #region Old
+            #region Convert To Building
 
 
             for (int i = 0; i < buildUpTimers.Count; i++)
@@ -125,15 +101,20 @@ namespace ShepProject
                 if (buildUpTimers[i] <= 0)
                 {
 
-                    GameObject tower = Instantiate(prefabs[buildIndices[i]].gameObject);
-                    tower.transform.position = currentBuildUps[i].transform.position;
-                    tower.transform.rotation = currentBuildUps[i].transform.rotation;
+                    GameObject current = Instantiate(prefabs[buildIndices[i]]);
+                    current.transform.position = currentBuildUps[i].transform.position;
+                    current.transform.rotation = currentBuildUps[i].transform.rotation;
+
+                    if (buildIndices[i] < 6)
+                    {
+                        //no need to set wake trigger, automatically set
+                        towers.Add(current.GetComponent<TowerBaseClass>());
+                        Inst.NPCS.AddTowerToList(towers[towers.Count - 1]);
+
+                    }
+
 
                     Destroy(currentBuildUps[i]);
-
-                    towers.Add(tower.GetComponent<BaseTower>());
-
-                    Inst.NPCS.AddTowerToList(towers[towers.Count - 1]);
 
                     currentBuildUps.RemoveAt(i);
                     buildUpTimers.RemoveAt(i);
@@ -166,16 +147,9 @@ namespace ShepProject
             for (int i = 0; i < towers.Count; i++)
             {
 
-                /*
-                 * if towers don't have a target, need to search for one
-                 * 
-                 */
 
                 if (towers[i].NeedsTarget)
                 {
-
-                    //slimeTarget = Inst.EnemyManager.QuadTree
-                    //.GetClosestObject(objectID, ShepProject.ObjectType.Slime, minDist, maxDist);
 
                     towers[i].slimeTarget =
                         Inst.NPCS.QuadTree
@@ -209,213 +183,138 @@ namespace ShepProject
 
         }
 
+        private void ActionSelectionChanged(int previousAction, int currentAction)
+        {
+
+            if (currentAction >= 3)
+            {
+
+                if (currentAction != previousAction)
+                {
+
+                    //destroy old if needed, then instantiate new
+                    if (currentBuilding != null)
+                        Destroy(currentBuilding.gameObject);
+
+                    InstantiateHologram(currentAction - 3);
+
+                }
+
+            }
+            else
+            {
+                if (currentBuilding != null)
+                {
+                    modeController.TurnOffBuildMode();
+                    Destroy(currentBuilding.gameObject);
+
+                }
+            }
+
+        }
 
 
         #region Building Related
 
-        public void CancelBuildMode()
-        {
-            modeController.TurnOffBuildMode();
-
-            if (currentHologram != null)
-                Destroy(currentHologram);
-
-            if (wallPlacement != null)
-                Destroy(wallPlacement.gameObject);
-
-            currentBuildingIndex = -1;
-
-
-        }
 
         private void ConfirmBuilding()
         {
             if (Inst.Input.MouseOverHUD()) return;
-            InstantiateBuildup();
-        }
 
-        void HideHologramsWhileRunning(InputAction.CallbackContext context)
-        {
-
-            running = true;
-
-            if (modeController.BuildMode)
+            if (!currentBuilding.IsValidLocation(this))
             {
-                modeController.TurnOffProjectorParticles();
-            }
-
-            if (currentHologram != null)
-            {
-                Destroy(currentHologram);
-                //currentHologram = null;
-            }
-            else if (wallPlacement != null)
-            {
-                Destroy(wallPlacement.gameObject);
-                //wallPlacement = null;
-            }
-
-
-
-        }
-        void ShowHologramsAfterRunning(InputAction.CallbackContext context)
-        {
-            running = false;
-
-            if (currentBuildingIndex == -1)
+                PlayErrorSound();
                 return;
+            }
 
-            int previous = currentBuildingIndex;
-            currentBuildingIndex = -1;
-            InstantiateHologram(previous);
+            GameObject replacement = Instantiate(buildUpPrefabs[Inst.Input.CurrentActionSelection - 3]);
+            currentBuildUps.Add(replacement);
+            replacement.transform.position = currentBuilding.transform.position;
+            replacement.transform.rotation = currentBuilding.transform.rotation;
 
-            if (currentHologram != null || wallPlacement != null)
-                modeController.TurnOnProjectorParticles();
+            if (currentBuilding is WallPlacement)
+            {
+                replacement.GetComponent<Collider>().enabled = true;
+                Inst.NPCS.AddWallToList(replacement.transform);
+                Inst.Pathfinding.QueueVectorFieldUpdate();
+
+            }
+
+            replacement.SetActive(true);
+            replacement.GetComponent<Animator>().SetTrigger("Build");
+
+
+            buildUpTimers.Add(buildTime);
+            buildIndices.Add(Inst.Input.CurrentActionSelection - 3);
+
+
 
         }
+
+        //void HideHologramsWhileRunning(InputAction.CallbackContext context)
+        //{
+
+        //    running = true;
+
+        //    if (modeController.BuildMode)
+        //    {
+        //        modeController.TurnOffProjectorParticles();
+        //    }
+
+        //    if (currentHologram != null)
+        //    {
+        //        Destroy(currentHologram);
+        //        //currentHologram = null;
+        //    }
+        //    else if (wallPlacement != null)
+        //    {
+        //        Destroy(wallPlacement.gameObject);
+        //        //wallPlacement = null;
+        //    }
+
+
+
+        //}
+        //void ShowHologramsAfterRunning(InputAction.CallbackContext context)
+        //{
+        //    running = false;
+
+        //    if (currentBuildingIndex == -1)
+        //        return;
+
+        //    int previous = currentBuildingIndex;
+        //    currentBuildingIndex = -1;
+        //    InstantiateHologram(previous);
+
+        //    if (currentHologram != null || wallPlacement != null)
+        //        modeController.TurnOnProjectorParticles();
+
+        //}
 
         private void InstantiateHologram(int towerIndex)
         {
 
-            actionSelectionNumber = towerIndex + 4;
-
             if (running)
                 return;
 
-            if (currentBuildingIndex == -1 && towerIndex != 6)
-            {
-                modeController.TurnOnBuildMode();
+            ModeController.TurnOnBuildMode();
 
+            if (currentBuilding != null)
+            {
+                Destroy(currentBuilding.gameObject);
             }
 
-            if (currentBuildingIndex != towerIndex)
-            {
-                if (currentHologram != null)
-                {
-                    Destroy(currentHologram);
-                }
-                else if (wallPlacement != null)
-                {
-                    Destroy(wallPlacement.gameObject);
-                }
-            }
-            else
-                return;
+            currentBuilding = Instantiate(hologramPrefabs[towerIndex].gameObject).GetComponent<BuildingPlacementBase>();
+            currentBuilding.InitialPlacement(this);
 
 
-            //special exception for wall
-            if (towerIndex == 6 && currentBuildingIndex != 6)
-            {
-                modeController.TurnOnProjectorParticles();
-                wallPlacement = Instantiate(hologramPrefabs[towerIndex]).GetComponent<WallPlacement>();
-                wallPlacement.PositionWall(modeController.WallReferencePosition(), modeController.WallReferenceRotation());
-
-
-                currentBuildingIndex = towerIndex;
-                return;
-            }
-
-
-
-            //instantiate hologram prefab and place it in front of robot
-            currentHologram = Instantiate(hologramPrefabs[towerIndex].gameObject);
-            currentHologram.transform.position = controller.hologramPos;
-
-            currentHologram.SetActive(true);
-
-            currentBuildingIndex = towerIndex;
-
-        }
-
-        private void InstantiateBuildup()
-        {
-            if (currentHologram == null && wallPlacement == null)
-                return;
-
-
-            if (currentHologram != null)
-            {
-
-                if (!ValidTowerLocation(controller.forwardTilePos))
-                {
-                    PlayErrorSound();
-                    return;
-                }
-
-                GameObject buildUp = Instantiate(buildUpHolograms[currentBuildingIndex]);
-                buildUp.transform.position = currentHologram.transform.position;
-                buildUp.transform.rotation =
-                    Quaternion.LookRotation(currentHologram.transform.position - ShepGM.inst.player.position, Vector3.up);
-
-                //replace with the actual turret here.
-                buildUp.GetComponent<Animator>().SetTrigger("Build");
-
-                currentBuildUps.Add(buildUp);
-                buildUpTimers.Add(7f);
-                buildIndices.Add(currentBuildingIndex);
-
-                buildUp.SetActive(true);
-
-
-
-                Destroy(currentHologram);
-                currentHologram = null;
-            }
-            else
-            {
-
-                if (wallPlacement.validLocation)
-                {
-                    Inst.NPCS.AddWallToList(wallPlacement.transform);
-
-                    wallPlacement.PlaceWall();
-                    wallPlacement = null;
-
-                }
-                else
-                {
-                    PlayErrorSound();
-                    return;
-                }
-
-            }
-
-            Inst.Pathfinding.QueueVectorFieldUpdate();
-
-            int previous = currentBuildingIndex;
-            currentBuildingIndex = -1;
-
-            InstantiateHologram(previous);
-
-
-        }
-
-
-        void UpdateTowerHologramColor()
-        {
-            foreach (Renderer r in currentHologram.GetComponentsInChildren<Renderer>())
-            {
-                if (ValidTowerLocation(controller.forwardTilePos))
-                    r.material.color = colorValid;
-                else
-                    r.material.color = colorInvalid;
-            }
-        }
-
-
-        bool ValidTowerLocation(Vector3 pos)
-        {
-
-            bool obstructed = Physics.Raycast(pos - Vector3.up, Vector3.up, 3f, LayerMask.GetMask("Tower"));
-            bool inBounds = Mathf.Abs(pos.x) <= bounds.x && Mathf.Abs(pos.z) <= bounds.y;
-            return !obstructed && inBounds;
-
+            currentBuilding.gameObject.SetActive(true);
 
         }
 
         void PlayErrorSound()
         {
-            Inst.player.GetComponent<AudioSource>().PlayOneShot(errorSound);
+            Inst.playerAudioSource.PlayOneShot(errorSound);
         }
 
         #endregion

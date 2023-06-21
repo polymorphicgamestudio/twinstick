@@ -19,6 +19,8 @@ namespace ShepProject {
 		public static ShepGM inst;
 
 		public Transform player;
+        public AudioSource playerAudioSource;
+
 
 		[SerializeField]
 		private NPCManager npcs;

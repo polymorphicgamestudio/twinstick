@@ -8,7 +8,7 @@ using UnityEngine;
 namespace ShepProject
 {
 
-    public class LightningTowerController : BaseTower
+    public class LightningTowerController : TowerBaseClass
     {
         public GameObject lightningBolt;
         public Transform end;

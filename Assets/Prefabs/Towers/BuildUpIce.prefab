@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2937225219394870461}
   - component: {fileID: 2430830995324576318}
   - component: {fileID: 4716670968220028755}
-  - component: {fileID: -3359475877944215541}
   - component: {fileID: 4701473617412490962}
   - component: {fileID: 1754046488251216495}
   m_Layer: 10
@@ -21,7 +20,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &724605339240661344
 Transform:
   m_ObjectHideFlags: 0
@@ -112,19 +111,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &-3359475877944215541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 87324928441829980}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 549fc1e6134ca924b91590a9cfcd9fac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hozRotationBone: {fileID: 5967685629078534766}
 --- !u!82 &4701473617412490962
 AudioSource:
   m_ObjectHideFlags: 0

@@ -22,7 +22,7 @@ namespace ShepProject
         public event EventTrigger<bool> pauseEvent;
         private bool paused;
         private bool actionSelected;
-
+         
 
         [SerializeField]
         private Canvas canvas;
@@ -35,7 +35,9 @@ namespace ShepProject
 
         public bool ActionSelected => actionSelected;
 
+        public int PreviousActionSelection => previousActionSelection;
         public int CurrentActionSelection => currentActionSelection;
+
 
         private void Awake()
         {

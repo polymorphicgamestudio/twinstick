@@ -9,7 +9,7 @@ namespace ShepProject
 	public abstract class SystemBase : MonoBehaviour
 	{
 		private ShepGM inst;
-		protected ShepGM Inst => inst;
+		public ShepGM Inst => inst;
 
 		public virtual void Initialize(ShepGM inst)
 		{

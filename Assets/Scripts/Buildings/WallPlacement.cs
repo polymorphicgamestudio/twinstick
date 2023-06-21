@@ -1,12 +1,12 @@
+using ShepProject;
 using TMPro;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
-public class WallPlacement : MonoBehaviour {
+public class WallPlacement : BuildingPlacementBase
+{
 
 	Vector2 bounds = new Vector2(72,40);  // (5, 3) * 16 - 8
-
-	Color colorValid = new Color(0.05f, 0.39f, 1f, 0.25f);
-	Color colorInvalid = new Color(1f, 0.07f, 0.07f, 0.25f);
 
 	Vector3 targetPosition;
 	Quaternion targetRotation;
@@ -15,11 +15,24 @@ public class WallPlacement : MonoBehaviour {
 	float lerpFraction = 0f;
 
 	[SerializeField] GameObject wall;
-	float buildTime = 7f;
+    //float buildTime = 7f;
 
-	public bool validLocation;
 
-	public void PositionWall(Vector3 pos, Quaternion rot) {
+    protected override void Awake()
+    {
+		base.Awake();
+        mask = LayerMask.GetMask("Wall");
+
+    }
+
+    public override void PlacementUpdate(BuildingManager manager)
+    {
+        base.PlacementUpdate(manager);
+
+		Vector3 pos = manager.ModeController.WallReferencePosition();
+		Quaternion rot = manager.ModeController.WallReferenceRotation();
+
+
 		Vector3 hoz = new Vector3(SnapNumber(pos.x, 0), 0, SnapNumber(pos.z, 8));
 		Vector3 vert = new Vector3(SnapNumber(pos.x, 8), 0, SnapNumber(pos.z, 0));
 		bool hozIsCloser = (pos - hoz).sqrMagnitude < (pos - vert).sqrMagnitude;
@@ -28,7 +41,7 @@ public class WallPlacement : MonoBehaviour {
 		float referenceY = rot.eulerAngles.y;
 		float clampHozY = referenceY > 270 || referenceY < 90 ? 0 : 180;
 		float clampVertY = referenceY < 180 ? 90 : 270;
-		float clampedY = hozIsCloser? clampHozY: clampVertY;
+		float clampedY = hozIsCloser ? clampHozY : clampVertY;
 		targetRotation = Quaternion.Euler(0f, clampedY, 0f);
 
 		smoothPosition = Vector3.Lerp(smoothPosition, targetPosition, 10f * Time.deltaTime);
@@ -38,45 +51,38 @@ public class WallPlacement : MonoBehaviour {
 		transform.position = Vector3.Lerp(pos, smoothPosition, lerpFraction);
 		transform.rotation = Quaternion.Lerp(rot, smoothRotation, lerpFraction);
 
-		CheckValidLocation();
 
-		Color hologramColor = validLocation? colorValid : colorInvalid;
-		GetComponent<Renderer>().material.color = hologramColor;
+
 	}
 
-	void CheckValidLocation() {
-		bool obstructed = Physics.Raycast(targetPosition - Vector3.up, Vector3.up, 3f, LayerMask.GetMask("Wall"));
-		bool onGrid = lerpFraction == 1;
-		bool inBounds = Mathf.Abs(targetPosition.x) <= bounds.x && Mathf.Abs(targetPosition.z) <= bounds.y;
-
-		validLocation = !obstructed && onGrid && inBounds;
-	}
-	public void InitializeSmoothValues(Vector3 pos, Quaternion rot) {
-		smoothPosition = pos;
-		smoothRotation = rot;
-	}
-	float SnapNumber(float num, float offset) {
+	float SnapNumber(float num, float offset) 
+	{
 		return Mathf.Round((num - offset) / 16.0f) * 16 + offset;
 	}
 
-	public void PlaceWall() {
-		transform.position = targetPosition;
-		transform.rotation = targetRotation;
-		GetComponent<Animator>().SetTrigger("Build");
-		Invoke("ReplaceWithRealWall", buildTime);
-		GetComponent<Collider>().enabled = true;
-	}
-	void ReplaceWithRealWall() {
-		Instantiate(wall, targetPosition, targetRotation);
-		Destroy(gameObject);
-	}
+    public override bool IsValidLocation(BuildingManager manager)
+    {
+        bool obstructed 
+			= Physics.Raycast(targetPosition - Vector3.up, Vector3.up, 3f, mask);
+        bool onGrid 
+			= lerpFraction == 1;
+        bool inBounds 
+			= Mathf.Abs(targetPosition.x) <= bounds.x && Mathf.Abs(targetPosition.z) <= bounds.y;
+
+		bool isAtTarget = (transform.position - targetPosition).sqrMagnitude < .05f;
+		bool isAtRotation = (transform.rotation.eulerAngles - targetRotation.eulerAngles).sqrMagnitude < .01f;
+
+
+		return !obstructed && onGrid && inBounds && isAtTarget && isAtRotation;
+    }
+
+    public override void InitialPlacement(BuildingManager manager)
+    {
+        transform.position = manager.ModeController.WallReferencePosition();
+        transform.rotation = manager.ModeController.WallReferenceRotation();
+
+    }
 }
-
-
-
-
-
-
 
 /* backup... old method where rotation was based on center of walled square
 

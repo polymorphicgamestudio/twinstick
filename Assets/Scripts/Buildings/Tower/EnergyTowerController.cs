@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BeamTowerController : BaseTower
+public abstract class BeamTowerController : TowerBaseClass
 {
     public ParticleSystem barrelParticles;
 

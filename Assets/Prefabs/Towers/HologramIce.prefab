@@ -208,13 +208,14 @@ GameObject:
   - component: {fileID: 8947808799849023264}
   - component: {fileID: 3910482920255585191}
   - component: {fileID: 6837714181903753789}
+  - component: {fileID: 2959664552850712250}
   m_Layer: 0
   m_Name: HologramIce
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8947808799849023264
 Transform:
   m_ObjectHideFlags: 0
@@ -282,3 +283,15 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2959664552850712250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8442841979106540446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5d85eecce8f15847b4474619d211a5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
