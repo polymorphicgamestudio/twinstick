@@ -18,11 +18,13 @@ namespace ShepProject
         [HideInInspector]
         public float damage;
         public float projectileSpeed;
+        private LayerMask mask;
 
         private void Awake()
         {
             
             rb = GetComponent<Rigidbody>();
+            mask = LayerMask.GetMask("Slime");
 
         }
 
@@ -48,8 +50,10 @@ namespace ShepProject
 
         protected void Explode()
         {
-            ParticleSystem exp = Instantiate(explosion, transform.position, transform.rotation);
-            Collider[] overlaps = Physics.OverlapSphere(transform.position, explosionRange, LayerMask.GetMask("Slime"));
+            ParticleSystem exp 
+                = Instantiate(explosion, transform.position, transform.rotation);
+            Collider[] overlaps 
+                = Physics.OverlapSphere(transform.position, explosionRange, mask);
 
             for (int i = 0; i < overlaps.Length; i++)
             {

@@ -6,23 +6,20 @@ using static UnityEditor.PlayerSettings;
 public class WallPlacement : BuildingPlacementBase
 {
 
-	Vector2 bounds = new Vector2(72,40);  // (5, 3) * 16 - 8
-
-	Vector3 targetPosition;
-	Quaternion targetRotation;
-	Vector3 smoothPosition = Vector3.zero;
-	Quaternion smoothRotation = Quaternion.identity;
-	float lerpFraction = 0f;
-
-	[SerializeField] GameObject wall;
-    //float buildTime = 7f;
-
+    private Vector3 targetPosition;
+    private Quaternion targetRotation;
+    private Vector3 smoothPosition;
+    private Quaternion smoothRotation;
+	private float lerpFraction = 0f;
+	[HideInInspector]
+	private new BoxCollider collider;
+	public BoxCollider Collider => collider;
 
     protected override void Awake()
     {
 		base.Awake();
         mask = LayerMask.GetMask("Wall");
-
+		collider = GetComponent<BoxCollider>();
     }
 
     public override void PlacementUpdate(BuildingManager manager)
@@ -39,13 +36,13 @@ public class WallPlacement : BuildingPlacementBase
 		targetPosition = hozIsCloser ? hoz : vert;
 
 		float referenceY = rot.eulerAngles.y;
-		float clampHozY = referenceY > 270 || referenceY < 90 ? 0 : 180;
-		float clampVertY = referenceY < 180 ? 90 : 270;
+		float clampHozY = 0;
+		float clampVertY = 90;
 		float clampedY = hozIsCloser ? clampHozY : clampVertY;
 		targetRotation = Quaternion.Euler(0f, clampedY, 0f);
 
 		smoothPosition = Vector3.Lerp(smoothPosition, targetPosition, 10f * Time.deltaTime);
-		smoothRotation = Quaternion.Lerp(smoothRotation, targetRotation, 10f * Time.deltaTime);
+		smoothRotation = Quaternion.Lerp(smoothRotation, targetRotation, 20f * Time.deltaTime);
 
 		lerpFraction = Mathf.Clamp01((64 - (pos - targetPosition).sqrMagnitude) / 50);
 		transform.position = Vector3.Lerp(pos, smoothPosition, lerpFraction);
@@ -64,16 +61,17 @@ public class WallPlacement : BuildingPlacementBase
     {
         bool obstructed 
 			= Physics.Raycast(targetPosition - Vector3.up, Vector3.up, 3f, mask);
-        bool onGrid 
-			= lerpFraction == 1;
-        bool inBounds 
-			= Mathf.Abs(targetPosition.x) <= bounds.x && Mathf.Abs(targetPosition.z) <= bounds.y;
+        bool inBounds = Mathf.Abs(targetPosition.x) <= manager.bounds.x 
+			&& Mathf.Abs(targetPosition.z) <= manager.bounds.y;
 
-		bool isAtTarget = (transform.position - targetPosition).sqrMagnitude < .05f;
-		bool isAtRotation = (transform.rotation.eulerAngles - targetRotation.eulerAngles).sqrMagnitude < .01f;
+		bool isAtTarget = (transform.position - targetPosition)
+			.sqrMagnitude < .05f;
+
+		bool isAtRotation = (transform.rotation.eulerAngles - targetRotation.eulerAngles)
+			.sqrMagnitude < .01f;
 
 
-		return !obstructed && onGrid && inBounds && isAtTarget && isAtRotation;
+		return !obstructed && inBounds && isAtTarget && isAtRotation;
     }
 
     public override void InitialPlacement(BuildingManager manager)

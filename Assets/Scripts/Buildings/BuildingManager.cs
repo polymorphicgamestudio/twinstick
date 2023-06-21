@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -46,7 +47,6 @@ namespace ShepProject
         public readonly Color colorInvalid = new Color(1f, 0.07f, 0.07f, 0.25f);
         public readonly float buildTime = 7f;
 
-
         private void Start()
         {
 
@@ -55,17 +55,14 @@ namespace ShepProject
             towers = new List<TowerBaseClass>(10);
             buildIndices = new List<int>(10);
 
-
-            //currentBuildingIndex = -1;
-
             //generate a wall surrounding the area
             GeneratePlayableAreaWall();
 
             #region Setup Input Callbacks
 
 
-            //Inst.Input.Actions.Player.Run.performed += HideHologramsWhileRunning;
-            //Inst.Input.Actions.Player.Run.canceled += ShowHologramsAfterRunning;
+            Inst.Input.Actions.Player.Run.performed += HideHologramsWhileRunning;
+            Inst.Input.Actions.Player.Run.canceled += ShowHologramsAfterRunning;
             Inst.Input.actionSelectionChanged += ActionSelectionChanged;
             Inst.endOfWave += EndOfWave;
 
@@ -112,7 +109,6 @@ namespace ShepProject
                         Inst.NPCS.AddTowerToList(towers[towers.Count - 1]);
 
                     }
-
 
                     Destroy(currentBuildUps[i]);
 
@@ -227,6 +223,18 @@ namespace ShepProject
                 return;
             }
 
+            if (currentBuilding is WallPlacement)
+            {
+
+                //check to make sure that the wall doesn't enclose an entire area
+                if (CheckIfWallEncloses())
+                {
+                    PlayErrorSound();
+                    return;
+                }
+
+            }
+
             GameObject replacement = Instantiate(buildUpPrefabs[Inst.Input.CurrentActionSelection - 3]);
             currentBuildUps.Add(replacement);
             replacement.transform.position = currentBuilding.transform.position;
@@ -234,6 +242,8 @@ namespace ShepProject
 
             if (currentBuilding is WallPlacement)
             {
+
+
                 replacement.GetComponent<Collider>().enabled = true;
                 Inst.NPCS.AddWallToList(replacement.transform);
                 Inst.Pathfinding.QueueVectorFieldUpdate();
@@ -251,45 +261,178 @@ namespace ShepProject
 
         }
 
-        //void HideHologramsWhileRunning(InputAction.CallbackContext context)
-        //{
-
-        //    running = true;
-
-        //    if (modeController.BuildMode)
-        //    {
-        //        modeController.TurnOffProjectorParticles();
-        //    }
-
-        //    if (currentHologram != null)
-        //    {
-        //        Destroy(currentHologram);
-        //        //currentHologram = null;
-        //    }
-        //    else if (wallPlacement != null)
-        //    {
-        //        Destroy(wallPlacement.gameObject);
-        //        //wallPlacement = null;
-        //    }
+        private bool CheckIfWallEncloses()
+        {
+            //this is only called when trying to build a wall
+            WallPlacement wall = currentBuilding as WallPlacement;
+            int instanceID = wall.gameObject.GetInstanceID();
 
 
+            Collider[] colliders = Physics.OverlapBox(wall.transform.position, wall.Collider.size / 2f, wall.transform.rotation, wall.Mask);
+            Drawing.Draw.SolidBox(wall.transform.position, wall.transform.rotation, wall.Collider.size / 2f, Color.green);
 
-        //}
-        //void ShowHologramsAfterRunning(InputAction.CallbackContext context)
-        //{
-        //    running = false;
+            currentBuilding.GetComponent<Collider>().enabled = true;
 
-        //    if (currentBuildingIndex == -1)
-        //        return;
+            /*
+             * for the first check, get the first up to four walls if it's in a t configuration
+             * then follow each configuration to its conclusion and if the wall that is trying to be placed now is found, 
+             * then it can't be palced
+             * 
+             * shrink any subsequent overlap to keep the previous wall from being overlapped
+             * 
+             * 
+             * if 0 or 180, the wall is running horizontally
+             *      no need to adjust size
+             * 
+             * if 90 or 270 then wall is running vertically
+             *      
+             * 
+             * 
+             */
 
-        //    int previous = currentBuildingIndex;
-        //    currentBuildingIndex = -1;
-        //    InstantiateHologram(previous);
+            NativeHashMap<int, int> searched = new NativeHashMap<int, int>(100, Allocator.Temp);
+            bool returnValue = false;
+            for (int i = 0; i < colliders.Length; i++)
+            {
 
-        //    if (currentHologram != null || wallPlacement != null)
-        //        modeController.TurnOnProjectorParticles();
+                if (colliders[i].gameObject.GetInstanceID() == wall.gameObject.GetInstanceID())
+                    continue;
 
-        //}
+                searched.Clear();
+                if (CheckNextWall(colliders[i], wall.transform.position, instanceID, ref searched))
+                {
+                    returnValue = true;
+                    break;
+                }
+
+            }
+
+            searched.Dispose();
+            currentBuilding.GetComponent<Collider>().enabled = false;
+            return returnValue;
+
+        }
+
+        private bool CheckNextWall(Collider toCheck, Vector3 previous, int originalWallInstanceID,
+            ref NativeHashMap<int, int> searched)
+        {
+
+
+            /*
+             * depending on the previousPosition, will calculate which side is closer
+             * then it will move 1 or 2 away from the closer side to make sure it doesn't
+             * overlap the previous wall
+             * 
+             * 
+             */
+
+
+            Vector3 center = toCheck.transform.position;
+            Vector3 halfExtents = new Vector3();
+            halfExtents.y = 1;
+            halfExtents.x = 7.5f;
+            halfExtents.z = 1f;
+
+            //running horizontally
+            if (math.abs(toCheck.transform.rotation.eulerAngles.y) < .1f)
+            {
+                if ((toCheck.transform.position - previous).x < 0)
+                {
+                    //left side is closer
+                    center -= Vector3.right;
+                }
+                else
+                {
+                    //right side is closer
+                    center += Vector3.right;
+                }
+            }
+            else if (math.abs(toCheck.transform.rotation.eulerAngles.y - 90) < .1f)
+            {
+                if ((toCheck.transform.position - previous).z < 0)
+                {
+                    //bottom side is closer
+                    center -= Vector3.forward;
+                }
+                else
+                {
+                    //top side is closer
+                    center += Vector3.forward;
+                }
+            }
+            else
+            {
+
+                Debug.Log("Angle Not Accounted For");
+
+            }
+
+
+            Collider[] colliders = Physics.OverlapBox(center, halfExtents, toCheck.transform.rotation, LayerMask.GetMask("Wall"));
+            Drawing.Draw.SolidBox(center, toCheck.transform.rotation, halfExtents * 2, Color.green);
+
+            searched.Add(toCheck.gameObject.GetInstanceID(), 0);
+
+            int instanceID = 0;
+            for (int i = 0; i < colliders.Length; i++)
+            {
+
+                instanceID = colliders[i].gameObject.GetInstanceID();
+                if (instanceID == toCheck.gameObject.GetInstanceID())
+                    continue;
+
+                if (instanceID == originalWallInstanceID)
+                {
+                    //true signifies that it completely encloses an area
+                    return true;
+
+                }
+
+                if (searched.ContainsKey(instanceID))
+                    continue;
+
+                if (CheckNextWall(colliders[i], toCheck.transform.position, originalWallInstanceID, ref searched))
+                    return true;
+
+            }
+
+            return false;
+
+        }
+
+
+        void HideHologramsWhileRunning(InputAction.CallbackContext context)
+        {
+
+            running = true;
+
+            if (modeController.BuildMode)
+            {
+                modeController.TurnOffProjectorParticles();
+            }
+
+
+            if (currentBuilding != null)
+            {
+                Destroy(currentBuilding.gameObject);
+            }
+
+
+
+
+        }
+        void ShowHologramsAfterRunning(InputAction.CallbackContext context)
+        {
+            running = false;
+
+            if (Inst.Input.CurrentActionSelection >= 3)
+            {
+                InstantiateHologram(Inst.Input.CurrentActionSelection - 3);
+                modeController.TurnOnProjectorParticles();
+            }
+
+
+        }
 
         private void InstantiateHologram(int towerIndex)
         {

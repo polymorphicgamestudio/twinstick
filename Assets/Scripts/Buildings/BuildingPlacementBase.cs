@@ -14,6 +14,7 @@ namespace ShepProject
         private Renderer[] renderers;
         protected LayerMask mask;
 
+        public LayerMask Mask => mask;
         protected virtual void Awake()
         {
             renderers = GetComponentsInChildren<Renderer>();
