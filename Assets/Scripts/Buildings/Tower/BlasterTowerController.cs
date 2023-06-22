@@ -9,23 +9,23 @@ public class BlasterTowerController : BeamTowerController
 {
 
     private RaycastHit hit;
+    [SerializeField]
+    private float burstTime;
 
+    [SerializeField]
+    private float currentBurstTime;
+    [SerializeField]
+    private float betweenShotCooldownTime;
+    private float currentBetweenShotCooldownTime;
+
+    protected override bool IsShooting => (currentBurstTime > 0);
 
     public override void ManualUpdate()
     {
 
         base.ManualUpdate();
 
-        /*
-         * if shooting, then do burst firing for a moment, then have a cooldown period
-         * 
-         * if the target isn't within a few degrees from being within front of the tower, 
-         *      should revert to idle
-         * 
-         * 
-         */
-
-
+        currentBurstTime -= Time.deltaTime;
         if (beam.enabled)
         {
 
@@ -33,6 +33,19 @@ public class BlasterTowerController : BeamTowerController
             beam.SetPosition(1, hit.point);
 
         }
+        else
+        {
+
+            currentBetweenShotCooldownTime -= Time.deltaTime;
+            if (currentBurstTime > 0 && currentBetweenShotCooldownTime <= 0)
+            {
+                ShootTurret();
+            }
+
+
+
+        }
+
 
     }
 
@@ -47,6 +60,12 @@ public class BlasterTowerController : BeamTowerController
     public override void ShootTurret()
     {
 
+        if (currentBurstTime <= 0)
+        {
+            currentBurstTime = burstTime;
+
+        }
+        currentBetweenShotCooldownTime = betweenShotCooldownTime;
         direction = barrel.position - transform.position;
         direction.y = 0;
 

@@ -452,11 +452,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectID: 0
-  timer: 0.2
+  timer: 1
   currentTimer: 0
   minDist: 0
   maxDist: 30
-  towerDamage: 50
+  towerDamage: 30
   slimeTarget: {fileID: 0}
   rotBoneHoz: {fileID: 3770160217998941399}
   rotBoneVert: {fileID: 5855215440035512831}
@@ -467,6 +467,9 @@ MonoBehaviour:
   barrelParticles: {fileID: 3536865060065689364}
   beam: {fileID: 1879553106351586658}
   beamActivationTime: 0.1
+  burstTime: 3
+  currentBurstTime: 0
+  betweenShotCooldownTime: 0.2
 --- !u!1 &5339181460291822323
 GameObject:
   m_ObjectHideFlags: 0

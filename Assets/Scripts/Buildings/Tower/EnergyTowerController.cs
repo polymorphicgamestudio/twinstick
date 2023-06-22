@@ -13,6 +13,7 @@ public abstract class BeamTowerController : TowerBaseClass
     public float beamActivationTime;
     protected float currentBeamActivationTime;
 
+    protected abstract bool IsShooting { get; }
 
     protected override void Start()
     {
@@ -25,7 +26,8 @@ public abstract class BeamTowerController : TowerBaseClass
 
     public override void ManualUpdate()
     {
-        base.ManualUpdate();
+        if (!IsShooting)
+            base.ManualUpdate();
 
         if (beam.enabled)
         {

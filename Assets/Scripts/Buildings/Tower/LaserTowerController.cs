@@ -15,6 +15,8 @@ public class LaserTowerController : BeamTowerController
 
     private RaycastHit[] hits;
 
+    protected override bool IsShooting => beam.enabled;
+
     protected override void Start()
     {
         base.Start();

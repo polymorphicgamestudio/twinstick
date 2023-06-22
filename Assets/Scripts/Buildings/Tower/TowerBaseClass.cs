@@ -9,7 +9,7 @@ public abstract class TowerBaseClass : MonoBehaviour
 
     public float timer;
 
-    [HideInInspector]
+    //[HideInInspector]
     public float currentTimer;
 
     public float minDist = 0f;
