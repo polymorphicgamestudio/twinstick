@@ -41,6 +41,7 @@ namespace ShepProject {
 
 
 		public event EventTrigger gameOver;
+        public event EventTrigger<int> startOfWave;
         public event EventTrigger<int> endOfWave;
 
 		private void Awake() 
@@ -91,6 +92,11 @@ namespace ShepProject {
             pathfinding.ManualUpdate();
 
 
+        }
+
+        public void StartOfWaveEventTrigger(int waveEndedNumber)
+        {
+            startOfWave?.Invoke(waveEndedNumber);
         }
 
         public void EndOfWaveEventTrigger(int waveEndedNumber)

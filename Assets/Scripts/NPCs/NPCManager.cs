@@ -152,6 +152,7 @@ namespace ShepProject
 
             enemyPhysicsMethods = new Dictionary<int, EnemyPhysicsMethods>(MaxTreeObjects);
             sheepPhysicsMethods = new Dictionary<int, SheepPhysicsMethods>(sheepCount);
+            waveNumber = 1;
 
             for (int i = 0; i < targetIDs.Length; i++)
                 targetIDs[i] = ushort.MaxValue;
@@ -291,7 +292,7 @@ namespace ShepProject
             if (updateInitialize)
             {
                 updateInitialize = false;
-
+                Inst.StartOfWaveEventTrigger(waveNumber);
                 //spawn any additional required burrows
                 //then set the amount of enemies for them to each spawn
 
