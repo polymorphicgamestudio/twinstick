@@ -36,10 +36,10 @@ namespace ShepProject
         private NativeArray<Sigmoid> sigmoids;
 
         [NativeDisableContainerSafetyRestriction]
-        private NativeArray<int> slimeFitnesses;
+        private NativeArray<float> slimeFitnesses;
 
         [NativeDisableContainerSafetyRestriction]
-        private NativeArray<int> fitnessRanges;
+        private NativeArray<float> fitnessRanges;
 
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<ChromosoneParents> parents;
@@ -52,8 +52,8 @@ namespace ShepProject
 
         #endregion
 
-        public EvolutionStructure(int maxGeneticObjects, int maxObjects,
-             int genesPerObject, SigmoidInfo[] sigmoids, float standardDeviation = 1, float mutationMean = 0, Allocator type = Allocator.Persistent)
+        public EvolutionStructure(int maxGeneticObjects, int maxObjects,int genesPerObject, 
+            SigmoidInfo[] sigmoids, float standardDeviation = 1, float mutationMean = 0, Allocator type = Allocator.Persistent)
         {
 
             traits = new NativeArray<float>(maxGeneticObjects * genesPerObject, type);
@@ -64,8 +64,8 @@ namespace ShepProject
 
             previousGenes = new NativeArray<float>(maxGeneticObjects * genesPerObject, type);
             previousTraits = new NativeArray<float>(maxGeneticObjects * genesPerObject, type);
-            slimeFitnesses = new NativeArray<int>(maxGeneticObjects, type);
-            fitnessRanges = new NativeArray<int>(maxGeneticObjects, type);
+            slimeFitnesses = new NativeArray<float>(maxGeneticObjects, type);
+            fitnessRanges = new NativeArray<float>(maxGeneticObjects, type);
 
             parents = new NativeArray<ChromosoneParents>(maxGeneticObjects, type);
             //previousParents = new NativeArray<ChromosoneParents>(maxGeneticObjects, type);
@@ -87,7 +87,8 @@ namespace ShepProject
             this.mutationMean = mutationMean;
 
             SetupInitialSlimeValues();
-            File.Delete(outputFilePath);
+            if (File.Exists(outputFilePath))
+                File.Delete(outputFilePath);
 
 
             
@@ -128,6 +129,18 @@ namespace ShepProject
             //    });
 
             //}
+
+
+        }
+
+        public void ManualUpdate(NPCManager manager)
+        {
+
+            UpdatePlayerDistanceFitnessJob playerFitness = new UpdatePlayerDistanceFitnessJob();
+            playerFitness.positions = manager.QuadTree.positions;
+            playerFitness.slimeFitnesses = slimeFitnesses;
+            playerFitness.ids = ids;
+            playerFitness.Schedule(ids.Length, SystemInfo.processorCount).Complete();
 
 
         }
@@ -360,6 +373,20 @@ namespace ShepProject
 
 
         }
+
+        public void UpdatePlayerDistanceFitness(float2 playerPosition)
+        {
+
+
+
+        }
+
+        //need the entire list of sheep
+        public void UpdateSheepDistanceFitness()
+        {
+
+        }
+
 
         private int ObjectMainTypeIndex(int id)
         {

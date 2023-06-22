@@ -183,15 +183,12 @@ namespace ShepProject
 
 
             //uncomment to add player to list of choosableTargets
-            //choosableTargets.Add(0);
+            choosableTargets.Add(0);
 
             AddSheepToList();
 
 
             AddBurrow(burrowCount);
-
-            //50 burrows for testing
-            //AddBurrow(50);
 
 
         }
@@ -210,6 +207,7 @@ namespace ShepProject
             {
 
                 DuringWaveUpdate();
+                evolutionStructure.ManualUpdate(this);
 
             }
 

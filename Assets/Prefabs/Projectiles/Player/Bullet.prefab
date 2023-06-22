@@ -99,6 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: -830393565186356826}
   aliveTime: 3
+  damage: 50
 --- !u!1 &5820320398664183217
 GameObject:
   m_ObjectHideFlags: 0

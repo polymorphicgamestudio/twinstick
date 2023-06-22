@@ -7,15 +7,41 @@ namespace ShepProject
 {
 
 
+    public struct UpdatePlayerDistanceFitnessJob : IJobParallelFor
+    {
+
+
+        public NativeArray<ushort> ids;
+
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<float2> positions;
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<float> slimeFitnesses;
+
+        public void Execute(int index)
+        {
+
+            if (ids[index] == ushort.MaxValue)
+                return;
+
+            float fitness = 10000f / math.distancesq(positions[index], positions[0]);
+            if (slimeFitnesses[ids[index]] < fitness)
+                slimeFitnesses[ids[index]] = fitness;
+
+            
+        }
+
+    }
+
 
     public struct ChooseParentSlimes : IJobParallelFor
     {
 
         [ReadOnly]
-        public NativeArray<int> fitnessRanges;
+        public NativeArray<float> fitnessRanges;
 
         [ReadOnly]
-        public NativeArray<int> slimeFitnesses;
+        public NativeArray<float> slimeFitnesses;
 
 
         public NativeArray<ChromosoneParents> parents;
@@ -29,14 +55,14 @@ namespace ShepProject
 
             ChromosoneParents currentParents = new ChromosoneParents();
 
-            int first = rand.NextInt(0, fitnessRanges[fitnessRanges.Length - 1] + 1);
-            int second = rand.NextInt(0, fitnessRanges[fitnessRanges.Length - 1] + 1);
+            float first = rand.NextFloat(0, fitnessRanges[fitnessRanges.Length - 1] + 1);
+            float second = rand.NextFloat(0, fitnessRanges[fitnessRanges.Length - 1] + 1);
 
             currentParents.parentOne = GetSlimeParent(first);
 
             do
             {
-                currentParents.parentTwo = GetSlimeParent(rand.NextInt(0, fitnessRanges[fitnessRanges.Length - 1] + 1));
+                currentParents.parentTwo = GetSlimeParent(rand.NextFloat(0, fitnessRanges[fitnessRanges.Length - 1] + 1));
 
             } while (currentParents.parentOne == currentParents.parentTwo);
 
@@ -45,7 +71,7 @@ namespace ShepProject
         }
 
 
-        private ushort GetSlimeParent(int randValue)
+        private ushort GetSlimeParent(float randValue)
         {
 
             int startIndex = 0;
@@ -94,8 +120,6 @@ namespace ShepProject
         }
 
     }
-
-
 
     public struct CreateNextGeneration : IJobParallelFor
     {
