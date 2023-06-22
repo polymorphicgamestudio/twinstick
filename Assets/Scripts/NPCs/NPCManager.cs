@@ -57,7 +57,7 @@ namespace ShepProject
         public Button startButton;
 
         [SerializeField]
-        private bool spawningEnemies;
+        private bool writeEvolutionDataToFile;
 
         private Dictionary<int, EnemyPhysicsMethods> enemyPhysicsMethods;
         private Dictionary<int, SheepPhysicsMethods> sheepPhysicsMethods;
@@ -86,9 +86,6 @@ namespace ShepProject
 
         public InitialSlimeValues slimeValues;
         public EnemyObjectPool slimePool;
-
-
-        public bool SpawningEnemies => spawningEnemies;
 
         #endregion
 
@@ -230,18 +227,17 @@ namespace ShepProject
 
                 currentCountdownToWave = countdownToWave;
 
-                if (waveNumber > 0)
-                	//end of wave event invoke
-                	Inst.EndOfWaveEventTrigger(waveNumber);
 
                 if (waveNumber > 0)
                 {
-                    //evolutionStructure.GenerateSlimesForNextWave(true, 
-                    //    new EvolutionDataFileInfo() 
-                    //    {
-                    //        info = sigmoids, 
-                    //        waveNumber = waveNumber
-                    //    });
+                    Inst.EndOfWaveEventTrigger(waveNumber);
+
+                    evolutionStructure.GenerateSlimesForNextWave(writeEvolutionDataToFile,
+                    new EvolutionDataFileInfo()
+                    {
+                        info = sigmoids,
+                        waveNumber = waveNumber
+                    });
 
                     //endOfWaveCanvasParent.SetActive(true);
 

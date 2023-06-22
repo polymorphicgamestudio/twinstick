@@ -119,15 +119,15 @@ namespace ShepProject
             genesHandle.Complete();
             traitsHandle.Complete();
 
-            for (int i = 0; i < 5; i++)
-            {
-                GenerateSlimesForNextWave(true, new EvolutionDataFileInfo()
-                {
-                    info = sigmoids,
-                    waveNumber = i
-                });
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    GenerateSlimesForNextWave(true, new EvolutionDataFileInfo()
+            //    {
+            //        info = sigmoids,
+            //        waveNumber = i
+            //    });
 
-            }
+            //}
 
 
         }
