@@ -108,12 +108,12 @@ namespace ShepProject
             JobHandle traitsHandle = copyTraits.Schedule(traits.Length, SystemInfo.processorCount);
 
 
-            Random r = Random.CreateFromIndex((uint)(Time.realtimeSinceStartup * 129847));
-            for (int i = 0; i < slimeFitnesses.Length; i++)
-            {
-                slimeFitnesses[i] = r.NextInt(10, 500);
+            //Random r = Random.CreateFromIndex((uint)(Time.realtimeSinceStartup * 129847));
+            //for (int i = 0; i < slimeFitnesses.Length; i++)
+            //{
+            //    slimeFitnesses[i] = r.NextInt(10, 500);
 
-            }
+            //}
 
 
             genesHandle.Complete();
