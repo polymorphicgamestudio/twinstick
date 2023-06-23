@@ -24,7 +24,7 @@ namespace ShepProject
             if (ids[index] == ushort.MaxValue)
                 return;
 
-            float fitness = 10000f / math.distancesq(positions[index], positions[0]);
+            float fitness = 100000f / math.distancesq(positions[index], positions[0]);
             if (slimeFitnesses[ids[index]] < fitness)
                 slimeFitnesses[ids[index]] = fitness;
 
@@ -39,10 +39,6 @@ namespace ShepProject
 
         [ReadOnly]
         public NativeArray<float> fitnessRanges;
-
-        [ReadOnly]
-        public NativeArray<float> slimeFitnesses;
-
 
         public NativeArray<ChromosoneParents> parents;
 

@@ -16,6 +16,8 @@ public class BombTowerController : TowerBaseClass
     private Vector3 shootingForce;
     private float vertex;
 
+    public override bool IsShooting => false;
+
     public override void ShootTurret()
     {
         base.ShootTurret();

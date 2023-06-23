@@ -28,6 +28,7 @@ namespace ShepProject
 
         private RaycastHit hit;
 
+        public override bool IsShooting => false;
 
         protected override void Start()
         {

@@ -107,7 +107,7 @@ namespace ShepProject
 
             startButton.onClick.RemoveListener(StartRound);
 
-            for (int i = 0; i < choosableTargets.Length; i++)
+            for (int i = 1; i < choosableTargets.Length; i++)
             {
 
                 sheepPhysicsMethods[choosableTargets[i]].UnsetKinematic();
@@ -240,9 +240,9 @@ namespace ShepProject
 
                     //endOfWaveCanvasParent.SetActive(true);
 
-                    for (int i = 0; i < choosableTargets.Length; i++)
+                    for (int i = 1; i < choosableTargets.Length; i++)
                     {
-
+                        
                         sheepPhysicsMethods[choosableTargets[i]].WaveEndInfoSet();
 
                     }

@@ -8,6 +8,7 @@ public class IceTowerController : TowerBaseClass
     //public float particleActivationTime;
     //public float currentParticleActivationTime;
 
+    public override bool IsShooting => iceParticles.isPlaying;
 
     public override void ManualUpdate()
     {

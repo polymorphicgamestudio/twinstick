@@ -34,6 +34,8 @@ public abstract class TowerBaseClass : MonoBehaviour
     public LayerMask mask;
     public Transform barrel;
 
+    public abstract bool IsShooting { get; }
+
     protected virtual void Start() 
     {
 		animator = GetComponent<Animator>();
@@ -63,6 +65,9 @@ public abstract class TowerBaseClass : MonoBehaviour
 
 
         }
+
+        if (IsShooting)
+            return;
 
         currentTimer -= Time.deltaTime;
 

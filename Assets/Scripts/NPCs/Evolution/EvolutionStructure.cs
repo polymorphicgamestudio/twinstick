@@ -254,9 +254,9 @@ namespace ShepProject
             }
 
 
+
             ChooseParentSlimes chooseSlimes = new ChooseParentSlimes();
             chooseSlimes.fitnessRanges = fitnessRanges;
-            chooseSlimes.slimeFitnesses = slimeFitnesses;
             chooseSlimes.elapsedTime = Time.realtimeSinceStartup;
 
             chooseSlimes.parents = parents;
@@ -266,6 +266,7 @@ namespace ShepProject
 
             genesHandle.Complete();
             traitsHandle.Complete();
+            //fitnessHandle.Complete();
 
             Thread writeToFileThread = null;
 
@@ -297,6 +298,14 @@ namespace ShepProject
                 writeToFileThread.Join();
 
             }
+
+
+            ResetNativeArrayJob<float> resetFitnesses = new ResetNativeArrayJob<float>();
+            resetFitnesses.array = slimeFitnesses;
+            //JobHandle fitnessHandle =
+            resetFitnesses.Schedule(slimeFitnesses.Length, SystemInfo.processorCount).Complete();
+
+
 
 
 

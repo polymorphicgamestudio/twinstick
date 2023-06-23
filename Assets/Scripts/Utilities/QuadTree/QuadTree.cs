@@ -629,19 +629,16 @@ namespace ShepProject
             sortedObjectIDs.Dispose();
 
             positions.Dispose();
+
             XQuads.Dispose();
             ZQuads.Dispose();
+
             sorted.Dispose();
             lengths.Dispose();
-            //quadsList.Dispose();
             transformAccess.Dispose();
-            //objectQuadIDs.Dispose();
             quads.Dispose();
             deletions.Dispose();
-
-
-            //         neighborCounts.Dispose();
-            //objectNeighbors.Dispose();
+            objTypes.Dispose();
 
 
 

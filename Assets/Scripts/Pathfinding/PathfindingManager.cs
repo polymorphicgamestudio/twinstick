@@ -257,6 +257,7 @@ namespace ShepProject
             fCostKeys.Dispose();
             finalPathIndices.Dispose();
             vectorField.Dispose();
+            vectorPathsFilled.Dispose();
         }
 
 
@@ -310,6 +311,8 @@ namespace ShepProject
             cnj.origin = new float2(transform.position.x, transform.position.z);
 
             cnj.Schedule(setupData.rows, SystemInfo.processorCount).Complete();
+
+
 
 
         }

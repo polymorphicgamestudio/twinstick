@@ -18,7 +18,7 @@ public class BlasterTowerController : BeamTowerController
     private float betweenShotCooldownTime;
     private float currentBetweenShotCooldownTime;
 
-    protected override bool IsShooting => (currentBurstTime > 0);
+    public override bool IsShooting => (currentBurstTime > 0);
 
     public override void ManualUpdate()
     {
