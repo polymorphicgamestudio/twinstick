@@ -349,8 +349,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfea6d024c7b8d644a06993eff1e58df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
   objectID: 0
-  timer: 0.2
+  timer: 0.5
   currentTimer: 0
   minDist: 0
   maxDist: 20
@@ -362,9 +363,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   barrel: {fileID: 3578508331868303610}
+  boltPrefab: {fileID: 1553354484848905667, guid: c8b700312f47a164b8d011a1957a8806, type: 3}
   lightningBolt: {fileID: 7334720914237780545}
   end: {fileID: 7334720912698078050}
-  beamActivationTime: 0.1
+  beamActivationTime: 0.3
+  jumpRadius: 10
+  jumpCount: 4
+  jumpDamageDecrease: 0.1
+  jumpRangeDecrease: 0.1
 --- !u!1 &2825773110333614817
 GameObject:
   m_ObjectHideFlags: 0

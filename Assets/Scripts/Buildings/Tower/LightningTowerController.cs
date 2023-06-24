@@ -9,8 +9,18 @@ using UnityEngine;
 namespace ShepProject
 {
 
+    internal struct ShockJumpData
+    {
+
+        public int jumpedFromInstanceID;
+        public byte jumpNumber;
+
+
+    }
+
     public class LightningTowerController : TowerBaseClass
     {
+        public GameObject boltPrefab;
         public GameObject lightningBolt;
         public Transform end;
 
@@ -24,15 +34,21 @@ namespace ShepProject
         private int jumpCount;
         [SerializeField]
         private float jumpDamageDecrease;
-
+        [SerializeField]
+        private float jumpRangeDecrease;
 
         private RaycastHit hit;
 
         public override bool IsShooting => false;
 
+        private NativeHashMap<int, ShockJumpData> searchedObjects;
+
+
         protected override void Start()
         {
             base.Start();
+
+            searchedObjects = new NativeHashMap<int, ShockJumpData>(100, Allocator.Persistent);
 
             lightningBolt.transform.SetParent(null);
             lightningBolt.SetActive(false);
@@ -64,8 +80,11 @@ namespace ShepProject
                 return;
             }
 
-            EnemyPhysicsMethods methods = hit.collider.GetComponent<EnemyPhysicsMethods>();
-            methods.DealDamage(towerDamage, DamageType.Blaster);
+            
+            hit.collider.gameObject.GetInstanceID();
+
+            //EnemyPhysicsMethods methods = GetComponent<EnemyPhysicsMethods>();
+            //methods.DealDamage(towerDamage, DamageType.Blaster);
 
 
 
@@ -87,17 +106,9 @@ namespace ShepProject
              * 
              */
 
-            NativeHashMap<int, int> searched = new NativeHashMap<int, int>(200, Allocator.Temp);
-            Collider[] colliders = Physics.OverlapSphere(hit.point, jumpRadius, mask);
+            searchedObjects.Clear();
+            DamageCurrentTargets(Physics.OverlapSphere(hit.point, jumpRadius, mask), hit.collider.gameObject.GetInstanceID(), 1);
 
-            DamageCurrentTargets(colliders, hit.point, ref searched);
-
-            for (int i = 0; i < colliders.Length; i++)
-            {
-
-                JumpToNextTargets(colliders[i], ref searched);
-
-            }
 
             /*
              * after all the info has been gathered, get the data into an array
@@ -107,15 +118,41 @@ namespace ShepProject
              * 
              */
 
+            NativeKeyValueArrays<int, ShockJumpData> enemiesToDamage = searchedObjects.GetKeyValueArrays(Allocator.Temp);
+
+            for (int i = 0; i < searchedObjects.Count; i++)
+            {
+                EnemyPhysicsMethods enemy = gameManager.NPCS.GetEnemyPhysicsMethodFromInstanceID(enemiesToDamage.Keys[i]);
+                //enemy.DealDamage((1 - (enemiesToDamage.Values[i].jumpNumber * jumpDamageDecrease)) * towerDamage, DamageType.Lightning);
+
+                GameObject boltInst = Instantiate(boltPrefab);
+                Transform endPos = boltInst.transform.GetChild(0);
+                boltInst.transform.position = enemy.transform.position;
+                endPos.position = gameManager.NPCS.GetEnemyPhysicsMethodFromInstanceID(enemiesToDamage.Values[i].jumpedFromInstanceID).transform.position;
+
+                Destroy(boltInst, beamActivationTime);
+
+            }
+
+            for (int i = 0; i < searchedObjects.Count; i++)
+            {
+
+                EnemyPhysicsMethods enemy = gameManager.NPCS.GetEnemyPhysicsMethodFromInstanceID(enemiesToDamage.Keys[i]);
+                enemy.DealDamage((1 - (enemiesToDamage.Values[i].jumpNumber * jumpDamageDecrease)) * towerDamage, DamageType.Lightning);
+
+            }
 
 
-            searched.Dispose();
+            enemiesToDamage.Dispose();
 
+           
         }
 
-        private void DamageCurrentTargets(Collider[] colliders, Vector3 startPoint, ref NativeHashMap<int, int> searched)
+        private void DamageCurrentTargets(Collider[] colliders, int jumpedFromInstanceID, byte jumpNumber)
         {
 
+            int instID = 0;
+            //float damagePercent = 0;
             for (int i = 0; i < colliders.Length; i++)
             {
 
@@ -130,17 +167,39 @@ namespace ShepProject
                  * 
                  */
 
+                instID = colliders[i].gameObject.GetInstanceID();
+                ShockJumpData data = new ShockJumpData();
+                data.jumpNumber = jumpNumber;
+                data.jumpedFromInstanceID = jumpedFromInstanceID;
+
+                if (searchedObjects.ContainsKey(instID))
+                {
+                    if (searchedObjects[instID].jumpNumber > jumpNumber)
+                    {
+                        searchedObjects[instID] = data;
+
+                    }
+
+
+
+                }
+                else
+                {
+                    searchedObjects.Add(instID, data);
+
+                    if (jumpNumber < jumpCount)
+                        JumpToNextTargets(colliders[i], (byte)(jumpNumber + 1));
+
+                }
+
 
             }
 
 
-
         }
 
-        private void JumpToNextTargets(Collider collider, ref NativeHashMap<int, int> searched)
+        private void JumpToNextTargets(Collider collider, byte jumpNumber)
         {
-
-
 
             /*
              * for this need to check each collider, 
@@ -149,10 +208,15 @@ namespace ShepProject
              * if contained, check whether or not the damage dealt in this function is larger than before 
              *      if it's larger, then deal the extra damage
              *      
-             *      
-             * 
-             * 
              */
+
+
+            Collider[] colliders = Physics.OverlapSphere(collider.transform.position, jumpRadius - (jumpCount * jumpRangeDecrease * jumpRadius), mask);
+
+            if (colliders.Length > 0) 
+                DamageCurrentTargets(colliders, collider.gameObject.GetInstanceID(), (byte)(jumpNumber + 1));
+
+
 
 
         }
@@ -170,6 +234,13 @@ namespace ShepProject
             currentBeamActivationTime = 0;
             lightningBolt.SetActive(false);
             
+        }
+
+        private void OnDisable()
+        {
+
+            searchedObjects.Dispose();
+
         }
 
 

@@ -1,8 +1,11 @@
+using ShepProject;
 using Unity.Mathematics;
 using UnityEngine;
 
 public abstract class TowerBaseClass : MonoBehaviour 
 {
+
+    public ShepGM gameManager;
 
     [HideInInspector]
     public ushort objectID;

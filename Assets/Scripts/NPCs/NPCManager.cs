@@ -527,6 +527,18 @@ namespace ShepProject
 
         }
 
+        public EnemyPhysicsMethods GetEnemyPhysicsMethodFromInstanceID(int instanceID)
+        {
+            if (quadTree.objectIDsFromInstanceID.TryGetValue(instanceID, out ushort objectID))
+            {
+                return enemyPhysicsMethods[objectID];
+
+            }
+
+
+            return null;
+        }
+
         #region Adding Object Types To Quad Tree
 
         public void AddEnemyToList(Transform enemy)

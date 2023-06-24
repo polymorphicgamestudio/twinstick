@@ -106,6 +106,7 @@ namespace ShepProject
                     {
                         //no need to set wake trigger, automatically set
                         towers.Add(current.GetComponent<TowerBaseClass>());
+                        towers[towers.Count - 1].gameManager = Inst;
                         Inst.NPCS.AddTowerToList(towers[towers.Count - 1]);
 
                     }

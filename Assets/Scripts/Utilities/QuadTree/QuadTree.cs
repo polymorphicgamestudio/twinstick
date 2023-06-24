@@ -27,6 +27,8 @@ namespace ShepProject
         public NativeList<ushort> deletions;
         public NativeArray<float2> positions;
 
+        public NativeHashMap<int, ushort> objectIDsFromInstanceID;
+
         public NPCManager npcManager;
         private Transform[] transforms;
         public Transform[] Transforms => transforms;
@@ -160,6 +162,7 @@ namespace ShepProject
             objectIDs = new NativeArray<ushort>(positionCount, type);
             sortedObjectIDs = new NativeArray<ushort>(positionCount, type);
             deletions = new NativeList<ushort>(100, type);
+            objectIDsFromInstanceID = new NativeHashMap<int, ushort>(positionCount, type);
 
             for (ushort i = 0; i < positionCount; i++)
             {
@@ -568,6 +571,7 @@ namespace ShepProject
             positionCount++;
             transforms[objectIDs[positionCount]] = transform;
             objTypes[objectIDs[positionCount]] = objType;
+            objectIDsFromInstanceID.Add(transform.gameObject.GetInstanceID(), objectIDs[positionCount]);
 
             return objectIDs[positionCount];
 
@@ -585,6 +589,8 @@ namespace ShepProject
 
 
             Transform inactive = transforms[objectID];
+            objectIDsFromInstanceID.Remove(inactive.gameObject.GetInstanceID());
+
             //inactive.gameObject.SetActive(false);
             transforms[objectID] = null;
 
@@ -601,6 +607,7 @@ namespace ShepProject
             objectIDs[positionCount] = objectID;
             //objTypes[objectIDs[sorted]] = ObjectType.None;
             //need to update the sortedIDs as well to make sure there are no errors
+
 
 
             positionCount--;
@@ -639,7 +646,7 @@ namespace ShepProject
             quads.Dispose();
             deletions.Dispose();
             objTypes.Dispose();
-
+            objectIDsFromInstanceID.Dispose();
 
 
         }
