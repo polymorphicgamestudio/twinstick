@@ -967,6 +967,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1399850377 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4139098388238955568, guid: 25cc6722d9946db4caf3c7a53a250b7e, type: 3}
+  m_PrefabInstance: {fileID: 7860672374585727731}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1494804417 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
@@ -1283,6 +1294,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7378135169659962220, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
   m_PrefabInstance: {fileID: 5554158920758829115}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2031684857 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1989395567052872230, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
+  m_PrefabInstance: {fileID: 5554158920758829115}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &123118041746417112
 GameObject:
   m_ObjectHideFlags: 0
@@ -1525,6 +1547,18 @@ PrefabInstance:
       propertyPath: eventSystem
       value: 
       objectReference: {fileID: 1182725456}
+    - target: {fileID: 4197902870222080706, guid: 6d5fa4bc2d0b6fc4ca85b12c03b56fdf, type: 3}
+      propertyPath: raycasters.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4197902870222080706, guid: 6d5fa4bc2d0b6fc4ca85b12c03b56fdf, type: 3}
+      propertyPath: raycasters.Array.data[0]
+      value: 
+      objectReference: {fileID: 2031684857}
+    - target: {fileID: 4197902870222080706, guid: 6d5fa4bc2d0b6fc4ca85b12c03b56fdf, type: 3}
+      propertyPath: raycasters.Array.data[1]
+      value: 
+      objectReference: {fileID: 1399850377}
     - target: {fileID: 8592393595452506393, guid: 6d5fa4bc2d0b6fc4ca85b12c03b56fdf, type: 3}
       propertyPath: m_RootOrder
       value: 1

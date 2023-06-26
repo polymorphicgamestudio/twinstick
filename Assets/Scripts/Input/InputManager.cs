@@ -28,7 +28,10 @@ namespace ShepProject
         private Canvas canvas;
         [SerializeField]
         private EventSystem eventSystem;
-        private GraphicRaycaster graphicRaycaster;
+        //private GraphicRaycaster graphicRaycaster;
+
+        [SerializeField]
+        private GraphicRaycaster[] raycasters;
 
         private PointerEventData pointerEventData;
         private List<RaycastResult> raycastResults;
@@ -82,7 +85,7 @@ namespace ShepProject
             }
             else
             {
-                graphicRaycaster = canvas.GetComponent<GraphicRaycaster>();
+                //graphicRaycaster = canvas.GetComponent<GraphicRaycaster>();
 
             }
 
@@ -94,9 +97,19 @@ namespace ShepProject
         public void ManualUpdate()
         {
 
-            raycastResults.Clear();
-            pointerEventData.position = actions.Player.MousePosition.ReadValue<Vector2>();
-            graphicRaycaster.Raycast(pointerEventData, raycastResults);
+            for (int i = 0; i < raycasters.Length; i++)
+            {
+
+                raycastResults.Clear();
+                pointerEventData.position = actions.Player.MousePosition.ReadValue<Vector2>();
+                raycasters[i].Raycast(pointerEventData, raycastResults);
+
+                if (raycastResults.Count > 0)
+                    break;
+
+            }
+
+
 
         }
 
