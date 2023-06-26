@@ -128,12 +128,13 @@ namespace ShepProject
             startButton.onClick.AddListener(RemoveCountdown);
             startButton.onClick.AddListener(StartRound);
 
-            int targetCount = 100;
+            int targetCount = sheepCount + 1;
             evolutionStructure = 
-                new EvolutionStructure(slimeValues.slimeCount, MaxTreeObjects, (int)Genes.TotalGeneCount, sigmoids, 1, 0);
+                new EvolutionStructure(slimeValues.slimeCount, MaxTreeObjects, (int)Genes.TotalGeneCount,
+                    sigmoids, 0);
 
 
-            slimePool = new EnemyObjectPool(slimePrefab, (ushort)MaxTreeObjects, 20);
+            slimePool = new EnemyObjectPool(slimePrefab, (ushort)MaxTreeObjects, 200);
 
             choosableTargets = new NativeList<ushort>(targetCount, Allocator.Persistent);
             targetIDs = new NativeArray<ushort>(MaxTreeObjects, Allocator.Persistent);
@@ -235,7 +236,10 @@ namespace ShepProject
                     new EvolutionDataFileInfo()
                     {
                         info = sigmoids,
-                        waveNumber = waveNumber
+                        waveNumber = waveNumber - 2,
+                        standardDeviation = slimeValues.standardDeviation,
+                        mutationChance = slimeValues.mutationChance,
+                        typeMutationChance = slimeValues.typeMutationChance
                     });
 
                     //endOfWaveCanvasParent.SetActive(true);
@@ -519,7 +523,7 @@ namespace ShepProject
                 if (quadTree.objTypes[quadTree.objectIDs[i]] == ObjectType.Slime)
                 {
 
-                    UpdateEnemyGenes(quadTree.objectIDs[i]);
+                    //UpdateEnemyGenes(quadTree.objectIDs[i]);
 
                 }
 
@@ -555,7 +559,7 @@ namespace ShepProject
             ushort id = quadTree.AddTransform(enemy, ObjectType.Slime);
             evolutionStructure.AddGenesToObject(id);
 
-            UpdateEnemyGenes(id);
+            //UpdateEnemyGenes(id);
 
             EnemyPhysicsMethods methods = enemy.GetComponent<EnemyPhysicsMethods>();
 
@@ -570,31 +574,31 @@ namespace ShepProject
 
         }
 
-        private void UpdateEnemyGenes(int id)
-        {
+        //private void UpdateEnemyGenes(int id)
+        //{
 
-            //offset 1 for type, then attractions count
-            //genes.SetObjectType(id, ObjectType.Slime);
-            evolutionStructure.SetAttraction(id, ObjectType.Sheep, slimeValues.sheepAttraction); // 1
-            evolutionStructure.SetAttraction(id, ObjectType.Tower, slimeValues.towerAttraction); // 1
-            evolutionStructure.SetAttraction(id, ObjectType.Slime, slimeValues.slimeAttraction); // .5
-            evolutionStructure.SetAttraction(id, ObjectType.Wall, slimeValues.wallAttraction); // 1
+        //    //offset 1 for type, then attractions count
+        //    //genes.SetObjectType(id, ObjectType.Slime);
+        //    evolutionStructure.SetAttraction(id, ObjectType.Sheep, slimeValues.sheepAttraction); // 1
+        //    evolutionStructure.SetAttraction(id, ObjectType.Tower, slimeValues.towerAttraction); // 1
+        //    evolutionStructure.SetAttraction(id, ObjectType.Slime, slimeValues.slimeAttraction); // .5
+        //    evolutionStructure.SetAttraction(id, ObjectType.Wall, slimeValues.wallAttraction); // 1
 
-            //setting trait values, not gene values
-            evolutionStructure.SetViewRange(id, ObjectType.Tower, slimeValues.towerViewRange);
-            evolutionStructure.SetViewRange(id, ObjectType.Slime, slimeValues.slimeViewRange);
-            evolutionStructure.SetViewRange(id, ObjectType.Player, slimeValues.playerViewRange);
-            evolutionStructure.SetViewRange(id, ObjectType.Wall, slimeValues.wallViewRange);
+        //    //setting trait values, not gene values
+        //    evolutionStructure.SetViewRange(id, ObjectType.Tower, slimeValues.towerViewRange);
+        //    evolutionStructure.SetViewRange(id, ObjectType.Slime, slimeValues.slimeViewRange);
+        //    evolutionStructure.SetViewRange(id, ObjectType.Player, slimeValues.playerViewRange);
+        //    evolutionStructure.SetViewRange(id, ObjectType.Wall, slimeValues.wallViewRange);
 
-            evolutionStructure.SetSlimeOptimalDistance(id, slimeValues.slimeOptimalDistance);
-            //-8 / genes.GetViewRange(id, ViewRange.Slime));
+        //    evolutionStructure.SetSlimeOptimalDistance(id, slimeValues.slimeOptimalDistance);
+        //    //-8 / genes.GetViewRange(id, ViewRange.Slime));
 
-            //value within something like 1-20
-            evolutionStructure.SetSpeed(id, slimeValues.slimeSpeed);
-            evolutionStructure.SetTurnRate(id, slimeValues.slimeTurnRate);
-            evolutionStructure.SetHealth(id, slimeValues.slimeHealth);
+        //    //value within something like 1-20
+        //    evolutionStructure.SetSpeed(id, slimeValues.slimeSpeed);
+        //    evolutionStructure.SetTurnRate(id, slimeValues.slimeTurnRate);
+        //    evolutionStructure.SetHealth(id, slimeValues.slimeHealth);
 
-        }
+        //}
 
         public void AddWallToList(Transform wall)
         {

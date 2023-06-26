@@ -44,6 +44,9 @@ public abstract class TowerBaseClass : MonoBehaviour
 		animator = GetComponent<Animator>();
 		animator.SetTrigger("Wake");
 
+        //rotBoneHoz.rotation = transform.rotation;
+        //transform.rotation = Quaternion.identity;
+
         maxDistSquared = maxDist * maxDist;
 
 	}

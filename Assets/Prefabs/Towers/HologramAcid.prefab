@@ -34,7 +34,7 @@ Transform:
   - {fileID: 7364134328306250685}
   - {fileID: 6315066045465802711}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1543600315604091618
 MeshFilter:
@@ -206,6 +206,7 @@ GameObject:
   - component: {fileID: 6315066045465802711}
   - component: {fileID: 3143601332449625198}
   - component: {fileID: 987269995707511899}
+  - component: {fileID: 5817967507946662526}
   m_Layer: 0
   m_Name: RangeIndicator
   m_TagString: Untagged
@@ -278,3 +279,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5817967507946662526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2843727677140809750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a79498721a657e41a738d9a1874adf0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  viewDistance: 12

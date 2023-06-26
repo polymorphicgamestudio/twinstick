@@ -128,16 +128,14 @@ namespace ShepProject
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<float> parentGenes;
 
-        //[ReadOnly]
-        //[NativeDisableContainerSafetyRestriction]
-        //public NativeArray<Sigmoid> sigmoids;
-
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<float> childGenes;
 
 
         public float mutationMean;
         public float mutationStandardDeviation;
+        public float mutationChance;
+        public float typeMutationChance;
 
         public float elapsedTime;
 
@@ -180,12 +178,10 @@ namespace ShepProject
 
             //need to do main type and secondary type
 
-
-            for (int i = (int)Genes.MainResistance; i < (int)Genes.Health; i++)
+            for (int i = (int)Genes.MainType; i <= (int)Genes.SecondaryType; i++)
             {
 
-                value = 0;
-                if (rand.NextInt(0, 1001) <= 500)
+                if (rand.NextInt(0, 1001) < 500)
                 {
                     //parent one
                     value = parentGenes[(parents[index].parentOne * (int)Genes.TotalGeneCount) + i];
@@ -199,25 +195,56 @@ namespace ShepProject
                 }
 
 
-                if (rand.NextInt(0, 1001) > 300)
+
+                if (rand.NextInt(0, 1001) < (typeMutationChance * 100f))
+                {
+                    //type mutation
+
+                    value = rand.NextInt(0, (int)SlimeType.Count);
+
+
+                }
+
+                childGenes[(index * (int)Genes.TotalGeneCount) + i] = value;
+
+            }
+
+
+
+
+            if (rand.NextInt(0, 1001) < (typeMutationChance * 100f))
+            {
+                //secondary type mutation
+
+            }
+
+
+            for (int i = (int)Genes.MainResistance; i < (int)Genes.Health; i++)
+            {
+
+                value = 0;
+                if (rand.NextInt(0, 1001) < 500)
+                {
+                    //parent one
+                    value = parentGenes[(parents[index].parentOne * (int)Genes.TotalGeneCount) + i];
+
+                }
+                else
+                {
+                    //parent two
+                    value = parentGenes[(parents[index].parentTwo * (int)Genes.TotalGeneCount) + i];
+
+                }
+
+
+                if (rand.NextInt(0, 1001) < (mutationChance * 100f))
                 {
 
                     //if tests need to be done to check if evolution is working, just do + or - 1
                     //tested by checking values and seemed to be working
 
-                    if (rand.NextInt(0, 1001) <= 500)
-                    {
+                    value += MathUtil.RandomGaussianJobThread(mutationStandardDeviation, mutationMean, ref rand);
 
-                        //will mutate
-                        value -= MathUtil.RandomGaussianJobThread(mutationStandardDeviation, mutationMean, ref rand);
-
-                    }
-                    else
-                    {
-                        value += MathUtil.RandomGaussianJobThread(mutationStandardDeviation, mutationMean, ref rand);
-
-                    }
-                    
                 }
 
                 //start index of child genes
@@ -254,6 +281,11 @@ namespace ShepProject
             int sigmoidIndex = 0;
             for (int i = (int)Genes.MainResistance; i < (int)Genes.Health; i++)
             {
+
+                if (i == (int)Genes.TowerAttraction)
+                {
+                    int test = 0;
+                }
 
                 traits[(index * (int)Genes.TotalGeneCount) + i] 
                     = sigmoids[sigmoidIndex].GetTraitValue(genes[(index * (int)Genes.TotalGeneCount) + i]);

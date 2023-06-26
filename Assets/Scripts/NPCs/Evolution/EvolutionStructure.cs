@@ -44,7 +44,7 @@ namespace ShepProject
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<ChromosoneParents> parents;
 
-        private float mutationStandardDeviation;
+        //private float mutationStandardDeviation;
         private float mutationMean;
         private ushort idIndex;
 
@@ -53,14 +53,13 @@ namespace ShepProject
         #endregion
 
         public EvolutionStructure(int maxGeneticObjects, int maxObjects,int genesPerObject, 
-            SigmoidInfo[] sigmoids, float standardDeviation = 1, float mutationMean = 0, Allocator type = Allocator.Persistent)
+            SigmoidInfo[] sigmoids, float mutationMean = 0, Allocator type = Allocator.Persistent)
         {
 
             traits = new NativeArray<float>(maxGeneticObjects * genesPerObject, type);
             genes = new NativeArray<float>(maxGeneticObjects * genesPerObject, type);
 
             ids = new NativeArray<ushort>(maxObjects, type);
-            //availables = new NativeList<ushort>(maxGeneticObjects, type);
 
             previousGenes = new NativeArray<float>(maxGeneticObjects * genesPerObject, type);
             previousTraits = new NativeArray<float>(maxGeneticObjects * genesPerObject, type);
@@ -68,7 +67,11 @@ namespace ShepProject
             fitnessRanges = new NativeArray<float>(maxGeneticObjects, type);
 
             parents = new NativeArray<ChromosoneParents>(maxGeneticObjects, type);
-            //previousParents = new NativeArray<ChromosoneParents>(maxGeneticObjects, type);
+            ResetNativeArrayWithValueJob<ChromosoneParents> assignParents 
+                = new ResetNativeArrayWithValueJob<ChromosoneParents>();
+            assignParents.value = new ChromosoneParents()
+            { parentOne = ushort.MaxValue, parentTwo = ushort.MaxValue };
+            assignParents.array = parents;
 
             this.sigmoids = new NativeArray<Sigmoid>(sigmoids.Length, type);
 
@@ -83,13 +86,24 @@ namespace ShepProject
             }
 
             idIndex = 0;
-            mutationStandardDeviation = standardDeviation;
+            //mutationStandardDeviation = standardDeviation;
             this.mutationMean = mutationMean;
 
             SetupInitialSlimeValues();
             if (File.Exists(outputFilePath))
-                File.Delete(outputFilePath);
+            {
+                try
+                {
+                    File.Delete(outputFilePath);
+                }
+                catch(IOException io)
+                {
+                    Debug.LogError("Error deleting old file to start fresh with new file," +
+                        " you probably need to close the file!");
+                    Debug.LogError(io.Message);
+                }
 
+            }
 
             
 
@@ -178,33 +192,36 @@ namespace ShepProject
             for (int i = 0; i < slimeFitnesses.Length; i++)
             {
 
+                objectTypeIndex = i * (int)Genes.TotalGeneCount;
+
                 //main slime type
                 genes[objectTypeIndex] = r.NextInt(0, (int)SlimeType.Count);
                 traits[objectTypeIndex] = genes[objectTypeIndex];
 
                 //secondary slime type
-                objectTypeIndex++;
-                genes[objectTypeIndex] = r.NextInt(0, (int)SlimeType.Count);
-                traits[objectTypeIndex] = genes[objectTypeIndex];
+                //objectTypeIndex++;
+                genes[objectTypeIndex + (int)Genes.SecondaryType] = r.NextInt(0, (int)SlimeType.Count);
+                traits[objectTypeIndex + (int)Genes.SecondaryType] = genes[objectTypeIndex + (int)Genes.SecondaryType];
 
                 sigmoidIndex = 0;
                 for (int j = (int)Genes.MainResistance; j < (int)Genes.Health; j++)
                 {
 
-                    objectTypeIndex++;
+                    //objectTypeIndex++;
                     //this will need to be able to have a range for a mutation
-                    genes[objectTypeIndex] = 0;
-                    traits[objectTypeIndex] = sigmoids[sigmoidIndex].GetTraitValue(genes[objectTypeIndex]);
+                    genes[objectTypeIndex + j] = 0;
+                    traits[objectTypeIndex + j] 
+                        = sigmoids[sigmoidIndex].GetTraitValue(genes[objectTypeIndex + j]);
 
                     sigmoidIndex++;
 
                 }
 
-                objectTypeIndex++;
-                genes[objectTypeIndex] = 100;
-                traits[objectTypeIndex] = 100;
+                //objectTypeIndex++;
+                genes[objectTypeIndex + (int)Genes.Health] = 100;
+                traits[objectTypeIndex + (int)Genes.Health] = 100;
 
-                objectTypeIndex++;
+                //objectTypeIndex++;
 
             }
 
@@ -255,18 +272,8 @@ namespace ShepProject
 
 
 
-            ChooseParentSlimes chooseSlimes = new ChooseParentSlimes();
-            chooseSlimes.fitnessRanges = fitnessRanges;
-            chooseSlimes.elapsedTime = Time.realtimeSinceStartup;
-
-            chooseSlimes.parents = parents;
-            JobHandle evolutionHandle = chooseSlimes.Schedule(slimeFitnesses.Length, SystemInfo.processorCount);
-
-            evolutionHandle.Complete();
-
             genesHandle.Complete();
             traitsHandle.Complete();
-            //fitnessHandle.Complete();
 
             Thread writeToFileThread = null;
 
@@ -283,14 +290,17 @@ namespace ShepProject
             createChromosones.parents = parents;
             createChromosones.mutationMean = mutationMean;
             createChromosones.elapsedTime = Time.realtimeSinceStartup;
-            createChromosones.mutationStandardDeviation = mutationStandardDeviation;
+            createChromosones.mutationStandardDeviation = fileInfo.standardDeviation;
+            createChromosones.mutationChance = fileInfo.mutationChance;
+            createChromosones.typeMutationChance = fileInfo.typeMutationChance;
             createChromosones.Schedule(slimeFitnesses.Length, SystemInfo.processorCount).Complete();
 
             UpdateTraitValues utv = new UpdateTraitValues();
             utv.genes = genes;
             utv.sigmoids = sigmoids;
             utv.traits = traits;
-            utv.Schedule(slimeFitnesses.Length, SystemInfo.processorCount).Complete();
+            utv.Run(slimeFitnesses.Length);
+            //utv.Schedule(slimeFitnesses.Length, SystemInfo.processorCount).Complete();
 
             if (writeToFile)
             {
@@ -305,6 +315,15 @@ namespace ShepProject
             //JobHandle fitnessHandle =
             resetFitnesses.Schedule(slimeFitnesses.Length, SystemInfo.processorCount).Complete();
 
+
+            ChooseParentSlimes chooseSlimes = new ChooseParentSlimes();
+            chooseSlimes.fitnessRanges = fitnessRanges;
+            chooseSlimes.elapsedTime = Time.realtimeSinceStartup;
+
+            chooseSlimes.parents = parents;
+            JobHandle evolutionHandle = chooseSlimes.Schedule(slimeFitnesses.Length, SystemInfo.processorCount);
+
+            evolutionHandle.Complete();
 
 
 
@@ -329,20 +348,20 @@ namespace ShepProject
 
             string output = "";
 
-            //if (writeInfo.waveNumber == 0)
-            //{
-
-            output = "Slime ID, Wave Number, Player Distance Fitness, Parent One, Parent Two, Main Type, Secondary Type,";
-
-            for (int i = 0; i < info.Length; i++)
+            if (writeInfo.waveNumber == 0)
             {
-                output += info[i].name + " Gene, " + info[i].name + " Trait, ";
+
+                output = "Slime ID, Wave Number, Player Distance Fitness, Parent One, Parent Two, Main Type, Secondary Type,";
+
+                for (int i = 0; i < info.Length; i++)
+                {
+                    output += info[i].name + " Gene, " + info[i].name + " Trait, ";
+
+                }
+
+                newLines.Add(output);
 
             }
-
-            newLines.Add(output);
-
-            //}
 
 
             for (int h = 0; h < slimeFitnesses.Length; h++)
@@ -357,10 +376,10 @@ namespace ShepProject
                 output += parents[h].parentOne + ", " + parents[h].parentTwo + ", ";
 
                 //main type
-                output += traits[(h * (int)Genes.TotalGeneCount)] + ", ";
+                output += previousTraits[(h * (int)Genes.TotalGeneCount)] + ", ";
 
 
-                output += traits[(h * (int)Genes.TotalGeneCount) + 1] + ", ";
+                output += previousTraits[(h * (int)Genes.TotalGeneCount) + (int)Genes.SecondaryType] + ", ";
 
 
                 //otherwise just write the wave number and then the gene values underneath that
@@ -370,29 +389,21 @@ namespace ShepProject
                     output += previousGenes[(h * (int)Genes.TotalGeneCount) + i] + ", "
                             + previousTraits[(h * (int)Genes.TotalGeneCount) + i] + ", ";
 
-
                 }
 
                 newLines.Add(output);
 
             }
 
-            File.AppendAllLines(outputFilePath, newLines);
-
-
-
-        }
-
-        public void UpdatePlayerDistanceFitness(float2 playerPosition)
-        {
-
-
-
-        }
-
-        //need the entire list of sheep
-        public void UpdateSheepDistanceFitness()
-        {
+            try
+            {
+                File.AppendAllLines(outputFilePath, newLines);
+            }
+            catch (IOException io)
+            {
+                Debug.LogError("Error Writing Slime Data to File! You probably need to close the file.");
+                Debug.LogError(io.Message);
+            }
 
         }
 

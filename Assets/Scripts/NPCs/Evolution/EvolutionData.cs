@@ -12,6 +12,9 @@ namespace ShepProject
     {
         public SigmoidInfo[] info;
         public int waveNumber;
+        public float standardDeviation;
+        public float mutationChance;
+        public float typeMutationChance;
 
     }
 

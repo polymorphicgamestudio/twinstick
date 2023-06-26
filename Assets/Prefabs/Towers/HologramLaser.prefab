@@ -99,7 +99,7 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 1536
-  viewDistance: 20
+  viewDistance: 12
 --- !u!1 &2073919788354195420
 GameObject:
   m_ObjectHideFlags: 0

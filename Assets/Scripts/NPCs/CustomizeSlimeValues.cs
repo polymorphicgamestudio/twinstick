@@ -40,6 +40,13 @@ public class InitialSlimeValues
     //[Range(1, 1000)]
     public float slimeHealth;
 
+    public float standardDeviation;
+
+    public float mutationChance;
+
+    public float typeMutationChance;
+
+
     public override bool Equals(object obj)
     {
         return obj is InitialSlimeValues values &&
@@ -74,7 +81,9 @@ public class InitialSlimeValues
         hash.Add(slimeSpeed);
         hash.Add(slimeTurnRate);
         hash.Add(slimeHealth);
-
+        hash.Add(standardDeviation);
+        hash.Add(mutationChance);
+        hash.Add(typeMutationChance);
         return hash.ToHashCode();
     }
 }
@@ -108,6 +117,9 @@ public class CustomizeSlimeValues : MonoBehaviour
 
     public Slider slimeCount;
 
+    public Slider standardDeviation;
+    public Slider mutationChance;
+    public Slider typeMutationChance;
 
     public InitialSlimeValues values;
 
@@ -131,6 +143,11 @@ public class CustomizeSlimeValues : MonoBehaviour
         slimeTurnRate.value = values.slimeTurnRate;
         slimeHealth.value = values.slimeHealth;
         slimeCount.value = values.slimeCount;
+
+        standardDeviation.value = values.standardDeviation;
+        mutationChance.value = values.mutationChance;
+        typeMutationChance.value = values.typeMutationChance;
+
 
         //values = new InitialSlimeValues();
 

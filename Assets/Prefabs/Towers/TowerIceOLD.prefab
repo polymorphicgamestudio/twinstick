@@ -646,11 +646,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50ad2099d0284614199cd25e92a60704, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
   objectID: 0
   timer: 0
   currentTimer: 0
   minDist: 0
-  maxDist: 10
+  maxDist: 12
+  towerDamage: 0
   slimeTarget: {fileID: 0}
   rotBoneHoz: {fileID: 572765258766886739}
   rotBoneVert: {fileID: 8184455842856494744}
@@ -660,8 +662,6 @@ MonoBehaviour:
   barrel: {fileID: 8504368410812997007}
   iceParticles: {fileID: 4550295724391474382}
   particlesCollider: {fileID: 9061946637452118771}
-  particleActivationTime: 3
-  currentParticleActivationTime: 0
 --- !u!1 &6847040003165695686
 GameObject:
   m_ObjectHideFlags: 0

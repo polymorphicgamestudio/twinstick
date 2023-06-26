@@ -354,7 +354,7 @@ MonoBehaviour:
   timer: 0.5
   currentTimer: 0
   minDist: 0
-  maxDist: 20
+  maxDist: 12
   towerDamage: 50
   slimeTarget: {fileID: 0}
   rotBoneHoz: {fileID: 5113013842146784195}

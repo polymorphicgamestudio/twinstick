@@ -703,11 +703,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 670ce8a9caa9fc44cbcd367c0bc72e34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
   objectID: 0
   timer: 1
   currentTimer: 0
   minDist: 0
-  maxDist: 20
+  maxDist: 12
   towerDamage: 50
   slimeTarget: {fileID: 0}
   rotBoneHoz: {fileID: 2277576498445254763}

@@ -667,21 +667,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: sheepCount
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: startButton
       value: 
       objectReference: {fileID: 1281194100}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: slimeValues.slimeCount
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: writeEvolutionDataToFile
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8121321063624790235, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: m_Name
       value: NPCManager
@@ -1707,11 +1695,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3862833892269724729, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -349.9998
+      value: -349.99976
       objectReference: {fileID: 0}
     - target: {fileID: 4076616291558513197, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -499.9998
+      value: -499.99976
       objectReference: {fileID: 0}
     - target: {fileID: 5041468437680933113, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
       propertyPath: m_text
@@ -1767,7 +1755,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7010229021446006739, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 349.9999
+      value: 349.99988
       objectReference: {fileID: 0}
     - target: {fileID: 7378135169659962220, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
       propertyPath: m_Pivot.x
@@ -1899,7 +1887,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8209570557998804740, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 499.9999
+      value: 499.99988
       objectReference: {fileID: 0}
     - target: {fileID: 8391571391188175004, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
       propertyPath: m_AnchorMax.y

@@ -49,12 +49,12 @@ MonoBehaviour:
   endOfWaveCanvasParent: {fileID: 0}
   slimePrefab: {fileID: 3180250549467891622, guid: d3835c63c2cab04448df5a6b0161012f, type: 3}
   burrowCount: 10
-  sheepCount: 15
+  sheepCount: 20
   countdownToWave: 10000
   currentCountdownToWave: 0
   quadTreeBucketSize: 15
   startButton: {fileID: 0}
-  spawningEnemies: 0
+  writeEvolutionDataToFile: 1
   sigmoids:
   - name: Main Resistance
     sigmoid:
@@ -139,13 +139,13 @@ MonoBehaviour:
       magnitude: 10
       slope: 0.25
       verticalOffset: 0.2
-      horizontalOffset: -1
+      horizontalOffset: -1.2
   - name: Turn Rate
     sigmoid:
       magnitude: 1
       slope: 0.25
       verticalOffset: 0
-      horizontalOffset: 0
+      horizontalOffset: -1
   - name: Sprint Duration
     sigmoid:
       magnitude: 5
@@ -159,7 +159,7 @@ MonoBehaviour:
       verticalOffset: 0
       horizontalOffset: 0
   slimeValues:
-    slimeCount: 30
+    slimeCount: 100
     sheepAttraction: 1
     towerAttraction: -1
     slimeAttraction: 0.2
@@ -172,3 +172,6 @@ MonoBehaviour:
     slimeSpeed: 3.5
     slimeTurnRate: 0.6
     slimeHealth: 10
+    standardDeviation: 1
+    mutationChance: 0.5
+    typeMutationChance: 0.5
