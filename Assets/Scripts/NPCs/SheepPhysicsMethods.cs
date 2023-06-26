@@ -59,7 +59,7 @@ namespace ShepProject
                 animator.SetBool("Moving", true);
                 animator.SetBool("Running", false);
 
-                rb.velocity = transform.forward * (speed /2f);
+                rb.velocity = transform.forward * (speed / 2f);
 
             }
             else if (slimeDistance > 4)

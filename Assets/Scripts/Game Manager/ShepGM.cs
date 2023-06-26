@@ -87,10 +87,13 @@ namespace ShepProject {
 
             input.ManualUpdate();
 
-            npcs.ManualUpdate();
-            buildings.ManualUpdate();
-            pathfinding.ManualUpdate();
+            if (npcs != null)
+            {
+                npcs.ManualUpdate();
+                buildings.ManualUpdate();
+                pathfinding.ManualUpdate();
 
+            }
 
         }
 
