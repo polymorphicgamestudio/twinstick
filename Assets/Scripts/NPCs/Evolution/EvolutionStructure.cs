@@ -72,6 +72,7 @@ namespace ShepProject
             assignParents.value = new ChromosoneParents()
             { parentOne = ushort.MaxValue, parentTwo = ushort.MaxValue };
             assignParents.array = parents;
+            assignParents.Schedule(parents.Length, SystemInfo.processorCount).Complete();
 
             this.sigmoids = new NativeArray<Sigmoid>(sigmoids.Length, type);
 
@@ -284,23 +285,6 @@ namespace ShepProject
 
             }
 
-            CreateNextGeneration createChromosones = new CreateNextGeneration();
-            createChromosones.parentGenes = previousGenes;
-            createChromosones.childGenes = genes;
-            createChromosones.parents = parents;
-            createChromosones.mutationMean = mutationMean;
-            createChromosones.elapsedTime = Time.realtimeSinceStartup;
-            createChromosones.mutationStandardDeviation = fileInfo.standardDeviation;
-            createChromosones.mutationChance = fileInfo.mutationChance;
-            createChromosones.typeMutationChance = fileInfo.typeMutationChance;
-            createChromosones.Schedule(slimeFitnesses.Length, SystemInfo.processorCount).Complete();
-
-            UpdateTraitValues utv = new UpdateTraitValues();
-            utv.genes = genes;
-            utv.sigmoids = sigmoids;
-            utv.traits = traits;
-            utv.Run(slimeFitnesses.Length);
-            //utv.Schedule(slimeFitnesses.Length, SystemInfo.processorCount).Complete();
 
             if (writeToFile)
             {
@@ -326,6 +310,23 @@ namespace ShepProject
             evolutionHandle.Complete();
 
 
+            CreateNextGeneration createChromosones = new CreateNextGeneration();
+            createChromosones.parentGenes = previousGenes;
+            createChromosones.childGenes = genes;
+            createChromosones.parents = parents;
+            createChromosones.mutationMean = mutationMean;
+            createChromosones.elapsedTime = Time.realtimeSinceStartup;
+            createChromosones.mutationStandardDeviation = fileInfo.standardDeviation;
+            createChromosones.mutationChance = fileInfo.mutationChance;
+            createChromosones.typeMutationChance = fileInfo.typeMutationChance;
+            createChromosones.Schedule(slimeFitnesses.Length, SystemInfo.processorCount).Complete();
+
+            UpdateTraitValues utv = new UpdateTraitValues();
+            utv.genes = genes;
+            utv.sigmoids = sigmoids;
+            utv.traits = traits;
+            utv.Run(slimeFitnesses.Length);
+            //utv.Schedule(slimeFitnesses.Length, SystemInfo.processorCount).Complete();
 
 
         }
@@ -373,7 +374,9 @@ namespace ShepProject
                 //player distance fitness
                 output += slimeFitnesses[h] + ", ";
 
-                output += parents[h].parentOne + ", " + parents[h].parentTwo + ", ";
+                output += (parents[h].parentOne == ushort.MaxValue ? "N/A" : parents[h].parentOne) + ", ";
+
+                output += (parents[h].parentTwo == ushort.MaxValue ? "N/A" : parents[h].parentTwo) + ", ";
 
                 //main type
                 output += previousTraits[(h * (int)Genes.TotalGeneCount)] + ", ";

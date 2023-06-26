@@ -24,11 +24,10 @@ namespace ShepProject
         private bool actionSelected;
          
 
-        [SerializeField]
-        private Canvas canvas;
+        //[SerializeField]
+        //private Canvas canvas;
         [SerializeField]
         private EventSystem eventSystem;
-        //private GraphicRaycaster graphicRaycaster;
 
         [SerializeField]
         private GraphicRaycaster[] raycasters;
@@ -78,16 +77,16 @@ namespace ShepProject
 
             #endregion
 
-            if (canvas == null)
-            {
-                Debug.LogError("Canvas not set in Input Manager, needed for towers and shooting!");
+            //if (canvas == null)
+            //{
+            //    Debug.LogError("Canvas not set in Input Manager, needed for towers and shooting!");
 
-            }
-            else
-            {
-                //graphicRaycaster = canvas.GetComponent<GraphicRaycaster>();
+            //}
+            //else
+            //{
+            //    //graphicRaycaster = canvas.GetComponent<GraphicRaycaster>();
 
-            }
+            //}
 
 
 
