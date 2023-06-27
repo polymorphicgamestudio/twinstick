@@ -617,8 +617,8 @@ namespace ShepProject
         private void AddSheepToList()
         {
 
-            int min = 5;
-            int max = 10;
+            int min = -5;
+            int max = 0;
 
             for (int i = 0; i < sheepCount; i++)
             {

@@ -100,34 +100,34 @@ MonoBehaviour:
       horizontalOffset: -1
   - name: Slime Attraction
     sigmoid:
-      magnitude: 2
+      magnitude: 1
       slope: 0.25
-      verticalOffset: -1
-      horizontalOffset: 0
+      verticalOffset: 0
+      horizontalOffset: -1.25
   - name: Tower Attraction
     sigmoid:
       magnitude: 2
       slope: 0.25
       verticalOffset: -1
-      horizontalOffset: 0
+      horizontalOffset: -0.4
   - name: Player Attraction
     sigmoid:
       magnitude: 2
       slope: 0.25
       verticalOffset: -1
-      horizontalOffset: 0
+      horizontalOffset: 0.2
   - name: Wall Attraction
     sigmoid:
-      magnitude: 0.8
+      magnitude: 1
       slope: 0.25
-      verticalOffset: 0.2
-      horizontalOffset: 0
+      verticalOffset: -1
+      horizontalOffset: -0.5
   - name: Sheep Attraction
     sigmoid:
       magnitude: 1
       slope: 0.25
       verticalOffset: 0
-      horizontalOffset: 0
+      horizontalOffset: 1
   - name: Slime Optimal Distance
     sigmoid:
       magnitude: 2
@@ -145,7 +145,7 @@ MonoBehaviour:
       magnitude: 1
       slope: 0.25
       verticalOffset: 0
-      horizontalOffset: -1
+      horizontalOffset: -1.5
   - name: Sprint Duration
     sigmoid:
       magnitude: 5

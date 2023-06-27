@@ -51,6 +51,7 @@ namespace ShepProject
 
         private NativeArray<bool> sorted;
 
+        private LayerMask slimeBlockingMask;
 
 
         #region Debugging
@@ -163,6 +164,8 @@ namespace ShepProject
             sortedObjectIDs = new NativeArray<ushort>(positionCount, type);
             deletions = new NativeList<ushort>(100, type);
             objectIDsFromInstanceID = new NativeHashMap<int, ushort>(positionCount, type);
+
+            slimeBlockingMask = LayerMask.GetMask("Tower") | LayerMask.GetMask("Wall");
 
             for (ushort i = 0; i < positionCount; i++)
             {
@@ -455,11 +458,20 @@ namespace ShepProject
                 if (tempSqDist < minSquareDist || tempSqDist > maxSquareDist)
                     continue;
 
-                if (!Physics.Raycast(new Ray(transforms[objectID].position + Vector3.up * .25f, new float3(local.x, 0, local.y)),
-                    out RaycastHit info, maxDist, LayerMask.GetMask(objectType.ToString())))
+                if (Physics.Raycast(new Ray((transforms[objectID].position + (transforms[objectID].forward * .5f)) 
+                    + Vector3.up * .25f, new float3(local.x, 0, local.y)),
+                    out RaycastHit info, maxDist, slimeBlockingMask))
                 {
                     continue;
                 }
+
+
+                if (!Physics.Raycast(new Ray(transforms[objectID].position + Vector3.up * .25f, new float3(local.x, 0, local.y)),
+                    out info, maxDist, LayerMask.GetMask(objectType.ToString()) ))
+                {
+                    continue;
+                }
+
 
                 if (tempSqDist > sqDist)
                     continue;
@@ -522,7 +534,7 @@ namespace ShepProject
                 return null;
 
 
-            return null;
+            return transforms[closestObjectID];
         }
 
         public Transform GetClosestObjectByPathing(int objectID, ObjectType objectType, float minDist = 0, float maxDist = 10)
@@ -571,7 +583,7 @@ namespace ShepProject
             {
                 if (quads[checkKey].IsWithinDistance(positions[objectID], maxDist))
                 {
-                    temp = CheckChildQuadsInRange(quads[checkKey].key, objectID, objectType, minDist, maxDist);
+                    temp = CheckChildQuadsInRange(quads[checkKey].key, objectID, objectType, minDist, maxDist, searchVisible);
 
                     closestID = CheckWhichObjectIsCloser(objectID, closestID, temp);
 
