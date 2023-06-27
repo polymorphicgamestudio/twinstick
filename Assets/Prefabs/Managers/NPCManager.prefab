@@ -159,7 +159,7 @@ MonoBehaviour:
       verticalOffset: 0
       horizontalOffset: 0
   slimeValues:
-    slimeCount: 100
+    slimeCount: 1500
     sheepAttraction: 1
     towerAttraction: -1
     slimeAttraction: 0.2
