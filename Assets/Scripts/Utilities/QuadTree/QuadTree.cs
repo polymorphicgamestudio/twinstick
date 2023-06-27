@@ -417,6 +417,53 @@ namespace ShepProject
 
                 if (tempSqDist > sqDist)
                     continue;
+
+
+                sqDist = tempSqDist;
+
+                closestIndex = objectIDs[i];
+            }
+
+
+            //doesn't contain this type of item
+            return closestIndex;
+
+        }
+
+        private int SearchQuadForVisibleObjectType(int objectID, Quad current, ObjectType objectType, float minDist = 0, float maxDist = 10)
+        {
+
+            if (current.Empty)
+                return -1;
+
+            int closestIndex = -1;
+            float tempSqDist = 0;
+            float minSquareDist = minDist * minDist;
+            float maxSquareDist = maxDist * maxDist;
+            float sqDist = 1000000;
+            float2 local = new float2();
+
+            for (int i = current.startIndex; i <= current.endIndex; i++)
+            {
+
+                if (objTypes[objectIDs[i]] != objectType)
+                    continue;
+
+                local = (positions[objectIDs[i]] - positions[objectID]);
+                tempSqDist = (local.x * local.x) + (local.y * local.y);
+
+                if (tempSqDist < minSquareDist || tempSqDist > maxSquareDist)
+                    continue;
+
+                if (!Physics.Raycast(new Ray(transforms[objectID].position + Vector3.up * .25f, new float3(local.x, 0, local.y)),
+                    out RaycastHit info, maxDist, LayerMask.GetMask(objectType.ToString())))
+                {
+                    continue;
+                }
+
+                if (tempSqDist > sqDist)
+                    continue;
+
                 sqDist = tempSqDist;
 
                 closestIndex = objectIDs[i];
@@ -463,10 +510,27 @@ namespace ShepProject
 
         public Transform GetClosestVisibleObject(int objectID, ObjectType objectType, float minDist = 0, float maxDist = 10)
         {
+            QuadKey topLevelKey = new QuadKey();
+            if (positionCount > bucketSize)
+                topLevelKey.SetDivided(true);
+
+            Quad topLevelQuad = quads[topLevelKey];
+
+            int closestObjectID = CheckChildQuadsInRange(topLevelKey, objectID, objectType, minDist, maxDist, true);
+
+            if (closestObjectID == -1)
+                return null;
+
 
             return null;
         }
 
+        public Transform GetClosestObjectByPathing(int objectID, ObjectType objectType, float minDist = 0, float maxDist = 10)
+        {
+            //need reference to pathfinding manager and read cached path costs for that object.
+
+            return null;
+        }
 
         private int CheckWhichObjectIsCloser(int objectID, int one, int two)
         {
@@ -485,7 +549,7 @@ namespace ShepProject
 
         }
 
-        private int CheckChildQuadsInRange(QuadKey key, int objectID, ObjectType objectType, float minDist, float maxDist)
+        private int CheckChildQuadsInRange(QuadKey key, int objectID, ObjectType objectType, float minDist, float maxDist, bool searchVisible = false)
         {
 
             int closestID = -1;
@@ -494,8 +558,11 @@ namespace ShepProject
 
             if (!quads[key].key.IsDivided)
             {
+
+                if (searchVisible)
+                    return SearchQuadForVisibleObjectType(objectID, quads[key], objectType, minDist, maxDist);
                 //search this quad for the required object
-                return SearchQuadForObjectType(objectID, quads[key], objectType, minDist, maxDist * maxDist);
+                return SearchQuadForObjectType(objectID, quads[key], objectType, minDist * minDist, maxDist * maxDist);
 
             }
 

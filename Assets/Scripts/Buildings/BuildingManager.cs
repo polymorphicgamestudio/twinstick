@@ -147,10 +147,16 @@ namespace ShepProject
 
                 if (towers[i].NeedsTarget)
                 {
+                    if (towers[i] is BombTowerController)
+                    {
+                        towers[i].slimeTarget =
+                            Inst.NPCS.QuadTree
+                            .GetClosestObject(towers[i].objectID, ObjectType.Slime, towers[i].minDist, towers[i].maxDist);
+                    }
 
                     towers[i].slimeTarget =
                         Inst.NPCS.QuadTree
-                        .GetClosestObject(towers[i].objectID, ObjectType.Slime, towers[i].minDist, towers[i].maxDist);
+                        .GetClosestVisibleObject(towers[i].objectID, ObjectType.Slime, towers[i].minDist, towers[i].maxDist);
 
                 }
 
