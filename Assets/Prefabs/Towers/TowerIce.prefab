@@ -10444,7 +10444,7 @@ MonoBehaviour:
   rotBoneVert: {fileID: 8184455842856494744}
   mask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   barrel: {fileID: 0}
   iceParticles: {fileID: 2552815330980176072}
   particlesCollider: {fileID: 4063622814510382786}

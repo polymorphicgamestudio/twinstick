@@ -299,7 +299,7 @@ MonoBehaviour:
   rotBoneVert: {fileID: 7698009924099055247}
   mask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   barrel: {fileID: 6032181036920477341}
   bombPrefab: {fileID: 2581103228676468692, guid: 10db1ca2c09189744b6c9d0e4db309e4, type: 3}
   bombSpeed: 10
