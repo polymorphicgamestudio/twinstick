@@ -355,7 +355,7 @@ MonoBehaviour:
   currentTimer: 0
   minDist: 0
   maxDist: 12
-  towerDamage: 50
+  towerDamage: 30
   slimeTarget: {fileID: 0}
   rotBoneHoz: {fileID: 5113013842146784195}
   rotBoneVert: {fileID: 3303388576948079174}
@@ -367,10 +367,10 @@ MonoBehaviour:
   lightningBolt: {fileID: 7334720914237780545}
   end: {fileID: 7334720912698078050}
   beamActivationTime: 0.3
-  jumpRadius: 10
+  jumpRadius: 8
   jumpCount: 4
-  jumpDamageDecrease: 0.1
-  jumpRangeDecrease: 0.1
+  jumpDamageDecrease: 0.24
+  jumpRangeDecrease: 0.24
 --- !u!1 &2825773110333614817
 GameObject:
   m_ObjectHideFlags: 0

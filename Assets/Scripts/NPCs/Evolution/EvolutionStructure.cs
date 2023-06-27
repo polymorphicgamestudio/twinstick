@@ -379,10 +379,10 @@ namespace ShepProject
                 output += (parents[h].parentTwo == ushort.MaxValue ? "N/A" : parents[h].parentTwo) + ", ";
 
                 //main type
-                output += previousTraits[(h * (int)Genes.TotalGeneCount)] + ", ";
+                output += (SlimeType)previousTraits[(h * (int)Genes.TotalGeneCount)] + ", ";
 
 
-                output += previousTraits[(h * (int)Genes.TotalGeneCount) + (int)Genes.SecondaryType] + ", ";
+                output += (SlimeType)previousTraits[(h * (int)Genes.TotalGeneCount) + (int)Genes.SecondaryType] + ", ";
 
 
                 //otherwise just write the wave number and then the gene values underneath that

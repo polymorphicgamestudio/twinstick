@@ -458,8 +458,7 @@ namespace ShepProject
                 if (tempSqDist < minSquareDist || tempSqDist > maxSquareDist)
                     continue;
 
-                if (Physics.Raycast(new Ray((transforms[objectID].position + (transforms[objectID].forward * .5f)) 
-                    + Vector3.up * .25f, new float3(local.x, 0, local.y)),
+                if (Physics.Raycast(new Ray((transforms[objectID].position) + Vector3.up * .25f, new float3(local.x, 0, local.y)),
                     out RaycastHit info, maxDist, slimeBlockingMask))
                 {
                     continue;
