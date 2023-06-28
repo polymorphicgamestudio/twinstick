@@ -32,7 +32,7 @@ Transform:
   - {fileID: 6135373874108954527}
   - {fileID: 4900837904466321246}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9093419373934137398
 MonoBehaviour:
@@ -51,15 +51,19 @@ MonoBehaviour:
   EndPosition: {fileID: 4900837904466321246}
   setupData:
     fitPlayableArea: 0
-    rows: 30
-    columns: 30
-    nodeLength: 5
+    rows: 7
+    columns: 11
+    nodeLength: 16
     origin:
+      x: -88
+      y: 0
+      z: -56
+    originfloat2:
       x: 0
       y: 0
-      z: 0
     walkableColor: {r: 0, g: 1, b: 1, a: 1}
     unwalkableColor: {r: 0.9716981, g: 0, b: 0, a: 1}
+  vectorFieldNeedsUpdate: 0
   drawIndexLabels: 0
   jobPath: 1
   drawNodeInfo: 0
@@ -81,7 +85,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6135373874108954527
 Transform:
   m_ObjectHideFlags: 0
@@ -186,7 +190,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4900837904466321246
 Transform:
   m_ObjectHideFlags: 0

@@ -128,6 +128,17 @@ namespace ShepProject
             startButton.onClick.AddListener(RemoveCountdown);
             startButton.onClick.AddListener(StartRound);
 
+
+
+            if (ExperimentModeSettings.initialized)
+            {
+                slimeValues.standardDeviation = ExperimentModeSettings.standardDeviation;
+                slimeValues.mutationChance = ExperimentModeSettings.mutationChance;
+                slimeValues.typeMutationChance = ExperimentModeSettings.typeMutationChance;
+                slimeValues.slimeCount = ExperimentModeSettings.slimeCount;
+            }
+
+
             int targetCount = sheepCount + 1;
             evolutionStructure = 
                 new EvolutionStructure(slimeValues.slimeCount, MaxTreeObjects, (int)Genes.TotalGeneCount,
@@ -157,8 +168,6 @@ namespace ShepProject
 
             for (int i = 0; i < targetIDs.Length; i++)
                 targetIDs[i] = ushort.MaxValue;
-
-
 
 
 
@@ -495,8 +504,6 @@ namespace ShepProject
                     enemyPhysicsMethods[quadTree.objectIDs[i]].SetVelocity(
                         quadTree.Transforms[quadTree.objectIDs[i]].forward 
                         * evolutionStructure.GetSpeed(quadTree.objectIDs[i]));
-                    //quadTree.Transforms[quadTree.objectIDs[i]].gameObject.GetComponent<Rigidbody>().velocity
-                    //= (quadTree.Transforms[quadTree.objectIDs[i]].forward * genes.GetSpeed(quadTree.objectIDs[i]));
 
                     Profiler.EndSample();
                 }

@@ -310,10 +310,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PathfindingManager
       objectReference: {fileID: 0}
-    - target: {fileID: 469871987328048598, guid: 7fa7252ba737b9c47ba8e8a5c28f18d1, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1206343051344724529, guid: 7fa7252ba737b9c47ba8e8a5c28f18d1, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -357,18 +353,6 @@ PrefabInstance:
     - target: {fileID: 1206343051344724529, guid: 7fa7252ba737b9c47ba8e8a5c28f18d1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9093419373934137398, guid: 7fa7252ba737b9c47ba8e8a5c28f18d1, type: 3}
-      propertyPath: setupData.rows
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 9093419373934137398, guid: 7fa7252ba737b9c47ba8e8a5c28f18d1, type: 3}
-      propertyPath: setupData.columns
-      value: 11
-      objectReference: {fileID: 0}
-    - target: {fileID: 9093419373934137398, guid: 7fa7252ba737b9c47ba8e8a5c28f18d1, type: 3}
-      propertyPath: setupData.nodeLength
-      value: 16
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -670,14 +654,6 @@ PrefabInstance:
       propertyPath: startButton
       value: 
       objectReference: {fileID: 1281194100}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: slimeValues.slimeCount
-      value: 1000
-      objectReference: {fileID: 0}
-    - target: {fileID: 7182491602775243239, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
-      propertyPath: sigmoids.Array.data[12].sigmoid.horizontalOffset
-      value: -1
-      objectReference: {fileID: 0}
     - target: {fileID: 8121321063624790235, guid: 74efa963ce965654fa8c80efbad7fbff, type: 3}
       propertyPath: m_Name
       value: NPCManager
@@ -1159,7 +1135,7 @@ GameObject:
   - component: {fileID: 1946025189}
   - component: {fileID: 1946025191}
   m_Layer: 5
-  m_Name: FPSDisplay (1)
+  m_Name: 'FPSDisplay '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1182,8 +1158,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 500, y: 450}
+  m_AnchoredPosition: {x: 0, y: 225}
+  m_SizeDelta: {x: 400, y: 300}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1946025189
 MonoBehaviour:
@@ -1232,8 +1208,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 108
-  m_fontSizeBase: 108
+  m_fontSize: 72
+  m_fontSizeBase: 72
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1667,6 +1643,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: HUD
       objectReference: {fileID: 0}
+    - target: {fileID: 1170888778123144501, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1170888778123144501, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: d6b0567a9dda8834491d569bacd21941, type: 3}
+    - target: {fileID: 1170888778123144501, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
+      propertyPath: m_Color.a
+      value: 0.34509805
+      objectReference: {fileID: 0}
+    - target: {fileID: 1170888778123144501, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
+      propertyPath: m_Color.b
+      value: 0.3137255
+      objectReference: {fileID: 0}
+    - target: {fileID: 1170888778123144501, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
+      propertyPath: m_Color.g
+      value: 0.6509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 1170888778123144501, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2069317848012418268, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -1931,6 +1931,26 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 499.99988
       objectReference: {fileID: 0}
+    - target: {fileID: 8248225134539377482, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 450
+      objectReference: {fileID: 0}
+    - target: {fileID: 8248225134539377482, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 8248225134539377482, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8248225134539377482, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1442
+      objectReference: {fileID: 0}
+    - target: {fileID: 8248225134539377482, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -951.43
+      objectReference: {fileID: 0}
     - target: {fileID: 8391571391188175004, guid: 6920c763ced1a4e429d00d5142b3b46f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -2136,6 +2156,10 @@ PrefabInstance:
     - target: {fileID: 7104260582081033578, guid: 25cc6722d9946db4caf3c7a53a250b7e, type: 3}
       propertyPath: m_Name
       value: SlimeCustomization UI
+      objectReference: {fileID: 0}
+    - target: {fileID: 7104260582081033578, guid: 25cc6722d9946db4caf3c7a53a250b7e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8482919530431737231, guid: 25cc6722d9946db4caf3c7a53a250b7e, type: 3}
       propertyPath: m_AnchorMax.y
